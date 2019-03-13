@@ -38,11 +38,6 @@ public class HexGrid : MonoBehaviour
 
   
 
-    
-
-
-
-
     /* Creates and labels a Hex Cell */
     void CreateCell(int x, int z, int i){
         Vector3 pos;
@@ -55,6 +50,25 @@ public class HexGrid : MonoBehaviour
         cell.transform.localPosition = pos;
         cell.coordinates = HexCoordinates.FromOffsetCoordinates(x,z);
         cell.color = defaultColor;
+
+        //connect to neighbors
+        if(x > 0){
+            cell.SetNeighbor(HexDirection.W, cells[i - 1]);
+        }
+        if(z > 0){
+            if((z & 1) == 0){
+                cell.SetNeighbor(HexDirection.SE, cells[i - sizeX]);
+                if(x > 0){
+                    cell.SetNeighbor(HexDirection.SW, cells[i - sizeX - 1]);
+                }
+            }
+            else {
+				cell.SetNeighbor(HexDirection.SW, cells[i - sizeX]);
+				if (x < sizeX - 1) {
+					cell.SetNeighbor(HexDirection.SE, cells[i - sizeX + 1]);
+				}
+			}
+        }
 
         //label cell
         Text label = Instantiate<Text>(cellLabelPrefab);
