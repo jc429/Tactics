@@ -13,7 +13,17 @@ public class HexMapEditor : MonoBehaviour
 
 
     private Color activeColor;
+	// whether or not to apply the selected color
+	bool applyColor;
+
     public int activeElevation;
+	// whether or not to apply the selected elevation
+	bool applyElevation = true;
+
+	// size of edit brush
+	int brushSize;
+
+
 
     void Awake()
     {
@@ -31,21 +41,61 @@ public class HexMapEditor : MonoBehaviour
         Ray inputRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 		RaycastHit hit;
 		if (Physics.Raycast(inputRay, out hit)) {
-			EditCell(hexGrid.GetCell(hit.point));
+			EditCells(hexGrid.GetCell(hit.point));
 		}
     }
 
     public void SelectColor (int index) {
-		activeColor = colors[index];
+		applyColor = index >= 0;
+		if (applyColor) {
+			activeColor = colors[index];
+		}
 	}
 
     public void SelectElevation (float elevation) {
 		activeElevation = (int)elevation;
 	}
 
-    void EditCell (HexCell cell) {
-		cell.color = activeColor;
-        cell.Elevation = activeElevation;
-		hexGrid.Refresh();
+	public void SetApplyElevation (bool toggle) {
+		applyElevation = toggle;
 	}
+
+	public void SetBrushSize (float size) {
+		brushSize = (int)size;
+	}
+
+	public void ShowUI (bool visible) {
+		hexGrid.ShowUI(visible);
+	}
+
+    void EditCell (HexCell cell) {
+		if(cell != null){
+			if(applyColor){
+				cell.CellColor = activeColor;
+			}
+			if(applyElevation){
+				cell.Elevation = activeElevation;
+			}
+		}
+	}
+
+	void EditCells (HexCell center) {
+		int centerX = center.coordinates.X;
+		int centerZ = center.coordinates.Z;
+
+		// bottom to center
+		for (int r = 0, z = centerZ - brushSize; z <= centerZ; z++, r++) {
+			for (int x = centerX - r; x <= centerX + brushSize; x++) {
+				EditCell(hexGrid.GetCell(new HexCoordinates(x, z)));
+			}
+		}
+
+		// top to row above center
+		for (int r = 0, z = centerZ + brushSize; z > centerZ; z--, r++) {
+			for (int x = centerX - brushSize; x <= centerX + r; x++) {
+				EditCell(hexGrid.GetCell(new HexCoordinates(x, z)));
+			}
+		}
+	}
+	
 }

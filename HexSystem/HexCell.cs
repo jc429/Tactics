@@ -5,14 +5,23 @@ using UnityEngine;
 public class HexCell : MonoBehaviour
 {
     public HexCoordinates coordinates;
-    public Color color;
+    
 
-    int elevation;
+	// elevation of cell
+    int elevation = int.MinValue;
 
-    public RectTransform uiRect;    //label
+	// cell color
+	Color color;
 
+	// cell label
+    public RectTransform uiRect;
+
+	// adjacent cells
     [SerializeField]
 	HexCell[] neighbors;
+
+	// chunk this cell is a member of 
+	public HexGridChunk chunk;
 
     // Start is called before the first frame update
     void Start()
@@ -26,12 +35,24 @@ public class HexCell : MonoBehaviour
         
     }
 
+
+	/* Position of cell */
+	public Vector3 Position {
+		get {
+			return transform.localPosition;
+		}
+	}
     
+	/* Elevation of cell */
     public int Elevation {
 		get {
 			return elevation;
 		}
 		set {
+			if (elevation == value) {
+				return;
+			}
+
 			elevation = value;
             Vector3 position = transform.localPosition;
 			position.y = value * HexMetrics.elevationStep;
@@ -40,8 +61,42 @@ public class HexCell : MonoBehaviour
             Vector3 uiPosition = uiRect.localPosition;
 			uiPosition.z = elevation * -HexMetrics.elevationStep;
 			uiRect.localPosition = uiPosition;
+
+			Refresh();
 		}
 	}
+
+	/* Color of cell */
+	public Color CellColor {
+		get {
+			return color;
+		}
+		set {
+			if (color == value) {
+				return;
+			}
+			color = value;
+			Refresh();
+		}
+	}
+
+
+
+	/* Refreshes chunk (and, by extension, cell) */
+	void Refresh () {
+		if(chunk != null){
+			chunk.Refresh();
+
+			// if this cell is neighboring any other chunks, they must be refreshed too
+			for (int i = 0; i < neighbors.Length; i++) {
+				HexCell neighbor = neighbors[i];
+				if (neighbor != null && neighbor.chunk != chunk) {
+					neighbor.chunk.Refresh();
+				}
+			}
+		}
+	}
+
 
 	public HexEdgeType GetEdgeType (HexDirection direction) {
 		return HexMetrics.GetEdgeType(
