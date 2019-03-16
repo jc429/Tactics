@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -21,14 +22,16 @@ public class HexGrid : MonoBehaviour
 	HexGridChunk[] chunks;
     HexCell[] cells;
 	
+	public Color[] colors;
 
-    public Color defaultColor = Color.white;
 
 
     void Awake(){
+		HexMetrics.colors = colors;
 
 		CreateMap(cellCountX,cellCountZ);
 	}
+
 
 	/* generates a new map */
 	public void CreateMap(int sizeX, int sizeZ){
@@ -88,7 +91,6 @@ public class HexGrid : MonoBehaviour
     //	cell.transform.SetParent(transform,false);
         cell.transform.localPosition = pos;
         cell.coordinates = HexCoordinates.FromOffsetCoordinates(x,z);
-        cell.CellColor = defaultColor;
 
         //connect to neighbors
         if(x > 0){
@@ -165,6 +167,21 @@ public class HexGrid : MonoBehaviour
 	public void ShowUI (bool visible) {
 		for (int i = 0; i < chunks.Length; i++) {
 			chunks[i].ShowUI(visible);
+		}
+	}
+
+	public void SaveGrid (BinaryWriter writer) {
+		for (int i = 0; i < cells.Length; i++) {
+			cells[i].SaveCell(writer);
+		}
+	}
+
+	public void LoadGrid (BinaryReader reader) {
+		for (int i = 0; i < cells.Length; i++) {
+			cells[i].LoadCell(reader);
+		}
+		for (int i = 0; i < chunks.Length; i++) {
+			chunks[i].Refresh();
 		}
 	}
 }

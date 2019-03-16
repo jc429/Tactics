@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -8,17 +9,16 @@ public class HexMapEditor : MonoBehaviour
     [SerializeField]
     HexGrid hexGrid;
     
-    [SerializeField]
-    Color[] colors;
+    
+
 
 	/* tools for detecting click + drag inputs */
 	bool isDrag;
 	HexDirection dragDirection;
 	HexCell previousCell;
 
-    private Color activeColor;
-	// whether or not to apply the selected color
-	bool applyColor;
+    
+	int activeTerrainTypeIndex;
 
     int activeElevation;
 	// whether or not to apply the selected elevation
@@ -36,7 +36,7 @@ public class HexMapEditor : MonoBehaviour
 
     void Awake()
     {
-        SelectColor(0);
+
     }
 
     // Update is called once per frame
@@ -48,6 +48,7 @@ public class HexMapEditor : MonoBehaviour
 			previousCell = null;
 		}
     }
+
 
 	
     void HandleInput(){
@@ -84,13 +85,8 @@ public class HexMapEditor : MonoBehaviour
 		isDrag = false;
 	}
 
-
-
-    public void SelectColor (int index) {
-		applyColor = index >= 0;
-		if (applyColor) {
-			activeColor = colors[index];
-		}
+	public void SetTerrainTypeIndex (int index) {
+		activeTerrainTypeIndex = index;
 	}
 
     public void SelectElevation (float elevation) {
@@ -108,7 +104,7 @@ public class HexMapEditor : MonoBehaviour
 	public void SetApplyWaterLevel (bool toggle) {
 		applyWaterLevel = toggle;
 	}
-	
+
 
 	public void SetBrushSize (float size) {
 		brushSize = (int)size;
@@ -120,8 +116,8 @@ public class HexMapEditor : MonoBehaviour
 
     void EditCell (HexCell cell) {
 		if(cell != null){
-			if(applyColor){
-				cell.CellColor = activeColor;
+			if (activeTerrainTypeIndex >= 0) {
+				cell.TerrainTypeIndex = activeTerrainTypeIndex;
 			}
 			if(applyElevation){
 				cell.Elevation = activeElevation;
@@ -148,6 +144,21 @@ public class HexMapEditor : MonoBehaviour
 			for (int x = centerX - brushSize; x <= centerX + r; x++) {
 				EditCell(hexGrid.GetCell(new HexCoordinates(x, z)));
 			}
+		}
+	}
+	
+	public void SaveMap() {
+		Debug.Log("Saving to: " + Application.persistentDataPath);
+		string path = Path.Combine(Application.persistentDataPath, "test.map");
+		using (BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Create))) {
+			hexGrid.SaveGrid(writer);
+		}
+	}
+
+	public void LoadMap() {
+		string path = Path.Combine(Application.persistentDataPath, "test.map");
+		using (BinaryReader reader = new BinaryReader(File.OpenRead(path))) {
+			hexGrid.LoadGrid(reader);
 		}
 	}
 	

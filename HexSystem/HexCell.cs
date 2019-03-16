@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public class HexCell : MonoBehaviour
@@ -13,8 +14,8 @@ public class HexCell : MonoBehaviour
 	// water level of cell
     int waterLevel = int.MinValue;
 
-	// cell color
-	Color color;
+	// cell terrain type
+	int terrainTypeIndex;
 
 	// cell label
     public RectTransform uiRect;
@@ -57,13 +58,7 @@ public class HexCell : MonoBehaviour
 			}
 
 			elevation = value;
-            Vector3 position = transform.localPosition;
-			position.y = value * HexMetrics.elevationStep;
-			transform.localPosition = position;
-
-            Vector3 uiPosition = uiRect.localPosition;
-			uiPosition.z = elevation * -HexMetrics.elevationStep;
-			uiRect.localPosition = uiPosition;
+			RefreshPosition();
 
 			Refresh();
 		}
@@ -92,17 +87,25 @@ public class HexCell : MonoBehaviour
 		}
 	}
 
+	/* returns terrain type of cell */
+	public int TerrainTypeIndex {
+		get {
+			return terrainTypeIndex;
+		}
+		set {
+			if (terrainTypeIndex != value) {
+				terrainTypeIndex = value;
+				Refresh();
+			}
+		}
+	}
+
 	/* Color of cell */
 	public Color CellColor {
 		get {
-			return color;
+			return HexMetrics.colors[terrainTypeIndex];
 		}
 		set {
-			if (color == value) {
-				return;
-			}
-			color = value;
-			Refresh();
 		}
 	}
 
@@ -126,6 +129,17 @@ public class HexCell : MonoBehaviour
 	/* Refreshes only the chunk containing this cell */
 	void RefreshSelfOnly () {
 		chunk.Refresh();
+	}
+
+	/* adjusts cell height when elevation is changed */
+	void RefreshPosition () {
+		Vector3 position = transform.localPosition;
+		position.y = elevation * HexMetrics.elevationStep;
+		transform.localPosition = position;
+
+		Vector3 uiPosition = uiRect.localPosition;
+		uiPosition.z = elevation * -HexMetrics.elevationStep;
+		uiRect.localPosition = uiPosition;
 	}
 
 	public HexEdgeType GetEdgeType (HexDirection direction) {
@@ -156,5 +170,25 @@ public class HexCell : MonoBehaviour
 		}
 	}
 
+
+	public void SaveCell(BinaryWriter writer) {
+		writer.Write(0);	//header
+		writer.Write((byte)terrainTypeIndex);
+		writer.Write((byte)elevation);
+		writer.Write((byte)waterLevel);
+	}
+
+	public void LoadCell(BinaryReader reader) {
+		int header = reader.ReadInt32();
+		if(header == 0){
+			terrainTypeIndex = reader.ReadByte();
+			elevation = reader.ReadByte();
+			RefreshPosition();
+			waterLevel = reader.ReadByte();
+		}
+		else {
+			Debug.LogWarning("Unknown map format: " + header);
+		}
+	}
 	
 }
