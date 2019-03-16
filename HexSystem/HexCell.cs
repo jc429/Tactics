@@ -10,6 +10,9 @@ public class HexCell : MonoBehaviour
 	// elevation of cell
     int elevation = int.MinValue;
 
+	// water level of cell
+    int waterLevel = int.MinValue;
+
 	// cell color
 	Color color;
 
@@ -66,6 +69,29 @@ public class HexCell : MonoBehaviour
 		}
 	}
 
+	/* Water Level of cell */
+	public int WaterLevel {
+		get {
+			return waterLevel;
+		}
+		set {
+			if (waterLevel == value) {
+				return;
+			}
+			waterLevel = value;
+			Refresh();
+		}
+	}
+
+	/* returns the physical location of the water surface */
+	public float WaterSurfaceY {
+		get {
+			return
+				(waterLevel + HexMetrics.waterElevationOffset) *
+				HexMetrics.elevationStep;
+		}
+	}
+
 	/* Color of cell */
 	public Color CellColor {
 		get {
@@ -82,7 +108,7 @@ public class HexCell : MonoBehaviour
 
 
 
-	/* Refreshes chunk (and, by extension, cell) */
+	/* Refreshes chunk (and, by extension, cell) and potentially neighbors */
 	void Refresh () {
 		if(chunk != null){
 			chunk.Refresh();
@@ -97,6 +123,10 @@ public class HexCell : MonoBehaviour
 		}
 	}
 
+	/* Refreshes only the chunk containing this cell */
+	void RefreshSelfOnly () {
+		chunk.Refresh();
+	}
 
 	public HexEdgeType GetEdgeType (HexDirection direction) {
 		return HexMetrics.GetEdgeType(
@@ -118,4 +148,13 @@ public class HexCell : MonoBehaviour
 		neighbors[(int)direction] = cell;
 		cell.neighbors[(int)direction.Opposite()] = this;
 	}
+
+	/* is cell submerged? */
+	public bool IsUnderwater {
+		get {
+			return waterLevel > elevation;
+		}
+	}
+
+	
 }

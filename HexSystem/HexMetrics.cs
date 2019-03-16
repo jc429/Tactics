@@ -2,14 +2,22 @@
 
 public static class HexMetrics
 {
+	/* ratios between outer and inner radii */
+	public const float outerToInner = 0.866025404f;
+	public const float innerToOuter = 1f / outerToInner;
+
 	/* radius of one hex tile */
     public const float outerRadius = 2f;
-    public const float innerRadius = outerRadius * 0.866025404f;
+    public const float innerRadius = outerRadius * outerToInner;
 
 	/* percentage of the hex tile that remains solid (for edge blending) */
     public const float solidFactor = 0.85f;
 	public const float blendFactor = 1f - solidFactor;
 
+	/* percentage of submerged hex tile that remains non-shore water */
+	public const float waterFactor = 0.6f;
+	public const float waterBlendFactor = 1f - waterFactor;
+	
 	/* how high (in m) one step of elevation raises one tile */
 	public const float elevationStep = 0.5f;
 
@@ -33,7 +41,11 @@ public static class HexMetrics
 	/* how many cells per chunk */
 	public const int chunkSizeX = 5, chunkSizeZ = 5;
 
+	/* how much lower water surface should be than land surface */
+	public const float waterElevationOffset = -0.25f;
 
+	/* cell color index */
+	public static Color[] colors;
 
 	public static Vector3 GetFirstCorner (HexDirection direction) {
 		return corners[(int)direction];
@@ -50,9 +62,22 @@ public static class HexMetrics
 	public static Vector3 GetSecondSolidCorner (HexDirection direction) {
 		return corners[(int)direction + 1] * solidFactor;
 	}
+	
+	public static Vector3 GetFirstWaterCorner (HexDirection direction) {
+		return corners[(int)direction] * waterFactor;
+	}
+
+	public static Vector3 GetSecondWaterCorner (HexDirection direction) {
+		return corners[(int)direction + 1] * waterFactor;
+	}
 
 	public static Vector3 GetBridge(HexDirection direction){
 		return (corners[(int)direction] + corners[(int)direction + 1]) * blendFactor;
+	}
+
+	public static Vector3 GetWaterBridge (HexDirection direction) {
+		return (corners[(int)direction] + corners[(int)direction + 1]) *
+			waterBlendFactor;
 	}
 
 	public static HexEdgeType GetEdgeType (int elevation1, int elevation2) {

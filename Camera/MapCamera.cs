@@ -34,9 +34,9 @@ public class MapCamera : MonoBehaviour
 	void Start(){
 		AdjustZoom(0.5f);
 		
-		float xMax = (grid.chunkCountX * HexMetrics.chunkSizeX - 0.5f) * (2f * HexMetrics.innerRadius);
-		float zMax = (grid.chunkCountZ * HexMetrics.chunkSizeZ - 1) * (1.5f * HexMetrics.outerRadius);
-		Debug.Log(xMax + ", " + zMax);
+		float xMax = (grid.cellCountX - 0.5f) * (2f * HexMetrics.innerRadius);
+		float zMax = (grid.cellCountZ - 1) * (1.5f * HexMetrics.outerRadius);
+		//Debug.Log(xMax + ", " + zMax);
 		transform.localPosition = new Vector3(0.5f*xMax,0,0.5f*zMax);
 		
 	}
@@ -96,10 +96,10 @@ public class MapCamera : MonoBehaviour
 
 	/* keeps camera within grid boundaries */
 	Vector3 ClampPosition (Vector3 position) {
-		float xMax = (grid.chunkCountX * HexMetrics.chunkSizeX - 0.5f) * (2f * HexMetrics.innerRadius);
+		float xMax = (grid.cellCountX - 0.5f) * (2f * HexMetrics.innerRadius);
 		position.x = Mathf.Clamp(position.x, 0f, xMax);
 
-		float zMax = (grid.chunkCountZ * HexMetrics.chunkSizeZ - 1) * (1.5f * HexMetrics.outerRadius);
+		float zMax = (grid.cellCountZ - 1) * (1.5f * HexMetrics.outerRadius);
 		position.z = Mathf.Clamp(position.z, 0f, zMax);
 
 		return position;

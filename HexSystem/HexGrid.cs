@@ -6,8 +6,10 @@ using UnityEngine.UI;
 public class HexGrid : MonoBehaviour
 {
 
-	public int chunkCountX = 4, chunkCountZ = 3;
-	int cellCountX, cellCountZ;
+	/* size of map in cells */
+	/* maps must currently be in a multiple of chunk sizes (5X, 5Z) */
+	public int cellCountX = 10, cellCountZ = 10;
+	int chunkCountX, chunkCountZ;
 
     [SerializeField]
     HexCell cellPrefab;
@@ -25,8 +27,27 @@ public class HexGrid : MonoBehaviour
 
     void Awake(){
 
-		cellCountX = chunkCountX * HexMetrics.chunkSizeX;
-		cellCountZ = chunkCountZ * HexMetrics.chunkSizeZ;
+		CreateMap(cellCountX,cellCountZ);
+	}
+
+	/* generates a new map */
+	public void CreateMap(int sizeX, int sizeZ){
+		if (
+			sizeX <= 0 || sizeX % HexMetrics.chunkSizeX != 0 ||
+			sizeZ <= 0 || sizeZ % HexMetrics.chunkSizeZ != 0
+		) {
+			Debug.LogError("Unsupported map size.");
+			return;
+		}
+
+		if (chunks != null) {
+			for (int i = 0; i < chunks.Length; i++) {
+				Destroy(chunks[i].gameObject);
+			}
+		}
+
+		chunkCountX = cellCountX / HexMetrics.chunkSizeX;
+		chunkCountZ = cellCountZ / HexMetrics.chunkSizeZ;
 
 		CreateChunks();
 		CreateCells();

@@ -11,14 +11,23 @@ public class HexMapEditor : MonoBehaviour
     [SerializeField]
     Color[] colors;
 
+	/* tools for detecting click + drag inputs */
+	bool isDrag;
+	HexDirection dragDirection;
+	HexCell previousCell;
 
     private Color activeColor;
 	// whether or not to apply the selected color
 	bool applyColor;
 
-    public int activeElevation;
+    int activeElevation;
 	// whether or not to apply the selected elevation
 	bool applyElevation = true;
+	
+	int activeWaterLevel;
+	// whether or not to apply the selected water level
+	bool applyWaterLevel = true;
+
 
 	// size of edit brush
 	int brushSize;
@@ -35,15 +44,47 @@ public class HexMapEditor : MonoBehaviour
         if (Input.GetMouseButton(0) && !EventSystem.current.IsPointerOverGameObject()) {
 			HandleInput();
 		}
+		else {
+			previousCell = null;
+		}
     }
 
+	
     void HandleInput(){
         Ray inputRay = Camera.main.ScreenPointToRay(Input.mousePosition);
 		RaycastHit hit;
 		if (Physics.Raycast(inputRay, out hit)) {
-			EditCells(hexGrid.GetCell(hit.point));
+			HexCell currentCell = hexGrid.GetCell(hit.point);
+			if (previousCell && previousCell != currentCell) {
+				ValidateDrag(currentCell);
+			}
+			else {
+				isDrag = false;
+			}
+			EditCells(currentCell);
+			previousCell = currentCell;
+		}
+		else {
+			previousCell = null;
 		}
     }
+
+	/* check that the input is a click + drag */
+	void ValidateDrag (HexCell currentCell) {
+		for (
+			dragDirection = HexDirection.NE;
+			dragDirection <= HexDirection.NW;
+			dragDirection++
+		) {
+			if (previousCell.GetNeighbor(dragDirection) == currentCell) {
+				isDrag = true;
+				return;
+			}
+		}
+		isDrag = false;
+	}
+
+
 
     public void SelectColor (int index) {
 		applyColor = index >= 0;
@@ -59,6 +100,15 @@ public class HexMapEditor : MonoBehaviour
 	public void SetApplyElevation (bool toggle) {
 		applyElevation = toggle;
 	}
+	
+	public void SelectWaterLevel (float level) {
+		activeWaterLevel = (int)level;
+	}
+
+	public void SetApplyWaterLevel (bool toggle) {
+		applyWaterLevel = toggle;
+	}
+	
 
 	public void SetBrushSize (float size) {
 		brushSize = (int)size;
@@ -75,6 +125,9 @@ public class HexMapEditor : MonoBehaviour
 			}
 			if(applyElevation){
 				cell.Elevation = activeElevation;
+			}
+			if (applyWaterLevel) {
+				cell.WaterLevel = activeWaterLevel;
 			}
 		}
 	}
