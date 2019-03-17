@@ -26,7 +26,10 @@ public class MapCamera : MonoBehaviour
 	[SerializeField]
 	HexGrid grid;
 
+	bool locked;
+
 	void Awake () {
+		GameController.mapCamera = this;
 		swivel = transform.GetChild(0);
 		stick = swivel.GetChild(0);
 	}
@@ -42,20 +45,22 @@ public class MapCamera : MonoBehaviour
 	}
 
 	void Update () {
-		float zoomDelta = Input.GetAxis("Mouse ScrollWheel");
-		if (zoomDelta != 0f) {
-			AdjustZoom(zoomDelta);
-		}
+		if(!locked){
+			float zoomDelta = Input.GetAxis("Mouse ScrollWheel");
+			if (zoomDelta != 0f) {
+				AdjustZoom(zoomDelta);
+			}
 
-		float rotationDelta = Input.GetAxis("CamRotation");
-		if (rotationDelta != 0f) {
-			AdjustRotation(rotationDelta);
-		}
+			float rotationDelta = Input.GetAxis("CamRotation");
+			if (rotationDelta != 0f) {
+				AdjustRotation(rotationDelta);
+			}
 
-		float xDelta = Input.GetAxis("Horizontal");
-		float zDelta = Input.GetAxis("Vertical");
-		if (xDelta != 0f || zDelta != 0f) {
-			AdjustPosition(xDelta, zDelta);
+			float xDelta = Input.GetAxis("Horizontal");
+			float zDelta = Input.GetAxis("Vertical");
+			if (xDelta != 0f || zDelta != 0f) {
+				AdjustPosition(xDelta, zDelta);
+			}
 		}
 	}
 	
@@ -103,5 +108,20 @@ public class MapCamera : MonoBehaviour
 		position.z = Mathf.Clamp(position.z, 0f, zMax);
 
 		return position;
+	}
+
+	/* forces camera to refresh and stay within map bounds */
+	public void ValidatePosition () {
+		AdjustPosition(0f, 0f);
+	}
+
+	/* Locks the camera from moving */
+	public void LockCamera(){
+		locked = true;
+	}
+
+	/* Unlocks the camera */
+	public void UnlockCamera(){
+		locked = false;
 	}
 }

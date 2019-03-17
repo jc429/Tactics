@@ -74,6 +74,7 @@ public class HexGridChunk : MonoBehaviour
 
     /* Creates a single triangle */
     void Triangulate(HexDirection direction, HexCell cell){
+		
         Vector3 center = cell.transform.localPosition;
 		Vector3 v1 = center + HexMetrics.GetFirstSolidCorner(direction);
 		Vector3 v2 = center + HexMetrics.GetSecondSolidCorner(direction);

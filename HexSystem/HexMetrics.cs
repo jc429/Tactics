@@ -39,7 +39,7 @@ public static class HexMetrics
 	};
 
 	/* how many cells per chunk */
-	public const int chunkSizeX = 5, chunkSizeZ = 5;
+	public const int chunkSizeX = 4, chunkSizeZ = 4;
 
 	/* how much lower water surface should be than land surface */
 	public const float waterElevationOffset = -0.25f;

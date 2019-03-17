@@ -8,8 +8,8 @@ public class HexGrid : MonoBehaviour
 {
 
 	/* size of map in cells */
-	/* maps must currently be in a multiple of chunk sizes (5X, 5Z) */
-	public int cellCountX = 10, cellCountZ = 10;
+	/* maps must currently be in a multiple of chunk sizes (4X, 4Z) */
+	public int cellCountX = 16, cellCountZ = 16;
 	int chunkCountX, chunkCountZ;
 
     [SerializeField]
@@ -34,13 +34,13 @@ public class HexGrid : MonoBehaviour
 
 
 	/* generates a new map */
-	public void CreateMap(int sizeX, int sizeZ){
+	public bool CreateMap(int sizeX, int sizeZ){
 		if (
 			sizeX <= 0 || sizeX % HexMetrics.chunkSizeX != 0 ||
 			sizeZ <= 0 || sizeZ % HexMetrics.chunkSizeZ != 0
 		) {
-			Debug.LogError("Unsupported map size.");
-			return;
+			Debug.LogError("Unsupported map size: " + sizeX + "x" + sizeZ);
+			return false;
 		}
 
 		if (chunks != null) {
@@ -48,12 +48,16 @@ public class HexGrid : MonoBehaviour
 				Destroy(chunks[i].gameObject);
 			}
 		}
+		cellCountX = sizeX;
+		cellCountZ = sizeZ;
 
-		chunkCountX = cellCountX / HexMetrics.chunkSizeX;
-		chunkCountZ = cellCountZ / HexMetrics.chunkSizeZ;
+		chunkCountX = sizeX / HexMetrics.chunkSizeX;
+		chunkCountZ = sizeZ / HexMetrics.chunkSizeZ;
 
 		CreateChunks();
 		CreateCells();
+
+		return true;
 	}
 
 
@@ -171,12 +175,23 @@ public class HexGrid : MonoBehaviour
 	}
 
 	public void SaveGrid (BinaryWriter writer) {
+		writer.Write(cellCountX);
+		writer.Write(cellCountZ);
 		for (int i = 0; i < cells.Length; i++) {
 			cells[i].SaveCell(writer);
 		}
 	}
 
 	public void LoadGrid (BinaryReader reader) {
+		int x = reader.ReadInt32(); 
+		int z = reader.ReadInt32();
+		Debug.Log("Creating Grid of size " + x + "x" + z);
+		if (x != cellCountX || z != cellCountZ) {
+			if (!CreateMap(x, z)) {
+				return;
+			}
+		}
+
 		for (int i = 0; i < cells.Length; i++) {
 			cells[i].LoadCell(reader);
 		}

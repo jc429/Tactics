@@ -172,23 +172,16 @@ public class HexCell : MonoBehaviour
 
 
 	public void SaveCell(BinaryWriter writer) {
-		writer.Write(0);	//header
 		writer.Write((byte)terrainTypeIndex);
 		writer.Write((byte)elevation);
 		writer.Write((byte)waterLevel);
 	}
 
 	public void LoadCell(BinaryReader reader) {
-		int header = reader.ReadInt32();
-		if(header == 0){
-			terrainTypeIndex = reader.ReadByte();
-			elevation = reader.ReadByte();
-			RefreshPosition();
-			waterLevel = reader.ReadByte();
-		}
-		else {
-			Debug.LogWarning("Unknown map format: " + header);
-		}
+		terrainTypeIndex = reader.ReadByte();
+		elevation = reader.ReadByte();
+		RefreshPosition();
+		waterLevel = reader.ReadByte();	
 	}
 	
 }

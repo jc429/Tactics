@@ -147,19 +147,5 @@ public class HexMapEditor : MonoBehaviour
 		}
 	}
 	
-	public void SaveMap() {
-		Debug.Log("Saving to: " + Application.persistentDataPath);
-		string path = Path.Combine(Application.persistentDataPath, "test.map");
-		using (BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Create))) {
-			hexGrid.SaveGrid(writer);
-		}
-	}
-
-	public void LoadMap() {
-		string path = Path.Combine(Application.persistentDataPath, "test.map");
-		using (BinaryReader reader = new BinaryReader(File.OpenRead(path))) {
-			hexGrid.LoadGrid(reader);
-		}
-	}
 	
 }
