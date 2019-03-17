@@ -9,6 +9,7 @@ public class HexMesh : MonoBehaviour
 	[System.NonSerialized] List<Vector3> vertices;
 	[System.NonSerialized] List<Color> colors;
 	[System.NonSerialized] List<int> triangles;
+	[System.NonSerialized] List<Vector3> terrainTypes;
 
     MeshCollider meshCollider;
 	public bool useCollider;
@@ -16,6 +17,8 @@ public class HexMesh : MonoBehaviour
 
 	public bool useUVCoordinates;
 	[System.NonSerialized] List<Vector2> uvs;
+
+	public bool useTerrainTypes;
 
     void Awake()
     {
@@ -36,6 +39,9 @@ public class HexMesh : MonoBehaviour
 		if (useUVCoordinates) {
 			uvs = ListPool<Vector2>.Get();
 		}
+		if (useTerrainTypes) {
+			terrainTypes = ListPool<Vector3>.Get();
+		}
 		triangles = ListPool<int>.Get();
 	}
 
@@ -49,6 +55,10 @@ public class HexMesh : MonoBehaviour
 		if (useUVCoordinates) {
 			hexMesh.SetUVs(0, uvs);
 			ListPool<Vector2>.Add(uvs);
+		}
+		if (useTerrainTypes) {
+			hexMesh.SetUVs(2, terrainTypes);
+			ListPool<Vector3>.Add(terrainTypes);
 		}
 		hexMesh.SetTriangles(triangles, 0);
 		ListPool<int>.Add(triangles);
@@ -91,6 +101,13 @@ public class HexMesh : MonoBehaviour
 		uvs.Add(uv3);
 	}
 
+	/* Adds terrain type info to a triangle */
+	public void AddTriangleTerrainTypes (Vector3 types) {
+		terrainTypes.Add(types);
+		terrainTypes.Add(types);
+		terrainTypes.Add(types);
+	}
+
     /* Creates a quad */
     public void AddQuad (Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4) {
 		int vertexIndex = vertices.Count;
@@ -130,10 +147,19 @@ public class HexMesh : MonoBehaviour
 		uvs.Add(uv4);
 	}
 
+	/* adds UVs to a quad */
 	public void AddQuadUV (float uMin, float uMax, float vMin, float vMax) {
 		uvs.Add(new Vector2(uMin, vMin));
 		uvs.Add(new Vector2(uMax, vMin));
 		uvs.Add(new Vector2(uMin, vMax));
 		uvs.Add(new Vector2(uMax, vMax));
+	}
+
+	/* Adds terrain type info to a quad */
+	public void AddQuadTerrainTypes (Vector3 types) {
+		terrainTypes.Add(types);
+		terrainTypes.Add(types);
+		terrainTypes.Add(types);
+		terrainTypes.Add(types);
 	}
 }
