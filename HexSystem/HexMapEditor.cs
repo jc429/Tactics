@@ -9,7 +9,11 @@ public class HexMapEditor : MonoBehaviour
     [SerializeField]
     HexGrid hexGrid;
     
-    
+    public Material terrainMaterial;
+
+
+	/* are we in edit mode or navigation mode */
+	bool editMode;
 
 
 	/* tools for detecting click + drag inputs */
@@ -34,10 +38,9 @@ public class HexMapEditor : MonoBehaviour
 
 
 
-    void Awake()
-    {
-
-    }
+    void Awake () {
+		terrainMaterial.DisableKeyword("GRID_ON");
+	}
 
     // Update is called once per frame
     void Update(){
@@ -62,7 +65,12 @@ public class HexMapEditor : MonoBehaviour
 			else {
 				isDrag = false;
 			}
-			EditCells(currentCell);
+			if(editMode){
+				EditCells(currentCell);
+			}
+			else {
+				hexGrid.FindDistancesTo(currentCell);
+			}
 			previousCell = currentCell;
 		}
 		else {
@@ -83,6 +91,11 @@ public class HexMapEditor : MonoBehaviour
 			}
 		}
 		isDrag = false;
+	}
+
+	public void SetEditMode (bool toggle) {
+		editMode = toggle;
+		hexGrid.ShowUI(!toggle);
 	}
 
 	public void SetTerrainTypeIndex (int index) {
@@ -112,6 +125,15 @@ public class HexMapEditor : MonoBehaviour
 
 	public void ShowUI (bool visible) {
 		hexGrid.ShowUI(visible);
+	}
+
+	public void ShowGrid (bool visible) {
+		if (visible) {
+			terrainMaterial.EnableKeyword("GRID_ON");
+		}
+		else {
+			terrainMaterial.DisableKeyword("GRID_ON");
+		}
 	}
 
     void EditCell (HexCell cell) {

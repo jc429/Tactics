@@ -162,4 +162,5 @@ public class HexMesh : MonoBehaviour
 		terrainTypes.Add(types);
 		terrainTypes.Add(types);
 	}
+
 }

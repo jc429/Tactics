@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class HexCell : MonoBehaviour
 {
@@ -26,6 +27,10 @@ public class HexCell : MonoBehaviour
 
 	// chunk this cell is a member of 
 	public HexGridChunk chunk;
+
+	// distance to this cell from another cell
+	int distanceToCell;
+
 
     // Start is called before the first frame update
     void Start()
@@ -78,12 +83,30 @@ public class HexCell : MonoBehaviour
 		}
 	}
 
+	/* Distance to this cell */
+	public int DistanceToCell {
+		get {
+			return distanceToCell;
+		}
+		set {
+			distanceToCell = value;
+			UpdateDistanceLabel();
+		}
+	}
+
 	/* returns the physical location of the water surface */
 	public float WaterSurfaceY {
 		get {
 			return
 				(waterLevel + HexMetrics.waterElevationOffset) *
 				HexMetrics.elevationStep;
+		}
+	}
+
+	/* is cell submerged? */
+	public bool IsUnderwater {
+		get {
+			return waterLevel > elevation;
 		}
 	}
 
@@ -107,6 +130,12 @@ public class HexCell : MonoBehaviour
 		}
 		set {
 		}
+	}
+
+	/* updates cell label when calculating distance */
+	void UpdateDistanceLabel () {
+		Text label = uiRect.GetComponent<Text>();
+		label.text = distanceToCell.ToString();
 	}
 
 
@@ -163,12 +192,7 @@ public class HexCell : MonoBehaviour
 		cell.neighbors[(int)direction.Opposite()] = this;
 	}
 
-	/* is cell submerged? */
-	public bool IsUnderwater {
-		get {
-			return waterLevel > elevation;
-		}
-	}
+
 
 
 	public void SaveCell(BinaryWriter writer) {

@@ -117,9 +117,8 @@ public class HexGrid : MonoBehaviour
 
         //label cell
         Text label = Instantiate<Text>(cellLabelPrefab);
-	//	label.rectTransform.SetParent(gridCanvas.transform, false);
 		label.rectTransform.anchoredPosition = new Vector2(pos.x, pos.z);
-		label.text = cell.coordinates.ToString();
+		//label.text = cell.coordinates.ToString();
 
         cell.uiRect = label.rectTransform;
 
@@ -140,8 +139,6 @@ public class HexGrid : MonoBehaviour
 		int localZ = z - chunkZ * HexMetrics.chunkSizeZ;
 		chunk.AddCell(localX + localZ * HexMetrics.chunkSizeX, cell);
 	}
-
-
 
     /* returns a cell at a given position */
     public HexCell GetCell(Vector3 position) {
@@ -173,6 +170,17 @@ public class HexGrid : MonoBehaviour
 			chunks[i].ShowUI(visible);
 		}
 	}
+
+	public void FindDistancesTo (HexCell cell) {
+		for (int i = 0; i < cells.Length; i++) {
+			cells[i].DistanceToCell = cell.coordinates.DistanceTo(cells[i].coordinates);
+		}
+	}
+
+
+
+
+
 
 	public void SaveGrid (BinaryWriter writer) {
 		writer.Write(cellCountX);
