@@ -90,7 +90,7 @@ public class HexCell : MonoBehaviour
 		}
 		set {
 			distanceToCell = value;
-			UpdateDistanceLabel();
+		//	UpdateDistanceLabel();
 		}
 	}
 
@@ -144,6 +144,9 @@ public class HexCell : MonoBehaviour
 		}
 	}
 
+	/* 0 = not touched yet, 1 = currently in frontier, 2 = removed from frontier */
+	public int SearchPhase { get; set; }
+
 	/* linked list of cells sharing a priority level */
 	public HexCell NextWithSamePriority { get; set; }
 
@@ -164,11 +167,14 @@ public class HexCell : MonoBehaviour
 
 	/* updates cell label when calculating distance */
 	void UpdateDistanceLabel () {
-		Text label = uiRect.GetComponent<Text>();
-		label.text = distanceToCell == int.MaxValue ? "" : distanceToCell.ToString();
+		SetLabel(distanceToCell == int.MaxValue ? "" : distanceToCell.ToString());
 	}
 
-
+	/* sets the celll label to whatever */
+	public void SetLabel (string text) {
+		Text label = uiRect.GetComponent<Text>();
+		label.text = text;
+	}
 
 	/* Refreshes chunk (and, by extension, cell) and potentially neighbors */
 	void Refresh () {

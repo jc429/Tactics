@@ -18,7 +18,6 @@ public class SaveLoadItem : MonoBehaviour {
 	}
 	
 	public void Select () {
-		Debug.Log("a " + mapName);
 		menu.SelectItem(mapName);
 	}
 }
