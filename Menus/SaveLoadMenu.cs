@@ -63,7 +63,7 @@ public class SaveLoadMenu : MonoBehaviour {
 		using (BinaryReader reader = new BinaryReader(File.OpenRead(path))) {
 			int header = reader.ReadInt32();
 			if(header == 0){
-				hexGrid.LoadGrid(reader);
+				hexGrid.LoadGrid(reader, header);
 				GameController.mapCamera.ValidatePosition();
 			}
 			else {

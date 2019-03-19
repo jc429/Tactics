@@ -24,7 +24,8 @@ public class HexGrid : MonoBehaviour
 	
 	public Color[] colors;
 
-
+	//priority queue for cell pathfinding
+	HexCellPriorityQueue searchFrontier;
 
     void Awake(){
 		HexMetrics.colors = colors;
@@ -171,9 +172,80 @@ public class HexGrid : MonoBehaviour
 		}
 	}
 
-	public void FindDistancesTo (HexCell cell) {
+	public void FindPath (HexCell fromCell, HexCell toCell) {
+		StopAllCoroutines();
+		StartCoroutine(CellSearch(fromCell, toCell));
+
+	}
+
+	/* depth-first search (dijkstra's) */
+	IEnumerator CellSearch (HexCell fromCell, HexCell toCell){
+		if (searchFrontier == null) {
+			searchFrontier = new HexCellPriorityQueue();
+		}
+		else {
+			searchFrontier.Clear();
+		}
+
 		for (int i = 0; i < cells.Length; i++) {
-			cells[i].DistanceToCell = cell.coordinates.DistanceTo(cells[i].coordinates);
+			cells[i].DistanceToCell = int.MaxValue;
+			cells[i].DisableHighlight();
+		}
+		fromCell.EnableHighlight(Color.blue);
+		toCell.EnableHighlight(Color.red);
+		
+		WaitForSeconds delay = new WaitForSeconds(1 / 60f);
+
+		fromCell.DistanceToCell = 0;
+		searchFrontier.Enqueue(fromCell);
+
+		
+		while (searchFrontier.Count > 0) {
+			yield return delay;
+			HexCell current = searchFrontier.Dequeue();
+
+			if (current == toCell) {
+				current = current.PathParent;
+				while (current != fromCell) {
+					current.EnableHighlight(Color.white);
+					current = current.PathParent;
+				}
+				break;
+			}
+
+			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
+				HexCell neighbor = current.GetNeighbor(d);
+				if (neighbor == null) {
+					continue;
+				}
+				if (neighbor.IsUnderwater) {
+					continue;
+				}
+				if (current.GetEdgeType(neighbor) == HexEdgeType.Cliff) {
+					continue;
+				}
+
+				int distance = current.DistanceToCell;
+				if (current.TerrainTypeIndex == (int)TerrainType.Road) {
+					distance += 1;
+				}
+				else {
+					distance += 2;
+				}
+
+				if(neighbor.DistanceToCell == int.MaxValue){
+					neighbor.DistanceToCell = distance;
+					neighbor.PathParent = current;
+					neighbor.SearchHeuristic = neighbor.coordinates.DistanceTo(toCell.coordinates);
+					searchFrontier.Enqueue(neighbor);
+				}
+				else if (distance < neighbor.DistanceToCell){
+					int oldPriority = neighbor.SearchPriority;
+					neighbor.DistanceToCell = distance;
+					neighbor.PathParent = current;
+					searchFrontier.Change(neighbor, oldPriority);
+				}
+			}
 		}
 	}
 
@@ -190,7 +262,8 @@ public class HexGrid : MonoBehaviour
 		}
 	}
 
-	public void LoadGrid (BinaryReader reader) {
+	public void LoadGrid (BinaryReader reader, int header) {
+		StopAllCoroutines();
 		int x = reader.ReadInt32(); 
 		int z = reader.ReadInt32();
 		Debug.Log("Creating Grid of size " + x + "x" + z);

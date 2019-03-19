@@ -35,7 +35,7 @@ public class HexCell : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+		DisableHighlight();
     }
 
     // Update is called once per frame
@@ -132,10 +132,40 @@ public class HexCell : MonoBehaviour
 		}
 	}
 
+	/* for calculating path from this cell back to search start */
+	public HexCell PathParent { get; set; }
+
+	public int SearchHeuristic { get; set; }
+
+	/* for more intelligent pathfinding */
+	public int SearchPriority {
+		get {
+			return distanceToCell + SearchHeuristic;
+		}
+	}
+
+	/* linked list of cells sharing a priority level */
+	public HexCell NextWithSamePriority { get; set; }
+
+
+
+	/* turns off cell highlight */
+	public void DisableHighlight () {
+		Image highlight = uiRect.GetChild(0).GetComponent<Image>();
+		highlight.enabled = false;
+	}
+	
+	/* turns on cell highlight and sets its color */
+	public void EnableHighlight (Color color) {
+		Image highlight = uiRect.GetChild(0).GetComponent<Image>();
+		highlight.color = color;
+		highlight.enabled = true;
+	}
+
 	/* updates cell label when calculating distance */
 	void UpdateDistanceLabel () {
 		Text label = uiRect.GetComponent<Text>();
-		label.text = distanceToCell.ToString();
+		label.text = distanceToCell == int.MaxValue ? "" : distanceToCell.ToString();
 	}
 
 

@@ -37,6 +37,9 @@ public class HexMapEditor : MonoBehaviour
 	int brushSize;
 
 
+	/* for measuring cell distances */
+	HexCell searchFromCell, searchToCell;
+
 
     void Awake () {
 		terrainMaterial.DisableKeyword("GRID_ON");
@@ -68,8 +71,19 @@ public class HexMapEditor : MonoBehaviour
 			if(editMode){
 				EditCells(currentCell);
 			}
-			else {
-				hexGrid.FindDistancesTo(currentCell);
+			else if (Input.GetKey(KeyCode.LeftShift) && searchToCell != currentCell) {
+				if (searchFromCell) {
+					searchFromCell.DisableHighlight();
+				}
+				searchFromCell = currentCell;
+				searchFromCell.EnableHighlight(Color.blue);
+				if (searchToCell) {
+					hexGrid.FindPath(searchFromCell, searchToCell);
+				}
+			}
+			else if (searchFromCell && searchFromCell != currentCell) {
+				searchToCell = currentCell;
+				hexGrid.FindPath(searchFromCell, searchToCell);
 			}
 			previousCell = currentCell;
 		}
