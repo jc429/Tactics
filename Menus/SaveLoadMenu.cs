@@ -5,6 +5,9 @@ using UnityEngine.UI;
 
 public class SaveLoadMenu : MonoBehaviour {
 
+	const int SaveFileVersionNumber = 1;
+
+
 	public HexGrid hexGrid;
 
 	public Text menuLabel, actionButtonLabel;
@@ -50,7 +53,7 @@ public class SaveLoadMenu : MonoBehaviour {
 	public void SaveMap(string path) {
 		Debug.Log("Saving to: " + path);
 		using (BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Create))) {
-			writer.Write(0);	//save file version number
+			writer.Write(SaveFileVersionNumber);
 			hexGrid.SaveGrid(writer);
 		}
 	}
@@ -62,7 +65,7 @@ public class SaveLoadMenu : MonoBehaviour {
 		}
 		using (BinaryReader reader = new BinaryReader(File.OpenRead(path))) {
 			int header = reader.ReadInt32();
-			if(header == 0){
+			if(header <= 1){
 				hexGrid.LoadGrid(reader, header);
 				GameController.mapCamera.ValidatePosition();
 			}

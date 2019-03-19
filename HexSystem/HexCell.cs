@@ -32,6 +32,10 @@ public class HexCell : MonoBehaviour
 	int distanceToCell;
 
 
+	//unit residing in this cell
+	public HexUnit Unit { get; set; }
+
+
     // Start is called before the first frame update
     void Start()
     {
@@ -180,7 +184,9 @@ public class HexCell : MonoBehaviour
 	void Refresh () {
 		if(chunk != null){
 			chunk.Refresh();
-
+			if (Unit) {
+				Unit.ValidateLocation();
+			}
 			// if this cell is neighboring any other chunks, they must be refreshed too
 			for (int i = 0; i < neighbors.Length; i++) {
 				HexCell neighbor = neighbors[i];
@@ -194,6 +200,9 @@ public class HexCell : MonoBehaviour
 	/* Refreshes only the chunk containing this cell */
 	void RefreshSelfOnly () {
 		chunk.Refresh();
+		if (Unit) {
+			Unit.ValidateLocation();
+		}
 	}
 
 	/* adjusts cell height when elevation is changed */
