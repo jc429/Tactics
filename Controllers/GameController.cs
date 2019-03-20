@@ -11,6 +11,8 @@ public class GameController : MonoBehaviour
 
 	public static MapCamera mapCamera;	
 
+	
+
     void Awake(){
         if (instance == null) {
 			instance = this;

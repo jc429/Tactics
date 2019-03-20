@@ -204,6 +204,7 @@ public class HexGrid : MonoBehaviour
 		ClearPath();
 		currentPathFrom = fromCell;
 		currentPathTo = toCell;
+		
 		currentPathExists = CellSearch(fromCell, toCell, movSteps);
 		ShowPath();
 	}
@@ -293,7 +294,21 @@ public class HexGrid : MonoBehaviour
 
 	/* display the found path */
 	void ShowPath () {
+		currentPathFrom.EnableHighlight(Color.blue);
+		if(currentPathFrom == currentPathTo){
+			return;
+		}
 		if (currentPathExists) {
+			//TODO: calc attack range and store in unit, then highlight attack range here 
+			/*foreach(HexCell cell in cells){
+				if(currentPathFrom.Unit && cell.DistanceToCell < currentPathFrom.Unit.moveRange){
+					cell.SetLabel(cell.DistanceToCell.ToString());
+				}
+				else{
+					cell.SetLabel("");
+				}
+			}*/
+
 			HexCell current = currentPathTo;
 			while (current != currentPathFrom) {
 				current.SetLabel(current.DistanceToCell.ToString());
@@ -322,6 +337,20 @@ public class HexGrid : MonoBehaviour
 			currentPathTo.DisableHighlight();
 		}
 		currentPathFrom = currentPathTo = null;
+	}
+
+	/* return current movement path */
+	public List<HexCell> GetPath () {
+		if (!currentPathExists) {
+			return null;
+		}
+		List<HexCell> path = ListPool<HexCell>.Get();
+		for (HexCell c = currentPathTo; c != currentPathFrom; c = c.PathParent) {
+			path.Add(c);
+		}
+		path.Add(currentPathFrom);
+		path.Reverse();
+		return path;
 	}
 
 	/* add a new unit */

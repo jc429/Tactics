@@ -5,6 +5,7 @@ using UnityEngine.UI;
 
 public class SaveLoadMenu : MonoBehaviour {
 
+	const bool OPEN_LOAD_MENU_ON_GAME_START = true;
 	const int SaveFileVersionNumber = 1;
 
 
@@ -19,6 +20,15 @@ public class SaveLoadMenu : MonoBehaviour {
 	public SaveLoadItem itemPrefab;		
 
 	bool saveMode;
+
+	void Start(){
+		if(OPEN_LOAD_MENU_ON_GAME_START){
+			Open(false);
+		}
+		else{
+			Close();
+		}
+	}
 
 	public void Open (bool save) {
 		saveMode = save;

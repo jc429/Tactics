@@ -31,6 +31,15 @@ public static class HexDirectionExtensions {
 		return (30 + (60 * (int)direction)) % 360;
 	}
 
+	public static HexDirection HexDirectionFromDegrees(int degrees){
+		while(degrees < 0){
+			degrees = degrees + 360;
+		}
+		degrees = degrees % 360;
+		// y 0 = north, 90 = east
+		return (HexDirection)(degrees / 60); 
+	}
+
 	public static HexDirection RandomDirection(){
 		return (HexDirection)Mathf.FloorToInt(Random.Range(0,6));
 	}
