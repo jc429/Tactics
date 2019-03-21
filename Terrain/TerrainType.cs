@@ -7,5 +7,6 @@ public enum TerrainType{
 	Indoor,
 	WaterShallow,
 	WaterDeep,
+	Coast,
 	Solid
 }

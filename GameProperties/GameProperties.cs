@@ -27,10 +27,11 @@ public static class GameProperties
 			{	1,		1,		1,		1,		2	},		//Road
 			{	1,		1,		1,		1,		2	},		//Grass
 			{	2,		3,		1,		1,		3	},		//Forest
-			{	2,		4,		1,		1,		4	},		//Desert
+			{	2,		4,		1,		1,		0	},		//Desert
 			{	1,		1,		4,		1,		2	},		//Indoor
 			{	2,		0,		1,		0,		1	},		//Water (Shallow)
 			{	4,		0,		1,		0,		1	},		//Water (Deep)
+			{	1,		4,		1,		1,		2	},		//Coast
 			{	0,		0,		0,		0,		0	}		//Solid
 		};
 		/* move cost of 0 means "cannot enter tile no matter what" */
