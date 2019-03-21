@@ -35,19 +35,43 @@ public class HexCell : MonoBehaviour
 	//unit residing in this cell
 	public HexUnit Unit { get; set; }
 
+	bool isHoveredOn, isSelected, onMovementPath, inMovementRange, inAttackRange;
 
-    // Start is called before the first frame update
-    void Start()
-    {
-		DisableHighlight();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-
+	public bool IsHoveredOn{
+		get{ return isHoveredOn; }
+		set{
+			isHoveredOn = value;
+			RefreshHighlight();
+		}
+	}
+	public bool IsSelected{
+		get{ return isSelected; }
+		set{
+			isSelected = value;
+			RefreshHighlight();
+		}
+	} 
+	public bool OnMovementPath{
+		get{ return onMovementPath; }
+		set{
+			onMovementPath = value;
+			RefreshHighlight();
+		}
+	} 
+	public bool InMovementRange{
+		get{ return inMovementRange; }
+		set{
+			inMovementRange = value;
+			RefreshHighlight();
+		}
+	} 
+	public bool InAttackRange{
+		get{ return inAttackRange; }
+		set{
+			inAttackRange = value;
+			RefreshHighlight();
+		}
+	} 
 
 	/* Position of cell */
 	public Vector3 Position {
@@ -127,6 +151,11 @@ public class HexCell : MonoBehaviour
 		}
 	}
 
+	public int CostToEnter(HexUnit unit){
+		//TODO: calc actual movement costs
+		return 2;
+	}
+
 	/* Color of cell */
 	public Color CellColor {
 		get {
@@ -154,19 +183,58 @@ public class HexCell : MonoBehaviour
 	/* linked list of cells sharing a priority level */
 	public HexCell NextWithSamePriority { get; set; }
 
+	
+    // Start is called before the first frame update
+    void Start()
+    {
+		DisableHighlight();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+
 
 
 	/* turns off cell highlight */
 	public void DisableHighlight () {
 		Image highlight = uiRect.GetChild(0).GetComponent<Image>();
 		highlight.enabled = false;
+		isHoveredOn = false;
+		isSelected = false;
+		onMovementPath = false;
+		inMovementRange = false;
+		inAttackRange = false;
 	}
 	
 	/* turns on cell highlight and sets its color */
-	public void EnableHighlight (Color color) {
+	void EnableHighlight (Color color) {
 		Image highlight = uiRect.GetChild(0).GetComponent<Image>();
 		highlight.color = color;
 		highlight.enabled = true;
+	}
+
+	public void RefreshHighlight(){
+		if(IsHoveredOn){
+			EnableHighlight(GameProperties.UIColors.HoverColor);
+		}
+		else if(IsSelected){
+			EnableHighlight(GameProperties.UIColors.StartColor);
+		}
+		else if(OnMovementPath){
+			EnableHighlight(GameProperties.UIColors.PathColor);
+		}
+		else if(InMovementRange){
+			EnableHighlight(GameProperties.UIColors.MoveRangeColor);
+		}
+		else if(InAttackRange){
+			EnableHighlight(GameProperties.UIColors.AttackRangeColor);
+		}
+		else{
+			DisableHighlight();
+		}
 	}
 
 	/* updates cell label when calculating distance */

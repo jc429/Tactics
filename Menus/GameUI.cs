@@ -14,6 +14,7 @@ public class GameUI : MonoBehaviour {
 	}
 
 	void Update () {
+		grid.StartMap();
 		if (!EventSystem.current.IsPointerOverGameObject()) {
 						
 			if (Input.GetMouseButtonDown(0)) {
@@ -29,15 +30,7 @@ public class GameUI : MonoBehaviour {
 			}
 			else{
 				HexCell prevCell = currentCell; 
-				UpdateCurrentCell();
-				//if(prevCell != currentCell){
-					if(currentCell != null){
-						currentCell.EnableHighlight(Color.white);
-					}
-					if(prevCell != null && prevCell != currentCell){
-						prevCell.DisableHighlight();
-					}
-				//}
+				UpdateCurrentCell();				
 			}
 		}
 	}
@@ -51,7 +44,13 @@ public class GameUI : MonoBehaviour {
 	bool UpdateCurrentCell () {
 		HexCell cell = grid.GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
 		if (cell != currentCell) {
+			if(currentCell != null){
+				currentCell.IsHoveredOn = false;
+			}
 			currentCell = cell;
+			if(currentCell != null){
+				currentCell.IsHoveredOn = true;
+			}
 			return true;
 		}
 		return false;
@@ -59,23 +58,35 @@ public class GameUI : MonoBehaviour {
 
 	void DoSelection () {
 		grid.ClearPath();
+		if(selectedUnit != null){
+			selectedUnit.DeselectUnit();
+		}
+		if(currentCell != null){
+			currentCell.IsSelected = false;
+		}
 		UpdateCurrentCell();
 		if (currentCell) {
 			selectedUnit = currentCell.Unit;
 			if(selectedUnit != null){
-				currentCell.EnableHighlight(Color.blue);
+				grid.CalculateMovementRange(currentCell,selectedUnit);
+				grid.CaluclateTotalAttackRange(selectedUnit);
+				selectedUnit.SelectUnit();
+				//currentCell.IsSelected = true;
 			}
 		}
 	}
 
 	public void DeselectUnit(){
+		if(selectedUnit){
+			selectedUnit.DeselectUnit();
+		}
 		selectedUnit = null;
 	}
 
 	void DoPathfinding () {
 		if (UpdateCurrentCell()) {
 			if (currentCell /*&& selectedUnit.IsValidDestination(currentCell)*/) {
-				grid.FindPath(selectedUnit.Location, currentCell, selectedUnit.moveRange);
+				grid.FindPath(selectedUnit.Location, currentCell, selectedUnit);
 			}
 			else {
 				grid.ClearPath();

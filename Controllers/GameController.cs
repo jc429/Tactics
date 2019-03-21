@@ -11,7 +11,7 @@ public class GameController : MonoBehaviour
 
 	public static MapCamera mapCamera;	
 
-	
+	public static HexGrid hexGrid;
 
     void Awake(){
         if (instance == null) {

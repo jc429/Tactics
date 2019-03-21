@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 public class HexGrid : MonoBehaviour
 {
-
+	bool started = false;
 	/* size of map in cells */
 	/* maps must currently be in a multiple of chunk sizes (4X, 4Z) */
 	public int cellCountX = 16, cellCountZ = 16;
@@ -46,13 +46,24 @@ public class HexGrid : MonoBehaviour
     void Awake(){
 		HexMetrics.colors = colors;
 		HexUnit.unitPrefab = unitPrefab;
+		GameController.hexGrid = this;
 
 		CreateMap(cellCountX,cellCountZ);
 	}
 
+	public void StartMap(){
+		if(started){
+			return;
+		}
+		for (int i = 0; i < units.Count; i++) {
+			units[i].StartUnit();
+		}
+		started = true;
+	}
 
 	/* generates a new map */
 	public bool CreateMap(int sizeX, int sizeZ){
+		started = false;
 		ClearPath();
 		ClearUnits();
 		if (
@@ -200,17 +211,102 @@ public class HexGrid : MonoBehaviour
 		}
 	}
 
-	public void FindPath (HexCell fromCell, HexCell toCell, int movSteps) {
+	public void FindPath (HexCell fromCell, HexCell toCell, HexUnit unit) {
 		ClearPath();
 		currentPathFrom = fromCell;
 		currentPathTo = toCell;
 		
-		currentPathExists = CellSearch(fromCell, toCell, movSteps);
+		currentPathExists = CellSearch(fromCell, toCell, unit);
 		ShowPath();
 	}
 
-	/* depth-first search (A*) */
-	bool CellSearch (HexCell fromCell, HexCell toCell, int movSteps){
+	/* calculates all possible cells that can be reached by a given unit from a given tile */
+	public void CalculateMovementRange(HexCell start, HexUnit unit){
+		if(unit == null || unit.moveTiles != null){
+			return;
+		}
+
+		for (int i = 0; i < cells.Length; i++) {
+			cells[i].DistanceToCell = int.MaxValue;
+		}
+
+		// cells we can move to
+		List<HexCell> moveCells = ListPool<HexCell>.Get();
+		
+		Queue<HexCell> frontier = new Queue<HexCell>();
+		start.DistanceToCell = 0;
+		frontier.Enqueue(start);
+
+		while (frontier.Count > 0) {
+			HexCell current = frontier.Dequeue();		
+
+			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
+				HexCell neighbor = current.GetNeighbor(d);
+				if (neighbor == null){
+					continue;
+				}
+				if (neighbor.IsUnderwater || neighbor.Unit != null) {
+					continue;
+				}
+				if (current.GetEdgeType(neighbor) == HexEdgeType.Cliff) {
+					continue;
+				}
+				
+				int moveCost = current.CostToEnter(unit);
+				int distance = current.DistanceToCell + moveCost;
+
+				if(distance > unit.moveRange){
+					continue;
+				}
+
+				//from this point we know we have enough movement to reach the cell
+
+				if(!moveCells.Contains(neighbor)){
+					moveCells.Add(neighbor);
+					frontier.Enqueue(neighbor);
+				}
+
+				if (distance < neighbor.DistanceToCell){
+					neighbor.DistanceToCell = distance;
+					neighbor.PathParent = current;
+				}
+				
+			}
+		}
+
+		unit.moveTiles = moveCells;
+	}
+
+	/* all tiles a unit can attack from their starting tile */
+	public void CaluclateTotalAttackRange(HexUnit unit){
+		if(unit == null || unit.moveTiles == null){
+			return;
+		}
+
+		List<HexCell> attackCells = ListPool<HexCell>.Get();
+		int unitAttackRange = 1;	//TODO: allow other ranges
+
+		foreach(HexCell cell in unit.moveTiles){
+			/*if(attackCells.Contains(cell)){
+				continue;
+			}*/
+
+			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
+				//melee attack range is easy
+				HexCell neighbor = cell.GetNeighbor(d);
+				if(neighbor != null){
+					if(!attackCells.Contains(neighbor)){
+						attackCells.Add(neighbor);
+					}
+				}
+			}
+		}
+
+		unit.attackTiles = attackCells;
+	}
+
+	/* depth-first search (A*) - finds a path between two cells relatively quickly */
+	bool CellSearch (HexCell fromCell, HexCell toCell, HexUnit unit){
 		searchFrontierPhase += 2;
 		if (searchFrontier == null) {
 			searchFrontier = new HexCellPriorityQueue();
@@ -260,17 +356,12 @@ public class HexGrid : MonoBehaviour
 					continue;
 				}
 
-				int moveCost;
-				if (current.TerrainTypeIndex == (int)TerrainType.Road) {
-					moveCost = 1;
-				}
-				else {
-					moveCost = 2;
-				}
+				int moveCost = current.CostToEnter(unit);
+				
 				int distance = current.DistanceToCell + moveCost;
 				
 				//path is too long - cant calculate
-				if(distance > movSteps){
+				if(distance > unit.moveRange){
 					continue;
 				}
 
@@ -294,7 +385,7 @@ public class HexGrid : MonoBehaviour
 
 	/* display the found path */
 	void ShowPath () {
-		currentPathFrom.EnableHighlight(Color.blue);
+		currentPathFrom.OnMovementPath = true;
 		if(currentPathFrom == currentPathTo){
 			return;
 		}
@@ -312,12 +403,12 @@ public class HexGrid : MonoBehaviour
 			HexCell current = currentPathTo;
 			while (current != currentPathFrom) {
 				current.SetLabel(current.DistanceToCell.ToString());
-				current.EnableHighlight(Color.white);
+				current.OnMovementPath = true;
 				current = current.PathParent;
 			}
 		}
-		currentPathFrom.EnableHighlight(Color.blue);
-		currentPathTo.EnableHighlight(Color.red);
+		currentPathFrom.OnMovementPath = true;
+		currentPathTo.OnMovementPath = true;
 	}
 
 	/* clear current path */
@@ -326,15 +417,17 @@ public class HexGrid : MonoBehaviour
 			HexCell current = currentPathTo;
 			while (current != currentPathFrom) {
 				current.SetLabel(null);
-				current.DisableHighlight();
+				current.OnMovementPath = false;
 				current = current.PathParent;
 			}
-			current.DisableHighlight();
+			current.OnMovementPath = false;
 			currentPathExists = false;
 		}
-		else if (currentPathFrom) {
-			currentPathFrom.DisableHighlight();
-			currentPathTo.DisableHighlight();
+		else if (currentPathFrom != null) {
+			currentPathFrom.OnMovementPath = false;
+			currentPathTo.OnMovementPath = false;
+			currentPathFrom.IsSelected = false;
+			currentPathTo.IsSelected = false;
 		}
 		currentPathFrom = currentPathTo = null;
 	}
@@ -389,6 +482,7 @@ public class HexGrid : MonoBehaviour
 	}
 
 	public void LoadGrid (BinaryReader reader, int header) {
+		started = false;
 		ClearPath();
 		ClearUnits();
 		int x = reader.ReadInt32(); 

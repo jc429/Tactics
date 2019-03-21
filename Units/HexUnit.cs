@@ -18,6 +18,10 @@ public class HexUnit : MonoBehaviour {
 
 	// how many tiles unit can move (before factoring in cost)
 	public int moveRange = 7;
+	//tiles unit can move to
+	public List<HexCell> moveTiles;
+	//tiles unit can attack
+	public List<HexCell> attackTiles;
 
 	// travel
 	bool isTraveling;
@@ -68,7 +72,9 @@ public class HexUnit : MonoBehaviour {
 	void OnEnable () {
 		if (location) {
 			transform.localPosition = location.Position;
+			
 		}
+
 	}
 
 
@@ -96,6 +102,43 @@ public class HexUnit : MonoBehaviour {
 	}
 	*/
 
+	public void StartUnit(){
+		GameController.hexGrid.CalculateMovementRange(location, this);
+		GameController.hexGrid.CaluclateTotalAttackRange(this);
+		Debug.Log(attackTiles.Count);
+		//FIXME: for some reason a unit will have 0 move tiles and 0 attack tiles until they move once
+	}
+
+
+	/* selection  */
+	public void SelectUnit(){
+		
+		MarkMovementRange(true);
+		MarkAttackRange(true);
+	}
+
+	public void DeselectUnit(){
+		MarkMovementRange(false);
+		MarkAttackRange(false);
+	}
+
+	/* marks all tiles within movement range as either true or false */
+	void MarkMovementRange(bool b){
+		if(moveTiles != null){
+			foreach(HexCell c in moveTiles){
+				c.InMovementRange = b;
+			}
+		}
+	}
+
+	/* marks all tiles within attack range as either true or false */
+	void MarkAttackRange(bool b){
+		if(attackTiles != null){
+			foreach(HexCell c in attackTiles){
+				c.InAttackRange = b;
+			}
+		}
+	}
 
 	/* refresh unit's position to be standing on cell */
 	public void ValidateLocation () {
@@ -163,6 +206,8 @@ public class HexUnit : MonoBehaviour {
 		Facing = HexDirectionExtensions.HexDirectionFromDegrees(Mathf.RoundToInt(orientation));
 
 		isTraveling = false;
+		ListPool<HexCell>.Add(moveTiles);
+		moveTiles = null;
 		ListPool<HexCell>.Add(pathToTravel);
 		pathToTravel = null;
 	}
@@ -187,7 +232,7 @@ public class HexUnit : MonoBehaviour {
 		Facing = HexDirectionExtensions.HexDirectionFromDegrees(Mathf.RoundToInt(orientation));
 	}
 
-
+	
 
 	/* unit cleanup */
 	public void Die () {

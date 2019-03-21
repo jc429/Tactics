@@ -41,8 +41,15 @@ public class SaveLoadMenu : MonoBehaviour {
 			actionButtonLabel.text = "Load";
 		}
 		FillList();
+		if(!save){
+			SaveLoadItem sli = listContent.GetChild(listContent.childCount - 1).gameObject.GetComponent<SaveLoadItem>();
+			if(sli != null){
+				SelectItem(sli.MapName);
+			}
+		}
 		gameObject.SetActive(true);
 		GameController.mapCamera.LockCamera();
+
 	}
 
 	public void Close () {
