@@ -17,11 +17,13 @@ public class HexUnit : MonoBehaviour {
 	HexDirection facing;
 
 	// how many tiles unit can move (before factoring in cost)
-	public int moveRange = 7;
+	//public int moveRange = 7;
 	//tiles unit can move to
 	public List<HexCell> moveTiles;
 	//tiles unit can attack
 	public List<HexCell> attackTiles;
+
+	public MovementClass movementClass;
 
 	// travel
 	bool isTraveling;
@@ -249,6 +251,8 @@ public class HexUnit : MonoBehaviour {
 	public static void Load (BinaryReader reader, HexGrid grid) {
 		HexCoordinates coordinates = HexCoordinates.Load(reader);
 		HexDirection facing = (HexDirection)reader.ReadInt32();
-		grid.AddUnit(Instantiate(unitPrefab), grid.GetCell(coordinates), facing);
+		HexUnit unit = Instantiate(unitPrefab);
+		unit movementClass = movementClass.Infantry;
+		grid.AddUnit(unit, grid.GetCell(coordinates), facing);
 	}
 }

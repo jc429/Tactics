@@ -211,15 +211,6 @@ public class HexGrid : MonoBehaviour
 		}
 	}
 
-	public void FindPath (HexCell fromCell, HexCell toCell, HexUnit unit) {
-		ClearPath();
-		currentPathFrom = fromCell;
-		currentPathTo = toCell;
-		
-		currentPathExists = CellSearch(fromCell, toCell, unit);
-		ShowPath();
-	}
-
 	/* calculates all possible cells that can be reached by a given unit from a given tile */
 	public void CalculateMovementRange(HexCell start, HexUnit unit){
 		if(unit == null || unit.moveTiles != null){
@@ -252,14 +243,17 @@ public class HexGrid : MonoBehaviour
 					continue;
 				}
 				
-				int moveCost = current.CostToEnter(unit);
-				int distance = current.DistanceToCell + moveCost;
+				int moveCost = GameProperties.MovementProperties.GetCostToEnter(current.terrain, unit.movementClass);
+				if(moveCost == 0){
+					continue;
+				}
 
+				int distance = current.DistanceToCell + moveCost;
 				if(distance > unit.moveRange){
 					continue;
 				}
 
-				//from this point we know we have enough movement to reach the cell
+				//from this point we know we can enter the cell
 
 				if(!moveCells.Contains(neighbor)){
 					moveCells.Add(neighbor);
@@ -305,6 +299,16 @@ public class HexGrid : MonoBehaviour
 		unit.attackTiles = attackCells;
 	}
 
+	/* finds a direct path between two tiles */
+	public void FindPath (HexCell fromCell, HexCell toCell, HexUnit unit) {
+		ClearPath();
+		currentPathFrom = fromCell;
+		currentPathTo = toCell;
+		
+		currentPathExists = CellSearch(fromCell, toCell, unit);
+		ShowPath();
+	}
+
 	/* depth-first search (A*) - finds a path between two cells relatively quickly */
 	bool CellSearch (HexCell fromCell, HexCell toCell, HexUnit unit){
 		searchFrontierPhase += 2;
@@ -315,13 +319,6 @@ public class HexGrid : MonoBehaviour
 			searchFrontier.Clear();
 		}
 
-		/*for (int i = 0; i < cells.Length; i++) {
-			cells[i].SetLabel(null);
-			cells[i].DisableHighlight();
-		}
-		fromCell.EnableHighlight(Color.blue);
-		//toCell.EnableHighlight(Color.red);
-		*/
 		
 		fromCell.SearchPhase = searchFrontierPhase;
 		fromCell.DistanceToCell = 0;
@@ -356,12 +353,14 @@ public class HexGrid : MonoBehaviour
 					continue;
 				}
 
-				int moveCost = current.CostToEnter(unit);
+				int moveCost = GameProperties.MovementProperties.GetCostToEnter(current.terrain, unit.movementClass);
+				if(moveCost == 0){
+					continue;
+				}
 				
 				int distance = current.DistanceToCell + moveCost;
-				
-				//path is too long - cant calculate
 				if(distance > unit.moveRange){
+					//path is too long - cant calculate
 					continue;
 				}
 

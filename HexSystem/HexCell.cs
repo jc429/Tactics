@@ -16,6 +16,7 @@ public class HexCell : MonoBehaviour
     int waterLevel = int.MinValue;
 
 	// cell terrain type
+	TerrainType terrain = TerrainType.Default;
 	int terrainTypeIndex;
 
 	// cell label
@@ -139,6 +140,17 @@ public class HexCell : MonoBehaviour
 	}
 
 	/* returns terrain type of cell */
+	public TerrainType Terrain {
+		get {
+			return terrain;
+		}
+		set {
+			if (terrain != value) {
+				terrain = value;
+				Refresh();
+			}
+		}
+	}
 	public int TerrainTypeIndex {
 		get {
 			return terrainTypeIndex;
@@ -149,11 +161,6 @@ public class HexCell : MonoBehaviour
 				Refresh();
 			}
 		}
-	}
-
-	public int CostToEnter(HexUnit unit){
-		//TODO: calc actual movement costs
-		return 2;
 	}
 
 	/* Color of cell */
@@ -316,6 +323,7 @@ public class HexCell : MonoBehaviour
 
 	public void LoadCell(BinaryReader reader) {
 		terrainTypeIndex = reader.ReadByte();
+		terrain = (TerrainType)terrainTypeIndex;
 		elevation = reader.ReadByte();
 		RefreshPosition();
 		waterLevel = reader.ReadByte();	

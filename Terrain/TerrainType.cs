@@ -1,10 +1,11 @@
 public enum TerrainType{
-	Default,
+	Default = 0,
 	Road,
 	Grass,
 	Forest,
 	Desert,
 	Indoor,
-	Water
-
+	WaterShallow,
+	WaterDeep,
+	Solid
 }
