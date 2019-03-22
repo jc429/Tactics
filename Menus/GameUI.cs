@@ -59,6 +59,9 @@ public class GameUI : MonoBehaviour {
 	void DoSelection () {
 		grid.ClearPath();
 		if(selectedUnit != null){
+			if(selectedUnit.isTraveling){
+				return;
+			}
 			selectedUnit.DeselectUnit();
 		}
 		if(currentCell != null){
@@ -66,10 +69,14 @@ public class GameUI : MonoBehaviour {
 		}
 		UpdateCurrentCell();
 		if (currentCell) {
-			selectedUnit = currentCell.Unit;
-			if(selectedUnit != null){
+			HexUnit unit = currentCell.Unit;
+			if(unit != null){
+				if(unit.isTraveling){
+					return;
+				}
+				selectedUnit = unit;
 				grid.CalculateMovementRange(currentCell,selectedUnit);
-				grid.CaluclateTotalAttackRange(selectedUnit);
+				grid.CalculateTotalAttackRange(selectedUnit);
 				selectedUnit.SelectUnit();
 				//currentCell.IsSelected = true;
 			}
@@ -95,7 +102,7 @@ public class GameUI : MonoBehaviour {
 	}
 
 	void DoMove () {
-		if (grid.HasPath) {
+		if (grid.HasPath && !selectedUnit.isTraveling) {
 			selectedUnit.Travel(grid.GetPath());
 			grid.ClearPath();
 			DeselectUnit();

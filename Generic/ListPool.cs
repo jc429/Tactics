@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using UnityEngine;
 
 public static class ListPool<T> {
 
@@ -14,6 +15,9 @@ public static class ListPool<T> {
 
 	/* add a new list to the stack, clearing it just in case */
 	public static void Add (List<T> list) {
+		if(list == null){
+			Debug.Log("Hmmm");
+		}
 		list.Clear();
 		stack.Push(list);
 	}

@@ -4,6 +4,12 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 
+public enum MapShape{
+	Rect,		//square-ish map based on x and z coords
+	Hex,		//hexagonal map based on three edge lengths
+	Circle		//circular map based on a given radius
+}
+
 public class HexGrid : MonoBehaviour
 {
 	bool started = false;
@@ -11,6 +17,7 @@ public class HexGrid : MonoBehaviour
 	/* maps must currently be in a multiple of chunk sizes (4X, 4Z) */
 	public int cellCountX = 16, cellCountZ = 16;
 	int chunkCountX, chunkCountZ;
+	MapShape mapShape;
 
     [SerializeField]
     HexCell cellPrefab;
@@ -48,7 +55,7 @@ public class HexGrid : MonoBehaviour
 		HexUnit.unitPrefab = unitPrefab;
 		GameController.hexGrid = this;
 
-		CreateMap(cellCountX,cellCountZ);
+		CreateMapRect(cellCountX,cellCountZ);
 	}
 
 	public void StartMap(){
@@ -62,10 +69,11 @@ public class HexGrid : MonoBehaviour
 	}
 
 	/* generates a new map */
-	public bool CreateMap(int sizeX, int sizeZ){
+	public bool CreateMapRect(int sizeX, int sizeZ){
 		started = false;
 		ClearPath();
 		ClearUnits();
+		mapShape = MapShape.Rect;
 		if (
 			sizeX <= 0 || sizeX % HexMetrics.chunkSizeX != 0 ||
 			sizeZ <= 0 || sizeZ % HexMetrics.chunkSizeZ != 0
@@ -91,6 +99,21 @@ public class HexGrid : MonoBehaviour
 		return true;
 	}
 
+	/* generates a new map */
+	public bool CreateMapCircle(int radius){
+		started = false;
+		ClearPath();
+		ClearUnits();
+		mapShape = MapShape.Circle;
+		
+		if (chunks != null) {
+			for (int i = 0; i < chunks.Length; i++) {
+				Destroy(chunks[i].gameObject);
+			}
+		}
+
+		return true;
+	}
 
 	/* Generate the chunks */
 	void CreateChunks () {
@@ -213,7 +236,7 @@ public class HexGrid : MonoBehaviour
 
 	/* calculates all possible cells that can be reached by a given unit from a given tile */
 	public void CalculateMovementRange(HexCell start, HexUnit unit){
-		if(unit == null || unit.moveTiles != null){
+		if(unit == null){
 			return;
 		}
 
@@ -243,13 +266,13 @@ public class HexGrid : MonoBehaviour
 					continue;
 				}
 				
-				int moveCost = GameProperties.MovementProperties.GetCostToEnter(current.terrain, unit.movementClass);
+				int moveCost = GameProperties.MovementProperties.GetCostToEnter(current.Terrain, unit.movementClass);
 				if(moveCost == 0){
 					continue;
 				}
 
 				int distance = current.DistanceToCell + moveCost;
-				if(distance > unit.moveRange){
+				if(distance > unit.MovementRange()){
 					continue;
 				}
 
@@ -272,8 +295,8 @@ public class HexGrid : MonoBehaviour
 	}
 
 	/* all tiles a unit can attack from their starting tile */
-	public void CaluclateTotalAttackRange(HexUnit unit){
-		if(unit == null || unit.moveTiles == null){
+	public void CalculateTotalAttackRange(HexUnit unit){
+		if(unit == null){
 			return;
 		}
 
@@ -353,13 +376,13 @@ public class HexGrid : MonoBehaviour
 					continue;
 				}
 
-				int moveCost = GameProperties.MovementProperties.GetCostToEnter(current.terrain, unit.movementClass);
+				int moveCost = GameProperties.MovementProperties.GetCostToEnter(current.Terrain, unit.movementClass);
 				if(moveCost == 0){
 					continue;
 				}
 				
 				int distance = current.DistanceToCell + moveCost;
-				if(distance > unit.moveRange){
+				if(distance > unit.MovementRange()){
 					//path is too long - cant calculate
 					continue;
 				}
@@ -488,7 +511,7 @@ public class HexGrid : MonoBehaviour
 		int z = reader.ReadInt32();
 		Debug.Log("Creating Grid of size " + x + "x" + z);
 		if (x != cellCountX || z != cellCountZ) {
-			if (!CreateMap(x, z)) {
+			if (!CreateMapRect(x, z)) {
 				return;
 			}
 		}

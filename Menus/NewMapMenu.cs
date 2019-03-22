@@ -15,7 +15,7 @@ public class NewMapMenu : MonoBehaviour {
 	}
 
 	void CreateMap (int x, int z) {
-		hexGrid.CreateMap(x, z);
+		hexGrid.CreateMapRect(x, z);
 		GameController.mapCamera.ValidatePosition();
 		Close();
 	}

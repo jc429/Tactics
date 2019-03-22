@@ -26,7 +26,7 @@ public class HexUnit : MonoBehaviour {
 	public MovementClass movementClass;
 
 	// travel
-	bool isTraveling;
+	public bool isTraveling;
 	const float travelSpeed = 4f;
 	const float rotationSpeed = 360f;
 	List<HexCell> pathToTravel;
@@ -106,7 +106,7 @@ public class HexUnit : MonoBehaviour {
 
 	public void StartUnit(){
 		GameController.hexGrid.CalculateMovementRange(location, this);
-		GameController.hexGrid.CaluclateTotalAttackRange(this);
+		GameController.hexGrid.CalculateTotalAttackRange(this);
 		Debug.Log(attackTiles.Count);
 		//FIXME: for some reason a unit will have 0 move tiles and 0 attack tiles until they move once
 	}
@@ -114,6 +114,13 @@ public class HexUnit : MonoBehaviour {
 
 	/* selection  */
 	public void SelectUnit(){
+		//if for some reason the unit doesnt have move/attack tiles calculated yet (but they always should)
+		if(moveTiles != null && moveTiles.Count == 0){
+			GameController.hexGrid.CalculateMovementRange(location,this);
+		}
+		if(attackTiles != null && attackTiles.Count == 0){
+			GameController.hexGrid.CalculateTotalAttackRange(this);
+		}
 		
 		MarkMovementRange(true);
 		MarkAttackRange(true);
@@ -122,6 +129,11 @@ public class HexUnit : MonoBehaviour {
 	public void DeselectUnit(){
 		MarkMovementRange(false);
 		MarkAttackRange(false);
+	}
+
+
+	public int MovementRange(){
+		return GameProperties.MovementProperties.ClassBaseMovement[(int)movementClass];
 	}
 
 	/* marks all tiles within movement range as either true or false */
@@ -252,7 +264,7 @@ public class HexUnit : MonoBehaviour {
 		HexCoordinates coordinates = HexCoordinates.Load(reader);
 		HexDirection facing = (HexDirection)reader.ReadInt32();
 		HexUnit unit = Instantiate(unitPrefab);
-		unit movementClass = movementClass.Infantry;
+		unit.movementClass = MovementClass.Infantry;
 		grid.AddUnit(unit, grid.GetCell(coordinates), facing);
 	}
 }

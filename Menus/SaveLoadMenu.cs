@@ -22,11 +22,13 @@ public class SaveLoadMenu : MonoBehaviour {
 	bool saveMode;
 
 	void Start(){
-		if(OPEN_LOAD_MENU_ON_GAME_START){
-			Open(false);
-		}
-		else{
-			Close();
+		switch(OPEN_LOAD_MENU_ON_GAME_START){
+			case true:
+				Open(false);
+				break;
+			case false:
+				Close();
+				break;
 		}
 	}
 

@@ -37,7 +37,7 @@ public static class GameProperties
 		/* move cost of 0 means "cannot enter tile no matter what" */
 
 		public static int GetCostToEnter(TerrainType terrain, MovementClass movClass){
-			return ClassTerrainMovementCostMatrix[terrain,movClass];
+			return ClassTerrainMovementCostMatrix[(int)terrain,(int)movClass];
 		}
 	}
 	
