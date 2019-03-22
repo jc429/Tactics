@@ -6,8 +6,7 @@ using UnityEngine.UI;
 
 public enum MapShape{
 	Rect,		//square-ish map based on x and z coords
-	Hex,		//hexagonal map based on three edge lengths
-	Circle		//circular map based on a given radius
+	Circle		//semi-circular map based on a given radius
 }
 
 public class HexGrid : MonoBehaviour
@@ -17,7 +16,7 @@ public class HexGrid : MonoBehaviour
 	/* maps must currently be in a multiple of chunk sizes (4X, 4Z) */
 	public int cellCountX = 16, cellCountZ = 16;
 	int chunkCountX, chunkCountZ;
-	MapShape mapShape;
+	MapShape mapShape = MapShape.Rect;
 
     [SerializeField]
     HexCell cellPrefab;
@@ -112,6 +111,10 @@ public class HexGrid : MonoBehaviour
 			}
 		}
 
+		
+		CreateChunks();
+		CreateCells();
+
 		return true;
 	}
 
@@ -129,13 +132,25 @@ public class HexGrid : MonoBehaviour
 
 	/* Generate the cells that will populate the grid */
 	void CreateCells () {
-        cells = new HexCell[cellCountX * cellCountZ];
-
-        for(int z = 0, i = 0; z < cellCountZ; z++){
-            for(int x = 0; x < cellCountX; x++){
-                CreateCell(x,z,i++);
-            }
-        }
+		switch(mapShape){
+		case MapShape.Circle:
+			int radius = 1;
+			int cellCount = 1;
+			for(int i = 1; i < radius; i++){
+				cellCount += 6 * i;
+			}
+			cells = new HexCell[cellCount];
+			break;
+		case MapShape.Rect:
+		default: 
+			cells = new HexCell[cellCountX * cellCountZ];
+			for(int z = 0, i = 0; z < cellCountZ; z++){
+				for(int x = 0; x < cellCountX; x++){
+					CreateCell(x,z,i++);
+				}
+			}
+			break;
+		}
     }
 
     /* Creates and labels a Hex Cell */
