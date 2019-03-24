@@ -8,6 +8,8 @@ public class HexCell : MonoBehaviour
 {
     public HexCoordinates coordinates;
     
+	//set true to disable this cell entirely
+	public bool inactive;	
 
 	// elevation of cell
     int elevation = int.MinValue;
@@ -249,7 +251,7 @@ public class HexCell : MonoBehaviour
 		SetLabel(distanceToCell == int.MaxValue ? "" : distanceToCell.ToString());
 	}
 
-	/* sets the celll label to whatever */
+	/* sets the cell label to whatever */
 	public void SetLabel (string text) {
 		Text label = uiRect.GetComponent<Text>();
 		label.text = text;
@@ -304,6 +306,9 @@ public class HexCell : MonoBehaviour
 	}
 
     public HexCell GetNeighbor (HexDirection direction) {
+		if(neighbors[(int)direction] != null && neighbors[(int)direction].inactive){
+			return null;
+		}
 		return neighbors[(int)direction];
 	}
 

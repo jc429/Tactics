@@ -14,22 +14,32 @@ public class NewMapMenu : MonoBehaviour {
 		GameController.mapCamera.UnlockCamera();
 	}
 
-	void CreateMap (int x, int z) {
+	void CreateRectMap (int x, int z) {
 		hexGrid.CreateMapRect(x, z);
 		GameController.mapCamera.ValidatePosition();
 		Close();
 	}
 
 	public void CreateSmallMap () {
-		CreateMap(8, 8);
+		CreateRectMap(8, 8);
 	}
 
 	public void CreateMediumMap () {
-		CreateMap(16, 16);
+		CreateRectMap(16, 16);
 	}
 
 	public void CreateLargeMap () {
-		CreateMap(24, 24);
+		CreateRectMap(24, 24);
+	}
+
+	void CreateCircleMap (int r) {
+		hexGrid.CreateMapCircle(r);
+		GameController.mapCamera.ValidatePosition();
+		Close();
+	}
+
+	public void CreateRoundMap () {
+		CreateCircleMap(5);
 	}
 
 }

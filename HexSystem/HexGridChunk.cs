@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class HexGridChunk : MonoBehaviour
 {
-	HexCell[] cells;
+	HexCell[] cellsArray;
+	List<HexCell> cellsList;
 
 	public HexMesh terrain, water, waterShore;
 	Canvas gridCanvas;
@@ -19,8 +20,8 @@ public class HexGridChunk : MonoBehaviour
 	void Awake () {
 		gridCanvas = GetComponentInChildren<Canvas>();
 
-		cells = new HexCell[HexMetrics.chunkSizeX * HexMetrics.chunkSizeZ];
-		
+		cellsArray = new HexCell[HexMetrics.chunkSizeX * HexMetrics.chunkSizeZ];
+		cellsList = new List<HexCell>();
 	}
 	
 	void Start () {
@@ -35,8 +36,9 @@ public class HexGridChunk : MonoBehaviour
 	}
 
 	/* assigns a cell to this chunk */
-	public void AddCell (int index, HexCell cell) {
-		cells[index] = cell;
+	public void AddCell (/*int index, */HexCell cell) {
+		//cellsArray[index] = cell;
+		cellsList.Add(cell);
 		cell.chunk = this;
 		cell.transform.SetParent(transform, false);
 		cell.uiRect.SetParent(gridCanvas.transform, false);
@@ -60,8 +62,10 @@ public class HexGridChunk : MonoBehaviour
 		water.ClearAll();
 		waterShore.ClearAll();
 
-        foreach(HexCell c in cells){
-            TriangulateCell(c);
+		foreach(HexCell c in cellsList){
+			if(!c.inactive){
+				TriangulateCell(c);
+			}
         }
 
 		terrain.Apply();

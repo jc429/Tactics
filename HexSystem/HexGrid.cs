@@ -17,6 +17,8 @@ public class HexGrid : MonoBehaviour
 	public int cellCountX = 16, cellCountZ = 16;
 	int chunkCountX, chunkCountZ;
 	MapShape mapShape = MapShape.Rect;
+	int mapRadius;		//for use with circular maps 
+	public int cellCountTotal = 0;
 
     [SerializeField]
     HexCell cellPrefab;
@@ -88,6 +90,7 @@ public class HexGrid : MonoBehaviour
 		}
 		cellCountX = sizeX;
 		cellCountZ = sizeZ;
+		cellCountTotal = cellCountX * cellCountZ;
 
 		chunkCountX = sizeX / HexMetrics.chunkSizeX;
 		chunkCountZ = sizeZ / HexMetrics.chunkSizeZ;
@@ -100,33 +103,76 @@ public class HexGrid : MonoBehaviour
 
 	/* generates a new map */
 	public bool CreateMapCircle(int radius){
+		Debug.Log(radius);
 		started = false;
 		ClearPath();
 		ClearUnits();
 		mapShape = MapShape.Circle;
+		mapRadius = radius;
 		
 		if (chunks != null) {
 			for (int i = 0; i < chunks.Length; i++) {
 				Destroy(chunks[i].gameObject);
 			}
 		}
+		//just make a larger map and then disable certain cells
+		cellCountX = (radius * 2) + 1;
+		cellCountZ = (radius * 2) + 1;
+		if(cellCountX % HexMetrics.chunkSizeX != 0){
+			cellCountX += HexMetrics.chunkSizeX - (cellCountX % HexMetrics.chunkSizeX);
+		}
+		if(cellCountZ % HexMetrics.chunkSizeZ != 0){
+			cellCountZ += HexMetrics.chunkSizeZ - (cellCountZ % HexMetrics.chunkSizeZ);
+		}
+		cellCountTotal = cellCountX * cellCountZ;
+		chunkCountX = cellCountX / HexMetrics.chunkSizeX;
+		chunkCountZ = cellCountZ / HexMetrics.chunkSizeZ;
 
+		/*cellCountTotal = 1;
+		for(int r = 1; r < radius; r++){
+			cellCountTotal += 6 * r;
+		}*/
 		
 		CreateChunks();
 		CreateCells();
+
+		foreach(HexCell cell in cells){
+			int x = cell.coordinates.X;
+			int z = cell.coordinates.Z;
+			if((z >= (2 * radius) - 1) 							// top
+			|| (x >= Mathf.Floor(1.5f * (float)radius))			//lower right
+			|| ((x + z) >= (2 * radius) + (radius - 2)/2)		//upper right -- this is the evil one 
+			|| ((x + z) < (radius / 2))							//lower left
+			|| (x <= -((float)radius * 0.5f))){					//upper left 
+
+				cell.inactive = true;
+			}
+		}
 
 		return true;
 	}
 
 	/* Generate the chunks */
 	void CreateChunks () {
-		chunks = new HexGridChunk[chunkCountX * chunkCountZ];
-
-		for (int z = 0, i = 0; z < chunkCountZ; z++) {
-			for (int x = 0; x < chunkCountX; x++) {
-				HexGridChunk chunk = chunks[i++] = Instantiate(chunkPrefab);
+		switch(mapShape){
+		case MapShape.Circle:
+			/*//maybe split circular maps further one day but for now this should be fine
+			chunks = new HexGridChunk[6];
+			for(int i = 0; i < 6; i++){
+				HexGridChunk chunk = chunks[i] = Instantiate(chunkPrefab);
 				chunk.transform.SetParent(transform);
 			}
+			break;*/
+		case MapShape.Rect:
+		default:
+			chunks = new HexGridChunk[chunkCountX * chunkCountZ];
+			for (int z = 0, i = 0; z < chunkCountZ; z++) {
+				for (int x = 0; x < chunkCountX; x++) {
+					HexGridChunk chunk = chunks[i++] = Instantiate(chunkPrefab);
+					chunk.transform.SetParent(transform);
+				}
+			}
+			break;
 		}
 	}
 
@@ -134,13 +180,63 @@ public class HexGrid : MonoBehaviour
 	void CreateCells () {
 		switch(mapShape){
 		case MapShape.Circle:
-			int radius = 1;
-			int cellCount = 1;
-			for(int i = 1; i < radius; i++){
-				cellCount += 6 * i;
+			/*cells = new HexCell[cellCountTotal];
+			int ringLevel = 0;		//lv 0 = core cell
+			int fillCells = 1;
+			for(int cellNum = 0; cellNum < cellCountTotal; cellNum++){
+				
+				if(cellNum >= fillCells + (ringLevel * 6)){
+					fillCells += ringLevel * 6;
+					ringLevel++;
+				}
+		
+				int cellRemainder = cellNum - fillCells;
+
+				int x = 0;
+				int z = 0;
+				// cell 0 = (0,0,0)
+				if(ringLevel > 0){
+					//go clockwise radially around each ring
+					if(cellRemainder == 0){
+						x = 0;
+						z = ringLevel;		//(0,r)
+					}
+					//if cellremainder <= ringlevel, approach (r,0)
+					else if(cellRemainder <= ringLevel){
+						x = cellRemainder;
+						z = ringLevel - cellRemainder;
+					}
+					//if cellremainder <= 2 * ringlevel, approach (r,-r)
+					else if(cellRemainder <= ringLevel * 2){
+						x = ringLevel;
+						z = ringLevel - cellRemainder;
+					}
+					//if cellremainder <= 3 * ringlevel, approach (0,-r)
+					else if(cellRemainder <= ringLevel * 3){
+						x = (ringLevel * 3) - cellRemainder;
+						z = -ringLevel;
+					}
+					//if cellremainder <= 4 * ringlevel, approach (-r,0)
+					else if(cellRemainder < ringLevel * 4){
+						x = ringLevel;
+						z = cellRemainder - (ringLevel * 4);
+					}
+					//if cellremainder <= 5 * ringlevel, approach (-r,r)
+					else if(cellRemainder <= ringLevel * 5){
+						x = -ringLevel;
+						z = cellRemainder - (ringLevel * 4);
+					}
+					//if cellremainder < 6 * ringlevel, approach (0,r) 
+					else if(cellRemainder < ringLevel * 6){
+						x = cellRemainder - (ringLevel * 5);
+						z = ringLevel;
+					}
+				}
+				Debug.Log("x: " + x + ", z: " + z);
+				
+				CreateCell(x, z, cellNum);
 			}
-			cells = new HexCell[cellCount];
-			break;
+			break;*/
 		case MapShape.Rect:
 		default: 
 			cells = new HexCell[cellCountX * cellCountZ];
@@ -153,6 +249,7 @@ public class HexGrid : MonoBehaviour
 		}
     }
 
+
     /* Creates and labels a Hex Cell */
     void CreateCell(int x, int z, int i){
         Vector3 pos;
@@ -163,26 +260,28 @@ public class HexGrid : MonoBehaviour
         HexCell cell = cells[i] = Instantiate<HexCell>(cellPrefab);
     //	cell.transform.SetParent(transform,false);
         cell.transform.localPosition = pos;
-        cell.coordinates = HexCoordinates.FromOffsetCoordinates(x,z);
+		cell.coordinates = HexCoordinates.FromOffsetCoordinates(x,z);
+		//cell.coordinates = new HexCoordinates(x,z);	
 
         //connect to neighbors
-        if(x > 0){
-            cell.SetNeighbor(HexDirection.W, cells[i - 1]);
-        }
-        if(z > 0){
-            if((z & 1) == 0){
-                cell.SetNeighbor(HexDirection.SE, cells[i - cellCountX]);
-                if(x > 0){
-                    cell.SetNeighbor(HexDirection.SW, cells[i - cellCountX - 1]);
-                }
-            }
-            else {
+		if(x > 0){
+			cell.SetNeighbor(HexDirection.W, cells[i - 1]);
+		}
+		if(z > 0){
+			if((z & 1) == 0){
+				cell.SetNeighbor(HexDirection.SE, cells[i - cellCountX]);
+				if(x > 0){
+					cell.SetNeighbor(HexDirection.SW, cells[i - cellCountX - 1]);
+				}
+			}
+			else {
 				cell.SetNeighbor(HexDirection.SW, cells[i - cellCountX]);
 				if (x < cellCountX - 1) {
 					cell.SetNeighbor(HexDirection.SE, cells[i - cellCountX + 1]);
 				}
 			}
-        }
+		}
+	
 
         //label cell
         Text label = Instantiate<Text>(cellLabelPrefab);
@@ -198,15 +297,56 @@ public class HexGrid : MonoBehaviour
 
 	/* what it says on the box */
 	void AddCellToChunk (int x, int z, HexCell cell) {
-		//location of parent chunk
-		int chunkX = x / HexMetrics.chunkSizeX;
-		int chunkZ = z / HexMetrics.chunkSizeZ;
-		HexGridChunk chunk = chunks[chunkX + chunkZ * chunkCountX];
+		HexGridChunk chunk;
+		switch(mapShape){
+		case MapShape.Circle:
+			/*int y = -x - z;
+			int cnum = 0;
+			if(x >= 0){
+				if(z >= 0){
+					cnum = 0;
+				}
+				else if(z < 0){
+					if( y < 0){
+						cnum = 1;
+					}
+					else if( y >= 0){
+						cnum = 2;
+					}
+				}
+			}
+			else if(x < 0){
+				if(z < 0){
+					cnum = 3;
+				}
+				else if(z >= 0){
+					if( y >= 0){
+						cnum = 4;
+					}
+					else if( y < 0){
+						cnum = 5;
+					}
+				}
+			}
+			chunk = chunks[cnum];
+			chunk.AddCell(cell);
 
-		// location of cell within chunk
-		int localX = x - chunkX * HexMetrics.chunkSizeX;
-		int localZ = z - chunkZ * HexMetrics.chunkSizeZ;
-		chunk.AddCell(localX + localZ * HexMetrics.chunkSizeX, cell);
+			break;*/
+		case MapShape.Rect:
+		default:
+			//location of parent chunk
+			int chunkX = x / HexMetrics.chunkSizeX;
+			int chunkZ = z / HexMetrics.chunkSizeZ;
+			chunk = chunks[chunkX + chunkZ * chunkCountX];
+
+			// location of cell within chunk
+			int localX = x - chunkX * HexMetrics.chunkSizeX;
+			int localZ = z - chunkZ * HexMetrics.chunkSizeZ;
+			chunk.AddCell(/*localX + localZ * HexMetrics.chunkSizeX, */cell);
+			
+			break;
+		}
+		cell.SetLabel(cell.coordinates.ToString());
 	}
 
     /* returns a cell at a given position */
