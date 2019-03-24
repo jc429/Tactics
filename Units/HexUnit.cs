@@ -7,36 +7,13 @@ public class HexUnit : MonoBehaviour {
 
 	public static HexUnit unitPrefab;
 
+	
+	public UnitProperties Properties;
+
 	// cell unit is positioned in
 	HexCell location;
-
-	// direction unit model is facing
-	float orientation;
-
-	// hex direction unit is facing
-	HexDirection facing;
-
-	// how many tiles unit can move (before factoring in cost)
-	//public int moveRange = 7;
-	//tiles unit can move to
-	public List<HexCell> moveTiles;
-	//tiles unit can attack
-	public List<HexCell> attackTiles;
-
-	public MovementClass movementClass;
-
-	// travel
-	public bool isTraveling;
-	const float travelSpeed = 4f;
-	const float rotationSpeed = 360f;
-	List<HexCell> pathToTravel;
-
-
-
 	public HexCell Location {
-		get {
-			return location;
-		}
+		get {	return location;	}
 		set {
 			if (location) {
 				location.Unit = null;
@@ -47,27 +24,54 @@ public class HexUnit : MonoBehaviour {
 		}
 	}
 
+	// direction unit model is facing
+	float orientation;
 	float Orientation {
-		get {
-			return orientation;
-		}
+		get {	return orientation;	}
 		set {
 			orientation = value;
 			transform.localRotation = Quaternion.Euler(0f, value, 0f);
 		}
 	}
 
-	/* hex direction unit is facing */
+	// hex direction unit is facing
+	HexDirection facing;
 	public HexDirection Facing {
-		get {
-			return facing;
-		}
+		get {	return facing;	}
 		set {
 			facing = value;
 			Orientation = value.DegreesOfRotation();
 		}
 	}
 
+	// how many tiles unit can move (before factoring in cost)
+	//public int moveRange = 7;
+	//tiles unit can move to
+	public List<HexCell> moveTiles;
+	//tiles unit can attack in a given turn
+	public List<HexCell> attackTiles;
+	//tiles unit can attack from where they are standing
+	public List<HexCell> localAttackTiles;
+
+
+	// travel
+	public bool isTraveling;
+	const float travelSpeed = 4f;
+	const float rotationSpeed = 360f;
+	List<HexCell> pathToTravel;
+
+
+
+	
+
+	
+
+	/* hex direction unit is facing */
+	
+
+	public HexUnit(){
+		Properties = new UnitProperties();
+	}
 	
 
 
@@ -107,8 +111,7 @@ public class HexUnit : MonoBehaviour {
 	public void StartUnit(){
 		GameController.hexGrid.CalculateMovementRange(location, this);
 		GameController.hexGrid.CalculateTotalAttackRange(this);
-		Debug.Log(attackTiles.Count);
-		//FIXME: for some reason a unit will have 0 move tiles and 0 attack tiles until they move once
+		//Debug.Log(attackTiles.Count);
 	}
 
 
@@ -127,13 +130,18 @@ public class HexUnit : MonoBehaviour {
 	}
 
 	public void DeselectUnit(){
+		HideDisplays();
+	}
+
+	public void HideDisplays(){
 		MarkMovementRange(false);
 		MarkAttackRange(false);
+		MarkLocalAttackRange(false);
 	}
 
 
 	public int MovementRange(){
-		return GameProperties.MovementProperties.ClassBaseMovement[(int)movementClass];
+		return GameProperties.MovementProperties.ClassBaseMovement[(int)Properties.movementClass];
 	}
 
 	/* marks all tiles within movement range as either true or false */
@@ -149,6 +157,15 @@ public class HexUnit : MonoBehaviour {
 	void MarkAttackRange(bool b){
 		if(attackTiles != null){
 			foreach(HexCell c in attackTiles){
+				c.InAttackRange = b;
+			}
+		}
+	}
+	
+	/* marks all tiles within attack range as either true or false */
+	void MarkLocalAttackRange(bool b){
+		if(localAttackTiles != null){
+			foreach(HexCell c in localAttackTiles){
 				c.InAttackRange = b;
 			}
 		}
@@ -220,10 +237,10 @@ public class HexUnit : MonoBehaviour {
 		Facing = HexDirectionExtensions.HexDirectionFromDegrees(Mathf.RoundToInt(orientation));
 
 		isTraveling = false;
-		ListPool<HexCell>.Add(moveTiles);
-		moveTiles = null;
+		moveTiles.Clear();
 		ListPool<HexCell>.Add(pathToTravel);
 		pathToTravel = null;
+		FinishTravel();
 	}
 
 
@@ -246,6 +263,11 @@ public class HexUnit : MonoBehaviour {
 		Facing = HexDirectionExtensions.HexDirectionFromDegrees(Mathf.RoundToInt(orientation));
 	}
 
+	/* called after unit moves to destination */
+	void FinishTravel(){
+		GameController.hexGrid.CalculateLocalAttackRange(Location,this);
+		MarkLocalAttackRange(true);
+	}
 	
 
 	/* unit cleanup */
@@ -264,7 +286,7 @@ public class HexUnit : MonoBehaviour {
 		HexCoordinates coordinates = HexCoordinates.Load(reader);
 		HexDirection facing = (HexDirection)reader.ReadInt32();
 		HexUnit unit = Instantiate(unitPrefab);
-		unit.movementClass = MovementClass.Infantry;
+		unit.Properties.movementClass = MovementClass.Infantry;
 		grid.AddUnit(unit, grid.GetCell(coordinates), facing);
 	}
 }

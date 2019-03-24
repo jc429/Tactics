@@ -17,6 +17,7 @@ public static class ListPool<T> {
 	public static void Add (List<T> list) {
 		if(list == null){
 			Debug.Log("Hmmm");
+			return;
 		}
 		list.Clear();
 		stack.Push(list);

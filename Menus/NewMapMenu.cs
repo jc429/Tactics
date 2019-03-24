@@ -21,15 +21,15 @@ public class NewMapMenu : MonoBehaviour {
 	}
 
 	public void CreateSmallMap () {
-		CreateRectMap(8, 8);
+		CreateCircleMap(4);
 	}
 
 	public void CreateMediumMap () {
-		CreateRectMap(16, 16);
+		CreateCircleMap(6);
 	}
 
 	public void CreateLargeMap () {
-		CreateRectMap(24, 24);
+		CreateCircleMap(8);
 	}
 
 	void CreateCircleMap (int r) {

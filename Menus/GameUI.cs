@@ -16,12 +16,8 @@ public class GameUI : MonoBehaviour {
 	void Update () {
 		grid.StartMap();
 		if (!EventSystem.current.IsPointerOverGameObject()) {
-						
-			if (Input.GetMouseButtonDown(0)) {
-				DoSelection();
-			}
-			else if (selectedUnit) {
-				if (Input.GetMouseButtonDown(1)) {
+			if(selectedUnit != null){
+				if (Input.GetMouseButtonDown(0)) {
 					DoMove();
 				}
 				else {
@@ -29,9 +25,16 @@ public class GameUI : MonoBehaviour {
 				}
 			}
 			else{
-				HexCell prevCell = currentCell; 
-				UpdateCurrentCell();				
+				if (Input.GetMouseButtonDown(0)) {
+					DoSelection();
+				}
+				else{
+					HexCell prevCell = currentCell; 
+					UpdateCurrentCell();				
+				}
 			}
+
+			
 		}
 	}
 
@@ -89,6 +92,7 @@ public class GameUI : MonoBehaviour {
 		}
 		selectedUnit = null;
 	}
+	
 
 	void DoPathfinding () {
 		if (UpdateCurrentCell()) {
@@ -105,7 +109,8 @@ public class GameUI : MonoBehaviour {
 		if (grid.HasPath && !selectedUnit.isTraveling) {
 			selectedUnit.Travel(grid.GetPath());
 			grid.ClearPath();
-			DeselectUnit();
+			selectedUnit.HideDisplays();
+
 		}
 	}
 }

@@ -56,7 +56,7 @@ public class HexGrid : MonoBehaviour
 		HexUnit.unitPrefab = unitPrefab;
 		GameController.hexGrid = this;
 
-		CreateMapRect(cellCountX,cellCountZ);
+		CreateMapCircle(6);
 	}
 
 	public void StartMap(){
@@ -103,7 +103,6 @@ public class HexGrid : MonoBehaviour
 
 	/* generates a new map */
 	public bool CreateMapCircle(int radius){
-		Debug.Log(radius);
 		started = false;
 		ClearPath();
 		ClearUnits();
@@ -128,24 +127,22 @@ public class HexGrid : MonoBehaviour
 		chunkCountX = cellCountX / HexMetrics.chunkSizeX;
 		chunkCountZ = cellCountZ / HexMetrics.chunkSizeZ;
 
-		/*cellCountTotal = 1;
-		for(int r = 1; r < radius; r++){
-			cellCountTotal += 6 * r;
-		}*/
-		
+			
 		CreateChunks();
 		CreateCells();
 
+		//carve out the excess tiles to make this a hexagon
 		foreach(HexCell cell in cells){
 			int x = cell.coordinates.X;
 			int z = cell.coordinates.Z;
 			if((z >= (2 * radius) - 1) 							// top
 			|| (x >= Mathf.Floor(1.5f * (float)radius))			//lower right
-			|| ((x + z) >= (2 * radius) + (radius - 2)/2)		//upper right -- this is the evil one 
+			|| ((x + z) >= (2 * radius) + (radius - 2)/2)		//upper right
 			|| ((x + z) < (radius / 2))							//lower left
 			|| (x <= -((float)radius * 0.5f))){					//upper left 
 
-				cell.inactive = true;
+				cell.invalid = true;
+				cell.SetLabel("");
 			}
 		}
 
@@ -346,7 +343,7 @@ public class HexGrid : MonoBehaviour
 			
 			break;
 		}
-		cell.SetLabel(cell.coordinates.ToString());
+		//cell.SetLabel(cell.coordinates.ToString());
 	}
 
     /* returns a cell at a given position */
@@ -400,7 +397,12 @@ public class HexGrid : MonoBehaviour
 		}
 
 		// cells we can move to
-		List<HexCell> moveCells = ListPool<HexCell>.Get();
+		if(unit.moveTiles == null){
+			unit.moveTiles = ListPool<HexCell>.Get();
+		}
+		else{
+			unit.moveTiles.Clear();
+		}
 		
 		Queue<HexCell> frontier = new Queue<HexCell>();
 		start.DistanceToCell = 0;
@@ -421,7 +423,7 @@ public class HexGrid : MonoBehaviour
 					continue;
 				}
 				
-				int moveCost = GameProperties.MovementProperties.GetCostToEnter(current.Terrain, unit.movementClass);
+				int moveCost = GameProperties.MovementProperties.GetCostToEnter(neighbor.Terrain, unit.Properties.movementClass);
 				if(moveCost == 0){
 					continue;
 				}
@@ -433,8 +435,8 @@ public class HexGrid : MonoBehaviour
 
 				//from this point we know we can enter the cell
 
-				if(!moveCells.Contains(neighbor)){
-					moveCells.Add(neighbor);
+				if(!unit.moveTiles.Contains(neighbor)){
+					unit.moveTiles.Add(neighbor);
 					frontier.Enqueue(neighbor);
 				}
 
@@ -446,7 +448,7 @@ public class HexGrid : MonoBehaviour
 			}
 		}
 
-		unit.moveTiles = moveCells;
+		
 	}
 
 	/* all tiles a unit can attack from their starting tile */
@@ -455,7 +457,12 @@ public class HexGrid : MonoBehaviour
 			return;
 		}
 
-		List<HexCell> attackCells = ListPool<HexCell>.Get();
+		if(unit.attackTiles == null){
+			unit.attackTiles = ListPool<HexCell>.Get();
+		}
+		else{
+			unit.attackTiles.Clear();
+		}
 		int unitAttackRange = 1;	//TODO: allow other ranges
 
 		foreach(HexCell cell in unit.moveTiles){
@@ -467,14 +474,39 @@ public class HexGrid : MonoBehaviour
 				//melee attack range is easy
 				HexCell neighbor = cell.GetNeighbor(d);
 				if(neighbor != null){
-					if(!attackCells.Contains(neighbor)){
-						attackCells.Add(neighbor);
+					if(!unit.attackTiles.Contains(neighbor)){
+						unit.attackTiles.Add(neighbor);
 					}
 				}
 			}
 		}
 
-		unit.attackTiles = attackCells;
+	}
+
+	/* after we have moved, which tiles can a unit attack from where they're currently standing */
+	public void CalculateLocalAttackRange(HexCell cell, HexUnit unit){
+		if(cell == null || unit == null){
+			return;
+		}
+
+		if(unit.localAttackTiles == null){
+			unit.localAttackTiles = ListPool<HexCell>.Get();
+		}
+		else{
+			unit.localAttackTiles.Clear();
+		}
+		int unitAttackRange = 1;	//TODO: allow other ranges
+
+		for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
+			//melee attack range is easy
+			HexCell neighbor = cell.GetNeighbor(d);
+			if(neighbor != null){
+				if(!unit.localAttackTiles.Contains(neighbor)){
+					unit.localAttackTiles.Add(neighbor);
+				}
+			}
+		}
+
 	}
 
 	/* finds a direct path between two tiles */
@@ -531,7 +563,7 @@ public class HexGrid : MonoBehaviour
 					continue;
 				}
 
-				int moveCost = GameProperties.MovementProperties.GetCostToEnter(current.Terrain, unit.movementClass);
+				int moveCost = GameProperties.MovementProperties.GetCostToEnter(neighbor.Terrain, unit.Properties.movementClass);
 				if(moveCost == 0){
 					continue;
 				}
@@ -664,7 +696,7 @@ public class HexGrid : MonoBehaviour
 		ClearUnits();
 		int x = reader.ReadInt32(); 
 		int z = reader.ReadInt32();
-		Debug.Log("Creating Grid of size " + x + "x" + z);
+		//Debug.Log("Creating Grid of size " + x + "x" + z);
 		if (x != cellCountX || z != cellCountZ) {
 			if (!CreateMapRect(x, z)) {
 				return;

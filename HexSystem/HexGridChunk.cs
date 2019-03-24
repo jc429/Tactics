@@ -63,7 +63,7 @@ public class HexGridChunk : MonoBehaviour
 		waterShore.ClearAll();
 
 		foreach(HexCell c in cellsList){
-			if(!c.inactive){
+			if(!c.invalid){
 				TriangulateCell(c);
 			}
         }

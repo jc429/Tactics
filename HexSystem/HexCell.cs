@@ -9,7 +9,7 @@ public class HexCell : MonoBehaviour
     public HexCoordinates coordinates;
     
 	//set true to disable this cell entirely
-	public bool inactive;	
+	public bool invalid;	
 
 	// elevation of cell
     int elevation = int.MinValue;
@@ -306,7 +306,7 @@ public class HexCell : MonoBehaviour
 	}
 
     public HexCell GetNeighbor (HexDirection direction) {
-		if(neighbors[(int)direction] != null && neighbors[(int)direction].inactive){
+		if(neighbors[(int)direction] != null && neighbors[(int)direction].invalid){
 			return null;
 		}
 		return neighbors[(int)direction];
@@ -321,12 +321,14 @@ public class HexCell : MonoBehaviour
 
 
 	public void SaveCell(BinaryWriter writer) {
+		writer.Write(invalid);
 		writer.Write((byte)terrainTypeIndex);
 		writer.Write((byte)elevation);
 		writer.Write((byte)waterLevel);
 	}
 
 	public void LoadCell(BinaryReader reader) {
+		invalid = reader.ReadBoolean();
 		terrainTypeIndex = reader.ReadByte();
 		terrain = (TerrainType)terrainTypeIndex;
 		elevation = reader.ReadByte();
