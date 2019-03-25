@@ -136,6 +136,8 @@ public class GameUI : MonoBehaviour {
 			if(selectedUnit.localAttackTiles.Contains(currentCell)){
 				if(currentCell.Unit != null && currentCell.Unit != selectedUnit){
 					//do combat
+					
+					yield return selectedUnit.TurnToLookAt(currentCell.Position);
 					CombatManager.StartCombat(selectedUnit,currentCell.Unit,1);
 					
 				}

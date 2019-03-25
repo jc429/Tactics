@@ -6,15 +6,29 @@ using UnityEngine;
 public class UnitProperties : System.Object{
 	public MovementClass movementClass;
 	public WeaponType weaponType;
-	[NamedArrayAttribute (new string[] {"HP", "Str", "Skl", "Spd", "Def", "Res"})]
-	public int[] stats = new int[(int)CombatStat.Total];
-
-	[NamedArrayAttribute (new string[] {"HP", "Str", "Skl", "Spd", "Def", "Res"})]
-	public int[] statBuffs = new int[(int)CombatStat.Total];
 	
-	[NamedArrayAttribute (new string[] {"HP", "Str", "Skl", "Spd", "Def", "Res"})]
+	[NamedArrayAttribute (GameProperties.statList)]
+	public int[] stats = new int[(int)CombatStat.Total];
+	[NamedArrayAttribute (GameProperties.statList)]
+	public int[] statBuffs = new int[(int)CombatStat.Total];
+	[NamedArrayAttribute (GameProperties.statList)]
 	public int[] statDebuffs = new int[(int)CombatStat.Total];
 
+	//which army unit is a member of
+	public int affiliation;
+
+	/* returns with an attack range based on unit's weapon type */
+	public int AttackRange{
+		get{
+			if(weaponType == WeaponType.Sword || weaponType == weaponType.Lance || weaponType == weaponType.Axe){
+				return 1;
+			}
+			else{
+				return 2;
+			}
+		}
+		private set;
+	}
 
 	public UnitProperties(){
 		for(int i = 0; i < (int)CombatStat.Total; i++){
@@ -24,7 +38,7 @@ public class UnitProperties : System.Object{
 		}
 	}
 
-	
+
 	/* sets a stat to the desired stat */
 	public void SetStat(CombatStat stat, int amount){
 		amount = Mathf.Clamp(amount,0,99);
@@ -37,8 +51,10 @@ public class UnitProperties : System.Object{
 	}
 
 	/* returns a given stat with mods applied */
-	public int GetStat(CombatStat stat){
-		return stats[(int)stat] + statBuffs[(int)stat] + statDebuffs[(int)stat];
+	public int GetStat(CombatStat stat, bool ignoreBuffs = false, bool ignoreDebuffs = false){
+		return stats[(int)stat] 
+			+ ignoreBuffs ? statBuffs[(int)stat] : 0
+			+ ignoreDebuffs ? statDebuffs[(int)stat] : 0;
 	}
 
 	/* randomizes stats */
@@ -63,7 +79,7 @@ public class UnitProperties : System.Object{
 		statDebuffs[(int)stat] = Mathf.Min(statDebuffs[(int)stat],amount);
 	}
 
-	/* resets all buffs to one */
+	/* resets all stats to one (not zero bc hp of 0 would break the game) */
 	void ClearStats(){
 		foreach(int i in stats){
 			stats[i] = 1;
@@ -88,5 +104,24 @@ public class UnitProperties : System.Object{
 		ClearStats();
 		ClearBuffs();
 		ClearDebuffs();
+	}
+
+
+	
+	/* save unit properties to file */
+	public void Save (BinaryWriter writer) {
+		writer.Write((int)movementClass);
+		writer.Write((int)weaponType);
+		for(int i = 0; i < (int)CombatStat.Total; i++){
+			writer.Write(stats[i]);
+		}
+	}
+
+	public void Load (BinaryReader reader) {
+		movementClass = (MovementClass)reader.ReadInt32();
+		weaponType = (WeaponType)reader.ReadInt32();
+		for(int i = 0; i < (int)CombatStat.Total; i++){
+			stats[i] = reader.ReadInt32();
+		}
 	}
 }

@@ -33,12 +33,10 @@ public static class CombatManager {
 	/* returns true if the defender takes lethal damage */
 	static bool ResolveCombatRound(HexUnit currentAttacker, HexUnit currentDefender){
 		int attackerAtk = currentAttacker.Properties.GetStatUnmodified(CombatStat.Str);
-
 		int defenderDef = currentDefender.Properties.GetStatUnmodified(CombatStat.Def);
 
 		int damage = attackerAtk - defenderDef;
-
-		Debug.Log(attackerAtk + " - " + defenderDef + " = " + damage);
+		//Debug.Log(attackerAtk + " - " + defenderDef + " = " + damage);
 
 		bool defenderDefeated = currentDefender.TakeDamage(damage);
 

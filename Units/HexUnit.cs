@@ -57,21 +57,12 @@ public class HexUnit : MonoBehaviour {
 	//tiles unit can attack from where they are standing
 	public List<HexCell> localAttackTiles;
 
-
 	// travel
 	public bool isTraveling;
 	const float travelSpeed = 4f;
 	const float rotationSpeed = 360f;
 	List<HexCell> pathToTravel;
 
-
-
-	
-
-	
-
-	/* hex direction unit is facing */
-	
 
 	public HexUnit(){
 		Properties = new UnitProperties();
@@ -222,7 +213,7 @@ public class HexUnit : MonoBehaviour {
 		
 		Vector3 a, b, c = pathToTravel[0].Position;
 		transform.localPosition = c;
-		yield return LookAt(pathToTravel[1].Position);
+		yield return TurnToLookAt(pathToTravel[1].Position);
 
 		float t = Time.deltaTime * travelSpeed;
 		for (int i = 1; i < pathToTravel.Count; i++) {
@@ -263,7 +254,7 @@ public class HexUnit : MonoBehaviour {
 	}
 
 
-	IEnumerator LookAt (Vector3 point) {
+	public IEnumerator TurnToLookAt (Vector3 point) {
 		point.y = transform.localPosition.y;
 		Quaternion fromRotation = transform.localRotation;
 		Quaternion toRotation = Quaternion.LookRotation(point - transform.localPosition);
@@ -323,13 +314,14 @@ public class HexUnit : MonoBehaviour {
 	public void Save (BinaryWriter writer) {
 		location.coordinates.Save(writer);
 		writer.Write((int)facing);
+		Properties.Save(writer);
 	}
 
 	public static void Load (BinaryReader reader, HexGrid grid) {
 		HexCoordinates coordinates = HexCoordinates.Load(reader);
 		HexDirection facing = (HexDirection)reader.ReadInt32();
 		HexUnit unit = Instantiate(unitPrefab);
-		unit.Properties.movementClass = MovementClass.Infantry;
+		unit.Properties.Load(reader);
 		grid.AddUnit(unit, grid.GetCell(coordinates), facing);
 	}
 }

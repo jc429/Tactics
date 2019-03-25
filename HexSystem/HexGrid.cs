@@ -463,7 +463,8 @@ public class HexGrid : MonoBehaviour
 		else{
 			unit.attackTiles.Clear();
 		}
-		int unitAttackRange = 1;	//TODO: allow other ranges
+
+		int unitAttackRange = unit.Properties.AttackRange;
 
 		foreach(HexCell cell in unit.moveTiles){
 			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
@@ -516,8 +517,9 @@ public class HexGrid : MonoBehaviour
 		else{
 			unit.localAttackTiles.Clear();
 		}
-		int unitAttackRange = 1;	//TODO: allow other ranges
-
+		
+		int unitAttackRange = unit.Properties.AttackRange;
+		
 		for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
 			if(unitAttackRange == 1){
 				//melee attack range is easy
