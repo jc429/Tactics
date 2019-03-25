@@ -7,8 +7,12 @@ public class HexUnit : MonoBehaviour {
 
 	public static HexUnit unitPrefab;
 
-	
 	public UnitProperties Properties;
+	
+	public int currentHP;
+
+	//what this unit is currently doing
+	public TurnState turnState;
 
 	// cell unit is positioned in
 	HexCell location;
@@ -109,37 +113,51 @@ public class HexUnit : MonoBehaviour {
 	*/
 
 	public void StartUnit(){
+		Properties.RandomizeStats();
+		ResetHP();
 		GameController.hexGrid.CalculateMovementRange(location, this);
 		GameController.hexGrid.CalculateTotalAttackRange(this);
+		
 		//Debug.Log(attackTiles.Count);
 	}
+
+	/* handles prepping the unit during the start of their turn */
+	public void StartTurn(){
+		turnState = TurnState.Idle;
+	}
+
+
 
 
 	/* selection  */
 	public void SelectUnit(){
-		//if for some reason the unit doesnt have move/attack tiles calculated yet (but they always should)
-		if(moveTiles != null && moveTiles.Count == 0){
-			GameController.hexGrid.CalculateMovementRange(location,this);
+		if(turnState == TurnState.Idle){
+			//if for some reason the unit doesnt have move/attack tiles calculated yet (but they always should)
+			if(moveTiles != null && moveTiles.Count == 0){
+				GameController.hexGrid.CalculateMovementRange(location,this);
+			}
+			if(attackTiles != null && attackTiles.Count == 0){
+				GameController.hexGrid.CalculateTotalAttackRange(this);
+			}
+			
+			MarkMovementRange(true);
+			MarkAttackRange(true);
+			turnState = TurnState.PreMove;
 		}
-		if(attackTiles != null && attackTiles.Count == 0){
-			GameController.hexGrid.CalculateTotalAttackRange(this);
-		}
-		
-		MarkMovementRange(true);
-		MarkAttackRange(true);
 	}
 
 	public void DeselectUnit(){
 		HideDisplays();
 	}
 
+	/* hide all movement and attack displays */
 	public void HideDisplays(){
 		MarkMovementRange(false);
 		MarkAttackRange(false);
 		MarkLocalAttackRange(false);
 	}
 
-
+	/* returns how far unit can move (currently entirely based on unit's class) */
 	public int MovementRange(){
 		return GameProperties.MovementProperties.ClassBaseMovement[(int)Properties.movementClass];
 	}
@@ -195,6 +213,7 @@ public class HexUnit : MonoBehaviour {
 		}
 		StopAllCoroutines();
 		isTraveling = true;
+		turnState = TurnState.Moving;
 		StartCoroutine(TravelPath());
 
 	}
@@ -265,10 +284,34 @@ public class HexUnit : MonoBehaviour {
 
 	/* called after unit moves to destination */
 	void FinishTravel(){
+		turnState = TurnState.PostMove;
 		GameController.hexGrid.CalculateLocalAttackRange(Location,this);
 		MarkLocalAttackRange(true);
 	}
-	
+
+	/* called after unit does combat or other actions */
+	public void FinishAction(){
+		turnState = TurnState.Finished;
+		DeselectUnit();
+		if(GameProperties.DEBUG_INFINITE_ACTIONS){
+			StartTurn();
+		}
+	}
+
+	public void ResetHP(){
+		currentHP = Properties.GetStat(CombatStat.HP);
+	}
+
+	/* damage received during combat -- returns true if unit dies */
+	public bool TakeDamage(int dmg){
+		currentHP -= dmg;
+		if (currentHP <= 0){
+			currentHP = 0;
+			Die();
+			return true;
+		}
+		return false;
+	}
 
 	/* unit cleanup */
 	public void Die () {

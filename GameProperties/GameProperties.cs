@@ -5,6 +5,8 @@ using UnityEngine;
 
 public static class GameProperties
 {
+	public const bool DEBUG_INFINITE_ACTIONS = true;
+
 	public static class UIColors{
 		public static Color HoverColor = Color.magenta;
 		public static Color PathColor = Color.green;

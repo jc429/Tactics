@@ -466,16 +466,37 @@ public class HexGrid : MonoBehaviour
 		int unitAttackRange = 1;	//TODO: allow other ranges
 
 		foreach(HexCell cell in unit.moveTiles){
-			/*if(attackCells.Contains(cell)){
-				continue;
-			}*/
-
 			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
-				//melee attack range is easy
-				HexCell neighbor = cell.GetNeighbor(d);
-				if(neighbor != null){
-					if(!unit.attackTiles.Contains(neighbor)){
-						unit.attackTiles.Add(neighbor);
+				if(unitAttackRange == 1){
+					//melee attack range is easy
+					HexCell neighbor = cell.GetNeighbor(d);
+					if(neighbor != null){
+						if(!unit.attackTiles.Contains(neighbor)){
+							unit.attackTiles.Add(neighbor);
+						}
+					}
+				}
+				if(unitAttackRange == 2){
+					HexCell neighbor = cell.GetNeighbor(d);
+					if(neighbor != null){
+						HexCell neighbor2 = neighbor.GetNeighbor(d);
+						if(neighbor2 != null){
+							if(!unit.attackTiles.Contains(neighbor2)){
+								unit.attackTiles.Add(neighbor2);
+							}
+						}
+						neighbor2 = neighbor.GetNeighbor(d.Next());
+						if(neighbor2 != null){
+							if(!unit.attackTiles.Contains(neighbor2)){
+								unit.attackTiles.Add(neighbor2);
+							}
+						}
+						neighbor2 = neighbor.GetNeighbor(d.Previous());
+						if(neighbor2 != null){
+							if(!unit.attackTiles.Contains(neighbor2)){
+								unit.attackTiles.Add(neighbor2);
+							}
+						}
 					}
 				}
 			}
@@ -498,11 +519,36 @@ public class HexGrid : MonoBehaviour
 		int unitAttackRange = 1;	//TODO: allow other ranges
 
 		for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
-			//melee attack range is easy
-			HexCell neighbor = cell.GetNeighbor(d);
-			if(neighbor != null){
-				if(!unit.localAttackTiles.Contains(neighbor)){
-					unit.localAttackTiles.Add(neighbor);
+			if(unitAttackRange == 1){
+				//melee attack range is easy
+				HexCell neighbor = cell.GetNeighbor(d);
+				if(neighbor != null){
+					if(!unit.localAttackTiles.Contains(neighbor)){
+						unit.localAttackTiles.Add(neighbor);
+					}
+				}
+			}
+			if(unitAttackRange == 2){
+				HexCell neighbor = cell.GetNeighbor(d);
+				if(neighbor != null){
+					HexCell neighbor2 = neighbor.GetNeighbor(d);
+					if(neighbor2 != null){
+						if(!unit.localAttackTiles.Contains(neighbor2)){
+							unit.localAttackTiles.Add(neighbor2);
+						}
+					}
+					neighbor2 = neighbor.GetNeighbor(d.Next());
+					if(neighbor2 != null){
+						if(!unit.localAttackTiles.Contains(neighbor2)){
+							unit.localAttackTiles.Add(neighbor2);
+						}
+					}
+					neighbor2 = neighbor.GetNeighbor(d.Previous());
+					if(neighbor2 != null){
+						if(!unit.localAttackTiles.Contains(neighbor2)){
+							unit.localAttackTiles.Add(neighbor2);
+						}
+					}
 				}
 			}
 		}

@@ -17,19 +17,36 @@ public class GameUI : MonoBehaviour {
 		grid.StartMap();
 		if (!EventSystem.current.IsPointerOverGameObject()) {
 			if(selectedUnit != null){
-				if (Input.GetMouseButtonDown(0)) {
-					DoMove();
+				if(selectedUnit.turnState == TurnState.PreMove){
+					if (Input.GetMouseButtonDown(0)) {
+						DoMove();
+					}
+					else{
+						DoPathfinding();
+					}
 				}
-				else {
-					DoPathfinding();
+				else if(selectedUnit.turnState == TurnState.PostMove){
+					if (Input.GetMouseButtonDown(0)) {
+						DoSelectTarget();
+					}
+					else{
+						UpdateCurrentCell();
+					}
+				}
+				else if(selectedUnit.turnState == TurnState.Finished){
+					if (Input.GetMouseButtonDown(0)) {
+						DoSelectUnit();
+					}
+					else{
+						UpdateCurrentCell();
+					}
 				}
 			}
 			else{
 				if (Input.GetMouseButtonDown(0)) {
-					DoSelection();
+					DoSelectUnit();
 				}
 				else{
-					HexCell prevCell = currentCell; 
 					UpdateCurrentCell();				
 				}
 			}
@@ -59,7 +76,7 @@ public class GameUI : MonoBehaviour {
 		return false;
 	}
 
-	void DoSelection () {
+	void DoSelectUnit () {
 		grid.ClearPath();
 		if(selectedUnit != null){
 			if(selectedUnit.isTraveling){
@@ -111,6 +128,20 @@ public class GameUI : MonoBehaviour {
 			grid.ClearPath();
 			selectedUnit.HideDisplays();
 
+		}
+	}
+
+	void DoSelectTarget(){
+		if(selectedUnit != null && selectedUnit.localAttackTiles != null){
+			if(selectedUnit.localAttackTiles.Contains(currentCell)){
+				if(currentCell.Unit != null && currentCell.Unit != selectedUnit){
+					//do combat
+					CombatManager.StartCombat(selectedUnit,currentCell.Unit,1);
+					
+				}
+				selectedUnit.FinishAction();
+				DeselectUnit();
+			}
 		}
 	}
 }
