@@ -98,6 +98,7 @@ public class GameUI : MonoBehaviour {
 				grid.CalculateMovementRange(currentCell,selectedUnit);
 				grid.CalculateTotalAttackRange(selectedUnit);
 				selectedUnit.SelectUnit();
+				GameController.unitUI.OpenPanel(selectedUnit);
 				//currentCell.IsSelected = true;
 			}
 		}
@@ -110,7 +111,7 @@ public class GameUI : MonoBehaviour {
 		selectedUnit = null;
 	}
 	
-
+	/* calculate the path the selected unit would take to reach the tile the cursor is on */
 	void DoPathfinding () {
 		if (UpdateCurrentCell()) {
 			if (currentCell /*&& selectedUnit.IsValidDestination(currentCell)*/) {
@@ -124,6 +125,7 @@ public class GameUI : MonoBehaviour {
 
 	void DoMove () {
 		if (grid.HasPath && !selectedUnit.isTraveling) {
+			GameController.unitUI.ClosePanel();
 			selectedUnit.Travel(grid.GetPath());
 			grid.ClearPath();
 			selectedUnit.HideDisplays();
@@ -137,7 +139,7 @@ public class GameUI : MonoBehaviour {
 				if(currentCell.Unit != null && currentCell.Unit != selectedUnit){
 					//do combat
 					
-					yield return selectedUnit.TurnToLookAt(currentCell.Position);
+					StartCoroutine(selectedUnit.TurnToLookAt(currentCell.Position));
 					CombatManager.StartCombat(selectedUnit,currentCell.Unit,1);
 					
 				}

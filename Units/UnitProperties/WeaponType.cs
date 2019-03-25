@@ -10,6 +10,24 @@ public enum WeaponType {
     Staff
 }
 
+public static class WeaponTypeExtensions {
+	static readonly string[] weaponTypeList = new string[]{
+		"None",
+		"Sword",
+		"Lance",
+		"Axe",
+		"Bow",
+		"Gun",
+		"Magic",
+		"Dagger",
+		"Staff"
+	};
+
+	public static string ToString(this WeaponType weaponType){
+		return weaponTypeList[(int)weaponType];
+	}
+}
+
 /*
 3 basic damage "types":
 slash (sword, magic)

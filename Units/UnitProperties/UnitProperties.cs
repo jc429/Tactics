@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 [System.Serializable]
@@ -7,11 +8,11 @@ public class UnitProperties : System.Object{
 	public MovementClass movementClass;
 	public WeaponType weaponType;
 	
-	[NamedArrayAttribute (GameProperties.statList)]
+	[NamedArrayAttribute (new string[] {"HP", "Str", "Skl", "Spd", "Def", "Res"})]
 	public int[] stats = new int[(int)CombatStat.Total];
-	[NamedArrayAttribute (GameProperties.statList)]
+	[NamedArrayAttribute (new string[] {"HP", "Str", "Skl", "Spd", "Def", "Res"})]
 	public int[] statBuffs = new int[(int)CombatStat.Total];
-	[NamedArrayAttribute (GameProperties.statList)]
+	[NamedArrayAttribute (new string[] {"HP", "Str", "Skl", "Spd", "Def", "Res"})]
 	public int[] statDebuffs = new int[(int)CombatStat.Total];
 
 	//which army unit is a member of
@@ -20,14 +21,13 @@ public class UnitProperties : System.Object{
 	/* returns with an attack range based on unit's weapon type */
 	public int AttackRange{
 		get{
-			if(weaponType == WeaponType.Sword || weaponType == weaponType.Lance || weaponType == weaponType.Axe){
+			if(weaponType == WeaponType.Sword || weaponType == WeaponType.Lance || weaponType == WeaponType.Axe){
 				return 1;
 			}
 			else{
 				return 2;
 			}
 		}
-		private set;
 	}
 
 	public UnitProperties(){
@@ -53,9 +53,16 @@ public class UnitProperties : System.Object{
 	/* returns a given stat with mods applied */
 	public int GetStat(CombatStat stat, bool ignoreBuffs = false, bool ignoreDebuffs = false){
 		return stats[(int)stat] 
-			+ ignoreBuffs ? statBuffs[(int)stat] : 0
-			+ ignoreDebuffs ? statDebuffs[(int)stat] : 0;
+			+ (ignoreBuffs ? statBuffs[(int)stat] : 0)
+			+ (ignoreDebuffs ? statDebuffs[(int)stat] : 0);
 	}
+
+	public int GetStat(int stat, bool ignoreBuffs = false, bool ignoreDebuffs = false){
+		return stats[stat] 
+			+ (ignoreBuffs ? statBuffs[(int)stat] : 0)
+			+ (ignoreDebuffs ? statDebuffs[(int)stat] : 0);
+	}
+
 
 	/* randomizes stats */
 	public void RandomizeStats(){

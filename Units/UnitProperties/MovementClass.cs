@@ -6,6 +6,14 @@ public enum MovementClass{
     Aquatic
 }
 
+public static class MovementClassExtensions {
+	static readonly string[] movTypeList = new string[]{"Infantry", "Cavalry", "Flying", "Heavy", "Aquatic"};
+
+	public static string ToString(this MovementClass movClass){
+		return movTypeList[(int)movClass];
+	}
+}
+
 /* 
 Movement classes:
 

@@ -7,7 +7,6 @@ public static class GameProperties
 {
 	public const bool DEBUG_INFINITE_ACTIONS = true;
 
-	public static string[] statList = new string{"HP", "Str", "Skl", "Spd", "Def", "Res"};
 
 	public static class UIColors{
 		public static Color HoverColor = Color.magenta;
@@ -18,12 +17,26 @@ public static class GameProperties
 		public static Color AttackRangeColor = Colors.GetColor(255,80,0);
 		public static Color AssistRangeColor = Colors.GetColor(80,220,0);
 	}
+
+	public static class Stats{
+		public static readonly string[] statList = new string[]{"HP", "Str", "Skl", "Spd", "Def", "Res"};
+
+		public static string GetStatString(CombatStat stat){
+			if(stat == CombatStat.Total){
+				return "Total";
+			}
+			return statList[(int)stat];
+		}
+	}
 	
 	public static class MovementProperties{
+
+		
+
+
 		public static readonly int[] ClassBaseMovement = new int[]
 		//	inf		cav		fly		hvy		aqua
 		{	4,		6,		4,		2,		6	};
-
 
 		static readonly int[,] ClassTerrainMovementCostMatrix = new int[,]
 		{
