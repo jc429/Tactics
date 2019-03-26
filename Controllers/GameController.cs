@@ -13,6 +13,7 @@ public class GameController : MonoBehaviour
 
 	public static HexGrid hexGrid;
 
+	public static GameUI gameUI;
 	public static UnitUI unitUI;
 
     void Awake(){

@@ -5,41 +5,71 @@ public class GameUI : MonoBehaviour {
 
 	public HexGrid grid;
 
+	public BasicMenu unitActionMenu;
+
 	//cell the mouse cursor is over
 	HexCell currentCell;
 
 	HexUnit selectedUnit;
+	//hex cell the unit started their turn in
+	HexCell startCell;
+	HexDirection startFacing;
+
+	void Awake(){
+		GameController.gameUI = this;
+	}
 
 	void Start(){
+		unitActionMenu.CloseMenu();
 	}
 
 	void Update () {
 		grid.StartMap();
 		if (!EventSystem.current.IsPointerOverGameObject()) {
 			if(selectedUnit != null){
-				if(selectedUnit.turnState == TurnState.PreMove){
+				switch(selectedUnit.turnState){
+				case TurnState.PreMove:
 					if (Input.GetMouseButtonDown(0)) {
 						DoMove();
+					}
+					else if(Input.GetMouseButtonDown(1)){
+						grid.ClearPath();
+						selectedUnit.turnState = TurnState.Idle;
+						DeselectUnit();
 					}
 					else{
 						DoPathfinding();
 					}
-				}
-				else if(selectedUnit.turnState == TurnState.PostMove){
+					break;
+				case TurnState.PostMove:
+					if(Input.GetMouseButtonDown(1)){
+						CancelUnitMovement();
+						selectedUnit.turnState = TurnState.PreMove;
+					}
+					break;
+				case TurnState.PreAttack:
 					if (Input.GetMouseButtonDown(0)) {
 						DoSelectTarget();
+					}
+					else if(Input.GetMouseButtonDown(1)){
+						CloseUnitAttackRange();
+						OpenUnitActionMenu();
 					}
 					else{
 						UpdateCurrentCell();
 					}
-				}
-				else if(selectedUnit.turnState == TurnState.Finished){
+					break;
+				case TurnState.Finished:
 					if (Input.GetMouseButtonDown(0)) {
 						DoSelectUnit();
 					}
 					else{
 						UpdateCurrentCell();
 					}
+					break;
+				default:
+					UpdateCurrentCell();
+					break;
 				}
 			}
 			else{
@@ -95,6 +125,8 @@ public class GameUI : MonoBehaviour {
 					return;
 				}
 				selectedUnit = unit;
+				startCell = unit.Location;
+				startFacing = unit.Facing;
 				grid.CalculateMovementRange(currentCell,selectedUnit);
 				grid.CalculateTotalAttackRange(selectedUnit);
 				selectedUnit.SelectUnit();
@@ -108,7 +140,18 @@ public class GameUI : MonoBehaviour {
 		if(selectedUnit){
 			selectedUnit.DeselectUnit();
 		}
+		unitActionMenu.CloseMenu();
+		GameController.unitUI.ClosePanel();
+	
 		selectedUnit = null;
+	}
+
+	void ReturnUnitToStart(){
+		if(selectedUnit){
+			selectedUnit.Location = startCell;
+			selectedUnit.Facing = startFacing;
+			selectedUnit.turnState = TurnState.PreMove;
+		}
 	}
 	
 	/* calculate the path the selected unit would take to reach the tile the cursor is on */
@@ -133,6 +176,26 @@ public class GameUI : MonoBehaviour {
 		}
 	}
 
+	public void OpenUnitActionMenu(){
+		unitActionMenu.OpenMenu();
+	}
+
+	public void OpenUnitAttackRange(){
+		if(selectedUnit != null && selectedUnit.localAttackTiles != null){
+			selectedUnit.MarkLocalAttackRange(true);
+			selectedUnit.turnState = TurnState.PreAttack;
+		}
+		unitActionMenu.CloseMenu();
+	}
+
+	void CloseUnitAttackRange(){
+		if(selectedUnit != null && selectedUnit.localAttackTiles != null){
+			selectedUnit.MarkLocalAttackRange(false);
+			selectedUnit.turnState = TurnState.PostMove;
+		}
+		unitActionMenu.OpenMenu();
+	}
+
 	void DoSelectTarget(){
 		if(selectedUnit != null && selectedUnit.localAttackTiles != null){
 			if(selectedUnit.localAttackTiles.Contains(currentCell)){
@@ -143,9 +206,28 @@ public class GameUI : MonoBehaviour {
 					CombatManager.StartCombat(selectedUnit,currentCell.Unit,1);
 					
 				}
-				selectedUnit.FinishAction();
-				DeselectUnit();
+				EndSelectedUnitTurn();
 			}
 		}
+	}
+
+	public void EndSelectedUnitTurn(){
+		if(selectedUnit == null){
+			return;
+		}
+		selectedUnit.FinishAction();
+		DeselectUnit();
+		unitActionMenu.CloseMenu();
+	}
+
+	public void CancelUnitMovement(){
+		if(selectedUnit == null){
+			return;
+		}
+		ReturnUnitToStart();
+		unitActionMenu.CloseMenu();
+		GameController.unitUI.OpenPanel(selectedUnit);
+		selectedUnit.MarkMovementRange(true);
+		selectedUnit.MarkAttackRange(true);
 	}
 }

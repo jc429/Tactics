@@ -154,7 +154,7 @@ public class HexUnit : MonoBehaviour {
 	}
 
 	/* marks all tiles within movement range as either true or false */
-	void MarkMovementRange(bool b){
+	public void MarkMovementRange(bool b){
 		if(moveTiles != null){
 			foreach(HexCell c in moveTiles){
 				c.InMovementRange = b;
@@ -163,7 +163,7 @@ public class HexUnit : MonoBehaviour {
 	}
 
 	/* marks all tiles within attack range as either true or false */
-	void MarkAttackRange(bool b){
+	public void MarkAttackRange(bool b){
 		if(attackTiles != null){
 			foreach(HexCell c in attackTiles){
 				c.InAttackRange = b;
@@ -172,7 +172,7 @@ public class HexUnit : MonoBehaviour {
 	}
 	
 	/* marks all tiles within attack range as either true or false */
-	void MarkLocalAttackRange(bool b){
+	public void MarkLocalAttackRange(bool b){
 		if(localAttackTiles != null){
 			foreach(HexCell c in localAttackTiles){
 				c.InAttackRange = b;
@@ -247,7 +247,7 @@ public class HexUnit : MonoBehaviour {
 		Facing = HexDirectionExtensions.HexDirectionFromDegrees(Mathf.RoundToInt(orientation));
 
 		isTraveling = false;
-		moveTiles.Clear();
+		//moveTiles.Clear();
 		ListPool<HexCell>.Add(pathToTravel);
 		pathToTravel = null;
 		FinishTravel();
@@ -277,12 +277,14 @@ public class HexUnit : MonoBehaviour {
 	void FinishTravel(){
 		turnState = TurnState.PostMove;
 		GameController.hexGrid.CalculateLocalAttackRange(Location,this);
-		MarkLocalAttackRange(true);
+		GameController.gameUI.OpenUnitActionMenu();
 	}
 
 	/* called after unit does combat or other actions */
 	public void FinishAction(){
 		turnState = TurnState.Finished;
+		//moveTiles.Clear();
+		//attackTiles.Clear();
 		DeselectUnit();
 		if(GameProperties.DEBUG_INFINITE_ACTIONS){
 			StartTurn();

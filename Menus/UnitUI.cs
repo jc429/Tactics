@@ -50,6 +50,7 @@ public class UnitUI : MonoBehaviour
 			for(int i = 0; i < statFields.Length; i++){
 				statFields[i].text = unit.Properties.GetStat(i).ToString();
 			}
+			statFields[0].text = unit.currentHP + "/" + unit.Properties.GetStat(CombatStat.HP).ToString();
 		}
 	}
 

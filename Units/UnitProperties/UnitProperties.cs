@@ -24,6 +24,9 @@ public class UnitProperties : System.Object{
 			if(weaponType == WeaponType.Sword || weaponType == WeaponType.Lance || weaponType == WeaponType.Axe){
 				return 1;
 			}
+			else if(weaponType == WeaponType.None){
+				return 0;
+			}
 			else{
 				return 2;
 			}
