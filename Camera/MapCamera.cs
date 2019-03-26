@@ -35,7 +35,7 @@ public class MapCamera : MonoBehaviour
 	}
 
 	void Start(){
-		AdjustZoom(0.5f);
+		AdjustZoom(0.15f);
 		
 		float xMax = (grid.cellCountX - 0.5f) * (2f * HexMetrics.innerRadius);
 		float zMax = (grid.cellCountZ - 1) * (1.5f * HexMetrics.outerRadius);
@@ -75,6 +75,16 @@ public class MapCamera : MonoBehaviour
 		swivel.localRotation = Quaternion.Euler(angle, 0f, 0f);
 	}
 
+	void SetZoom(float z){
+		zoom = Mathf.Clamp01(z);
+
+		float distance = Mathf.Lerp(stickMinZoom, stickMaxZoom, zoom);
+		stick.localPosition = new Vector3(0f, 0f, distance);
+
+		float angle = Mathf.Lerp(swivelMinZoom, swivelMaxZoom, zoom);
+		swivel.localRotation = Quaternion.Euler(angle, 0f, 0f);
+	}
+
 	/* Freely rotates the camera */
 	void AdjustRotation(float delta){
 		rotationAngle += delta * rotationSpeed * Time.deltaTime;
@@ -96,6 +106,17 @@ public class MapCamera : MonoBehaviour
 
 		Vector3 pos = transform.localPosition;
 		pos += distance * direction;
+		transform.localPosition = ClampPosition(pos);
+	}
+
+	void SetPosition(float xPos, float zPos){
+		Vector3 pos = transform.localPosition;
+		pos.x = xPos;
+		pos.z = zPos;
+		transform.localPosition = ClampPosition(pos);
+	}
+
+	void SetPosition(Vector3 pos){
 		transform.localPosition = ClampPosition(pos);
 	}
 
@@ -123,5 +144,11 @@ public class MapCamera : MonoBehaviour
 	/* Unlocks the camera */
 	public void UnlockCamera(){
 		locked = false;
+	}
+
+	public void ResetZoomAndCenterCamera(){
+		SetZoom(0.15f);
+		HexCell center = grid.GetCell(grid.GetCenterCoordinates());
+		SetPosition(center.Position);
 	}
 }

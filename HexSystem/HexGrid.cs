@@ -19,6 +19,8 @@ public class HexGrid : MonoBehaviour
 	MapShape mapShape = MapShape.Rect;
 	int mapRadius;		//for use with circular maps 
 	public int cellCountTotal = 0;
+	//where the center of the map is located
+	HexCoordinates centerCoords;	//x = half of radius, z = radius - 1 
 
     [SerializeField]
     HexCell cellPrefab;
@@ -75,6 +77,9 @@ public class HexGrid : MonoBehaviour
 		ClearPath();
 		ClearUnits();
 		mapShape = MapShape.Rect;
+		mapRadius = 0;
+		centerCoords = new HexCoordinates(sizeX / 2, sizeZ / 2);
+
 		if (
 			sizeX <= 0 || sizeX % HexMetrics.chunkSizeX != 0 ||
 			sizeZ <= 0 || sizeZ % HexMetrics.chunkSizeZ != 0
@@ -108,6 +113,7 @@ public class HexGrid : MonoBehaviour
 		ClearUnits();
 		mapShape = MapShape.Circle;
 		mapRadius = radius;
+		centerCoords = new HexCoordinates(radius / 2, radius - 1);
 		
 		if (chunks != null) {
 			for (int i = 0; i < chunks.Length; i++) {
@@ -379,6 +385,10 @@ public class HexGrid : MonoBehaviour
 		return null;
 	}
 
+	public HexCoordinates GetCenterCoordinates(){
+		return centerCoords;
+	}
+
 	/* show or hide the labels on each cell */
 	public void ShowUI (bool visible) {
 		for (int i = 0; i < chunks.Length; i++) {
@@ -467,7 +477,8 @@ public class HexGrid : MonoBehaviour
 		int unitAttackRange = unit.Properties.AttackRange;
 
 		if(unitAttackRange <= 0){
-			Debug.Log("Unit cannot attack!");
+			//Debug.Log("Unit cannot attack!");
+			return;
 		}
 
 		foreach(HexCell cell in unit.moveTiles){
@@ -737,6 +748,7 @@ public class HexGrid : MonoBehaviour
 	public void SaveGrid (BinaryWriter writer) {
 		writer.Write(cellCountX);
 		writer.Write(cellCountZ);
+		writer.Write(mapRadius);
 		for (int i = 0; i < cells.Length; i++) {
 			cells[i].SaveCell(writer);
 		}
@@ -758,6 +770,16 @@ public class HexGrid : MonoBehaviour
 				return;
 			}
 		}
+		
+		mapRadius = reader.ReadInt32();
+		if(mapRadius > 0){
+			mapShape = MapShape.Circle;
+			centerCoords = new HexCoordinates(mapRadius / 2, mapRadius - 1);
+		}
+		else{
+			mapShape = MapShape.Rect;
+			centerCoords = new HexCoordinates( x / 2, z / 2);
+		}
 
 		for (int i = 0; i < cells.Length; i++) {
 			cells[i].LoadCell(reader);
@@ -773,5 +795,7 @@ public class HexGrid : MonoBehaviour
 				HexUnit.Load(reader, this);
 			}
 		}
+
+		GameController.mapCamera.ResetZoomAndCenterCamera();
 	}
 }
