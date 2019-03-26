@@ -14,7 +14,7 @@ public class GameController : MonoBehaviour
 	public static HexGrid hexGrid;
 
 	public static GameUI gameUI;
-	public static UnitUI unitUI;
+	public static UnitInfoPanel unitInfoPanel;
 
     void Awake(){
         if (instance == null) {

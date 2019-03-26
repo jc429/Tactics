@@ -122,6 +122,7 @@ public class UnitProperties : System.Object{
 	public void Save (BinaryWriter writer) {
 		writer.Write((int)movementClass);
 		writer.Write((int)weaponType);
+		writer.Write(affiliation);
 		for(int i = 0; i < (int)CombatStat.Total; i++){
 			writer.Write(stats[i]);
 		}
@@ -130,6 +131,7 @@ public class UnitProperties : System.Object{
 	public void Load (BinaryReader reader) {
 		movementClass = (MovementClass)reader.ReadInt32();
 		weaponType = (WeaponType)reader.ReadInt32();
+		affiliation = reader.ReadInt32();
 		for(int i = 0; i < (int)CombatStat.Total; i++){
 			stats[i] = reader.ReadInt32();
 		}

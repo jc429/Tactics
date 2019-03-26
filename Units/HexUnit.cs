@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class HexUnit : MonoBehaviour {
 
+	UnitColor _unitColor;
+
 	public static HexUnit unitPrefab;
 
 	public UnitProperties Properties;
@@ -68,7 +70,9 @@ public class HexUnit : MonoBehaviour {
 		Properties = new UnitProperties();
 	}
 	
-
+	void Awake(){
+		_unitColor = GetComponent<UnitColor>();
+	}
 
 	void OnEnable () {
 		if (location) {
@@ -146,6 +150,12 @@ public class HexUnit : MonoBehaviour {
 		MarkMovementRange(false);
 		MarkAttackRange(false);
 		MarkLocalAttackRange(false);
+	}
+
+	/* set which army unit is a member of */
+	public void SetAffiliation(int aff){
+		Properties.affiliation = aff;
+		_unitColor.SetColor(Colors.ArmyColors.GetArmyColor(aff));
 	}
 
 	/* returns how far unit can move (currently entirely based on unit's class) */
@@ -324,6 +334,7 @@ public class HexUnit : MonoBehaviour {
 		HexDirection facing = (HexDirection)reader.ReadInt32();
 		HexUnit unit = Instantiate(unitPrefab);
 		unit.Properties.Load(reader);
+		unit.SetAffiliation(unit.Properties.affiliation);
 		grid.AddUnit(unit, grid.GetCell(coordinates), facing);
 	}
 }

@@ -227,19 +227,19 @@ public class HexCell : MonoBehaviour
 
 	public void RefreshHighlight(){
 		if(IsHoveredOn){
-			EnableHighlight(GameProperties.UIColors.HoverColor);
+			EnableHighlight(Colors.UIColors.HoverColor);
 		}
 		else if(IsSelected){
-			EnableHighlight(GameProperties.UIColors.StartColor);
+			EnableHighlight(Colors.UIColors.StartColor);
 		}
 		else if(OnMovementPath){
-			EnableHighlight(GameProperties.UIColors.PathColor);
+			EnableHighlight(Colors.UIColors.PathColor);
 		}
 		else if(InMovementRange){
-			EnableHighlight(GameProperties.UIColors.MoveRangeColor);
+			EnableHighlight(Colors.UIColors.MoveRangeColor);
 		}
 		else if(InAttackRange){
-			EnableHighlight(GameProperties.UIColors.AttackRangeColor);
+			EnableHighlight(Colors.UIColors.AttackRangeColor);
 		}
 		else{
 			DisableHighlight();

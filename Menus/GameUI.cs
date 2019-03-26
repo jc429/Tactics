@@ -2,7 +2,7 @@
 using UnityEngine.EventSystems;
 
 public class GameUI : MonoBehaviour {
-
+	
 	public HexGrid grid;
 
 	public BasicMenu unitActionMenu;
@@ -130,7 +130,7 @@ public class GameUI : MonoBehaviour {
 				grid.CalculateMovementRange(currentCell,selectedUnit);
 				grid.CalculateTotalAttackRange(selectedUnit);
 				selectedUnit.SelectUnit();
-				GameController.unitUI.OpenPanel(selectedUnit);
+				GameController.unitInfoPanel.OpenPanel(selectedUnit);
 				//currentCell.IsSelected = true;
 			}
 		}
@@ -141,7 +141,7 @@ public class GameUI : MonoBehaviour {
 			selectedUnit.DeselectUnit();
 		}
 		unitActionMenu.CloseMenu();
-		GameController.unitUI.ClosePanel();
+		GameController.unitInfoPanel.ClosePanel();
 	
 		selectedUnit = null;
 	}
@@ -168,7 +168,7 @@ public class GameUI : MonoBehaviour {
 
 	void DoMove () {
 		if (grid.HasPath && !selectedUnit.isTraveling) {
-			GameController.unitUI.ClosePanel();
+			GameController.unitInfoPanel.ClosePanel();
 			selectedUnit.Travel(grid.GetPath());
 			grid.ClearPath();
 			selectedUnit.HideDisplays();
@@ -226,7 +226,7 @@ public class GameUI : MonoBehaviour {
 		}
 		ReturnUnitToStart();
 		unitActionMenu.CloseMenu();
-		GameController.unitUI.OpenPanel(selectedUnit);
+		GameController.unitInfoPanel.OpenPanel(selectedUnit);
 		selectedUnit.MarkMovementRange(true);
 		selectedUnit.MarkAttackRange(true);
 	}

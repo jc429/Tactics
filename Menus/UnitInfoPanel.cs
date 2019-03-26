@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UnitUI : MonoBehaviour
+public class UnitInfoPanel : MonoBehaviour
 {
 	HexUnit currentUnit;
 
@@ -20,7 +20,7 @@ public class UnitUI : MonoBehaviour
 	public Text[] statFields;
 
 	void Awake(){
-		GameController.unitUI = this;
+		GameController.unitInfoPanel = this;
 		ClosePanel();
 	}
 
