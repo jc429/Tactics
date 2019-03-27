@@ -13,6 +13,7 @@ public class HexUnit : MonoBehaviour {
 	
 	public int currentHP;
 	public DynamicMeter hpBar;
+	public bool isDead;
 
 	//what this unit is currently doing
 	public TurnState turnState;
@@ -82,6 +83,12 @@ public class HexUnit : MonoBehaviour {
 	void OnEnable () {
 		if (location) {
 			transform.localPosition = location.Position;
+		}
+	}
+
+	void LateUpdate(){
+		if(isDead){
+			Destroy(gameObject);
 		}
 	}
 
@@ -304,6 +311,7 @@ public class HexUnit : MonoBehaviour {
 
 	public void ResetHP(){
 		currentHP = Properties.GetStat(CombatStat.HP);
+		hpBar.SetCurrentValue(currentHP);
 	}
 
 	/* damage received during combat -- returns true if unit dies */
@@ -318,10 +326,10 @@ public class HexUnit : MonoBehaviour {
 		return false;
 	}
 
-	/* unit cleanup */
+	/* preps unit for death */
 	public void Die () {
+		isDead = true;
 		location.Unit = null;
-		Destroy(gameObject);
 	}
 
 	/* save unit to file */

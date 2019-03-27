@@ -20,7 +20,7 @@ public class GameController : MonoBehaviour
 	public static PauseScreen pauseScreen;
 	public static bool gamePaused;
 
-	public Canvas hpBarCanvas;
+	public RectTransform hpBarCanvasParent;
 
     void Awake(){
         if (instance == null) {

@@ -9,6 +9,10 @@ public enum MovementClass{
 public static class MovementClassExtensions {
 	static readonly string[] movTypeList = new string[]{"Infantry", "Cavalry", "Flying", "Heavy", "Aquatic"};
 
+	public static int GetRange(this MovementClass movClass){
+		return GameProperties.MovementProperties.ClassBaseMovement[(int)movClass];
+	}
+
 	public static string ToString(this MovementClass movClass){
 		return movTypeList[(int)movClass];
 	}

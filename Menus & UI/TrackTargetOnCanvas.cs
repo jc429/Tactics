@@ -13,10 +13,10 @@ public class TrackTargetOnCanvas : MonoBehaviour
 
     void Awake(){
 		_rTransform = GetComponent<RectTransform>();
-		canvas = GameController.instance.hpBarCanvas.GetComponent<RectTransform>();
-		_rTransform.parent = canvas;
+		canvas = GameController.instance.hpBarCanvasParent;
+		_rTransform.SetParent(canvas);
 		_rTransform.localPosition = Vector2.zero;
-		_rTransform.localScale = Vector2.one;
+		_rTransform.localScale = Vector3.one;
 		_rTransform.localRotation = Quaternion.identity;
     }
 
@@ -27,6 +27,7 @@ public class TrackTargetOnCanvas : MonoBehaviour
 	
 	void TrackTarget(){
 		if(target == null){
+			Destroy(this.gameObject);
 			return;
 		}
 		Vector2 screenPosition = Camera.main.WorldToViewportPoint(target.position);

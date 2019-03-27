@@ -22,9 +22,6 @@ public static class GameProperties
 	
 	public static class MovementProperties{
 
-		
-
-
 		public static readonly int[] ClassBaseMovement = new int[]
 		//	inf		cav		fly		hvy		aqua
 		{	4,		6,		4,		2,		6	};

@@ -229,5 +229,6 @@ public class GameUI : MonoBehaviour {
 		GameController.unitInfoPanel.OpenPanel(selectedUnit);
 		selectedUnit.MarkMovementRange(true);
 		selectedUnit.MarkAttackRange(true);
+		grid.FindPath(selectedUnit.Location, currentCell, selectedUnit);
 	}
 }

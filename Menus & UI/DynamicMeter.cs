@@ -19,6 +19,7 @@ public class DynamicMeter : MonoBehaviour
 
 	public void SetMaxValue(float max){
 		maxValue = max;		
+		UpdateMeter();
 	}
 
 	public void SetCurrentValue(float value){
