@@ -508,7 +508,6 @@ public class HexGrid : MonoBehaviour
 		foreach(HexCell cell in unit.moveTiles){
 			CheckCellsWithinRange(cell,unit.attackTiles,unitAttackRange);
 		}
-
 	}
 
 	/* after we have moved, which tiles can a unit attack from where they're currently standing */
@@ -719,7 +718,7 @@ public class HexGrid : MonoBehaviour
 	}
 
 	/* add a new unit */
-	public void AddUnit (HexUnit unit, HexCell location, HexDirection direction) {
+	public void AddUnit (HexUnit unit, HexCell location, DodecDirection direction) {
 		units.Add(unit);
 		unit.transform.SetParent(transform, false);
 		unit.Location = location;

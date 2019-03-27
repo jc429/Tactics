@@ -201,7 +201,7 @@ public class HexMapEditor : MonoBehaviour
 	void CreateUnit () {
 		HexCell cell = GetCellUnderCursor();
 		if (cell && !cell.Unit) {
-			hexGrid.AddUnit(Instantiate(HexUnit.unitPrefab), cell, HexDirectionExtensions.RandomDirection()); 
+			hexGrid.AddUnit(Instantiate(HexUnit.unitPrefab), cell, HexDirectionExtensions.RandomDirection().ConvertTo12Direction()); 
 		}
 	}
 

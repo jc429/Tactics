@@ -13,7 +13,7 @@ public class GameUI : MonoBehaviour {
 	HexUnit selectedUnit;
 	//hex cell the unit started their turn in
 	HexCell startCell;
-	HexDirection startFacing;
+	DodecDirection startFacing;
 
 	void Awake(){
 		GameController.gameUI = this;

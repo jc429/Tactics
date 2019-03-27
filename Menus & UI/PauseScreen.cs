@@ -4,17 +4,20 @@ using UnityEngine;
 
 public class PauseScreen : MonoBehaviour
 {
+	[SerializeField]
+	GameObject screen;
+
     void Awake(){
 		GameController.pauseScreen = this;
 	}
 
 
 	public void ActivatePauseScreen(){
-		gameObject.SetActive(true);
+		screen.SetActive(true);
 	}
 
 	public void DeactivatePauseScreen(){
-		gameObject.SetActive(false);
+		screen.SetActive(false);
 	}
 
 }

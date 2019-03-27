@@ -4,6 +4,7 @@ public enum HexDirection {
 	NE, E, SE, SW, W, NW
 }
 
+
 public static class HexDirectionExtensions {
 	public static HexDirection Opposite (this HexDirection direction) {
 		return (int)direction < 3 ? (direction + 3) : (direction - 3);
@@ -42,5 +43,9 @@ public static class HexDirectionExtensions {
 
 	public static HexDirection RandomDirection(){
 		return (HexDirection)Mathf.FloorToInt(Random.Range(0,6));
+	}
+
+	public static DodecDirection ConvertTo12Direction(this HexDirection direction){
+		return (DodecDirection)((int)direction * 2);
 	}
 }

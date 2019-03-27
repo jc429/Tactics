@@ -42,8 +42,8 @@ public class HexUnit : MonoBehaviour {
 	}
 
 	// hex direction unit is facing
-	HexDirection facing;
-	public HexDirection Facing {
+	DodecDirection facing;
+	public DodecDirection Facing {
 		get {	return facing;	}
 		set {
 			facing = value;
@@ -255,7 +255,7 @@ public class HexUnit : MonoBehaviour {
 		transform.localPosition = location.Position;
 		orientation = transform.localRotation.eulerAngles.y;
 		// set facing
-		Facing = HexDirectionExtensions.HexDirectionFromDegrees(Mathf.RoundToInt(orientation));
+		Facing = DodecDirectionExtensions.DodecDirectionFromDegrees(Mathf.RoundToInt(orientation));
 
 		isTraveling = false;
 		//moveTiles.Clear();
@@ -281,7 +281,7 @@ public class HexUnit : MonoBehaviour {
 
 		transform.LookAt(point);
 		orientation = transform.localRotation.eulerAngles.y;
-		Facing = HexDirectionExtensions.HexDirectionFromDegrees(Mathf.RoundToInt(orientation));
+		Facing = DodecDirectionExtensions.DodecDirectionFromDegrees(Mathf.RoundToInt(orientation));
 	}
 
 	/* called after unit moves to destination */
@@ -333,7 +333,7 @@ public class HexUnit : MonoBehaviour {
 
 	public static void Load (BinaryReader reader, HexGrid grid) {
 		HexCoordinates coordinates = HexCoordinates.Load(reader);
-		HexDirection facing = (HexDirection)reader.ReadInt32();
+		DodecDirection facing = (DodecDirection)reader.ReadInt32();
 		HexUnit unit = Instantiate(unitPrefab);
 		unit.Properties.Load(reader);
 		unit.SetAffiliation(unit.Properties.affiliation);
