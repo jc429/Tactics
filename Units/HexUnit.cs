@@ -115,8 +115,6 @@ public class HexUnit : MonoBehaviour {
 		ResetHP();
 		GameController.hexGrid.CalculateMovementRange(location, this);
 		GameController.hexGrid.CalculateTotalAttackRange(this);
-		
-		//Debug.Log(attackTiles.Count);
 	}
 
 	/* handles prepping the unit during the start of their turn */

@@ -506,40 +506,7 @@ public class HexGrid : MonoBehaviour
 		}
 
 		foreach(HexCell cell in unit.moveTiles){
-			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
-				if(unitAttackRange == 1){
-					//melee attack range is easy
-					HexCell neighbor = cell.GetNeighbor(d);
-					if(neighbor != null){
-						if(!unit.attackTiles.Contains(neighbor)){
-							unit.attackTiles.Add(neighbor);
-						}
-					}
-				}
-				if(unitAttackRange == 2){
-					HexCell neighbor = cell.GetNeighbor(d);
-					if(neighbor != null){
-						HexCell neighbor2 = neighbor.GetNeighbor(d);
-						if(neighbor2 != null){
-							if(!unit.attackTiles.Contains(neighbor2)){
-								unit.attackTiles.Add(neighbor2);
-							}
-						}
-						neighbor2 = neighbor.GetNeighbor(d.Next());
-						if(neighbor2 != null){
-							if(!unit.attackTiles.Contains(neighbor2)){
-								unit.attackTiles.Add(neighbor2);
-							}
-						}
-						neighbor2 = neighbor.GetNeighbor(d.Previous());
-						if(neighbor2 != null){
-							if(!unit.attackTiles.Contains(neighbor2)){
-								unit.attackTiles.Add(neighbor2);
-							}
-						}
-					}
-				}
-			}
+			CheckCellsWithinRange(cell,unit.attackTiles,unitAttackRange);
 		}
 
 	}
@@ -563,41 +530,46 @@ public class HexGrid : MonoBehaviour
 			Debug.Log("Unit cannot attack!");
 		}
 
+		CheckCellsWithinRange(cell,unit.localAttackTiles,unitAttackRange);
+
+	}
+
+	/* takes all cells within range of a given cell and appends them to a list (works for 1 or 2 range) */
+	void CheckCellsWithinRange(HexCell sourceCell, List<HexCell> validList, int range){
 		for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
-			if(unitAttackRange == 1){
+			if(range == 1){
 				//melee attack range is easy
-				HexCell neighbor = cell.GetNeighbor(d);
+				HexCell neighbor = sourceCell.GetNeighbor(d);
 				if(neighbor != null){
-					if(!unit.localAttackTiles.Contains(neighbor)){
-						unit.localAttackTiles.Add(neighbor);
+					if(!validList.Contains(neighbor)){
+						validList.Add(neighbor);
 					}
 				}
 			}
-			if(unitAttackRange == 2){
-				HexCell neighbor = cell.GetNeighbor(d);
+			if(range == 2){
+				HexCell neighbor = sourceCell.GetNeighbor(d);
 				if(neighbor != null){
 					HexCell neighbor2 = neighbor.GetNeighbor(d);
 					if(neighbor2 != null){
-						if(!unit.localAttackTiles.Contains(neighbor2)){
-							unit.localAttackTiles.Add(neighbor2);
+						if(!validList.Contains(neighbor2)){
+							validList.Add(neighbor2);
 						}
 					}
 					neighbor2 = neighbor.GetNeighbor(d.Next());
 					if(neighbor2 != null){
-						if(!unit.localAttackTiles.Contains(neighbor2)){
-							unit.localAttackTiles.Add(neighbor2);
+						if(!validList.Contains(neighbor2)){
+							validList.Add(neighbor2);
 						}
 					}
 					neighbor2 = neighbor.GetNeighbor(d.Previous());
 					if(neighbor2 != null){
-						if(!unit.localAttackTiles.Contains(neighbor2)){
-							unit.localAttackTiles.Add(neighbor2);
+						if(!validList.Contains(neighbor2)){
+							validList.Add(neighbor2);
 						}
 					}
 				}
 			}
 		}
-
 	}
 
 	/* finds a direct path between two tiles */
