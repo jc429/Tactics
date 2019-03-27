@@ -146,6 +146,7 @@ public class MapCamera : MonoBehaviour
 		locked = false;
 	}
 
+	/* puts the camera in a default state, usually after reloading a map */
 	public void ResetZoomAndCenterCamera(){
 		SetZoom(0.15f);
 		HexCell center = grid.GetCell(grid.GetCenterCoordinates());

@@ -95,11 +95,11 @@ public class GameUI : MonoBehaviour {
 		HexCell cell = grid.GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
 		if (cell != currentCell) {
 			if(currentCell != null){
-				currentCell.IsHoveredOn = false;
+				currentCell.colorFlags.IsHoveredOn = false;
 			}
 			currentCell = cell;
 			if(currentCell != null){
-				currentCell.IsHoveredOn = true;
+				currentCell.colorFlags.IsHoveredOn = true;
 			}
 			return true;
 		}
@@ -115,7 +115,7 @@ public class GameUI : MonoBehaviour {
 			selectedUnit.DeselectUnit();
 		}
 		if(currentCell != null){
-			currentCell.IsSelected = false;
+			currentCell.colorFlags.IsSelected = false;
 		}
 		UpdateCurrentCell();
 		if (currentCell) {

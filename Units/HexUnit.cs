@@ -12,6 +12,7 @@ public class HexUnit : MonoBehaviour {
 	public UnitProperties Properties;
 	
 	public int currentHP;
+	public DynamicMeter hpBar;
 
 	//what this unit is currently doing
 	public TurnState turnState;
@@ -74,12 +75,14 @@ public class HexUnit : MonoBehaviour {
 		_unitColor = GetComponent<UnitColor>();
 	}
 
+	void Start(){
+		hpBar.SetMaxValue(Properties.GetStat(CombatStat.HP));
+	}
+
 	void OnEnable () {
 		if (location) {
 			transform.localPosition = location.Position;
-			
 		}
-
 	}
 
 
@@ -167,7 +170,7 @@ public class HexUnit : MonoBehaviour {
 	public void MarkMovementRange(bool b){
 		if(moveTiles != null){
 			foreach(HexCell c in moveTiles){
-				c.InMovementRange = b;
+				c.colorFlags.InMovementRange = b;
 			}
 		}
 	}
@@ -176,7 +179,7 @@ public class HexUnit : MonoBehaviour {
 	public void MarkAttackRange(bool b){
 		if(attackTiles != null){
 			foreach(HexCell c in attackTiles){
-				c.InAttackRange = b;
+				c.colorFlags.InAttackRange = b;
 			}
 		}
 	}
@@ -185,7 +188,7 @@ public class HexUnit : MonoBehaviour {
 	public void MarkLocalAttackRange(bool b){
 		if(localAttackTiles != null){
 			foreach(HexCell c in localAttackTiles){
-				c.InAttackRange = b;
+				c.colorFlags.InAttackRange = b;
 			}
 		}
 	}
@@ -308,6 +311,7 @@ public class HexUnit : MonoBehaviour {
 	/* damage received during combat -- returns true if unit dies */
 	public bool TakeDamage(int dmg){
 		currentHP -= dmg;
+		hpBar.SetCurrentValue(currentHP);
 		if (currentHP <= 0){
 			currentHP = 0;
 			Die();
@@ -336,5 +340,6 @@ public class HexUnit : MonoBehaviour {
 		unit.Properties.Load(reader);
 		unit.SetAffiliation(unit.Properties.affiliation);
 		grid.AddUnit(unit, grid.GetCell(coordinates), facing);
+
 	}
 }

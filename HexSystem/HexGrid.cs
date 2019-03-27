@@ -396,6 +396,35 @@ public class HexGrid : MonoBehaviour
 		}
 	}
 
+	/* returns true if a given unit can enter a given tile */
+	bool CheckValidCellEntry(HexCell cell, HexUnit unit){
+		if(cell == null || unit == null){
+			return false;
+		}
+		if(cell.Unit != null){
+			return false;
+		}
+		if(cell.IsUnderwater 
+		&& (unit.Properties.movementClass != MovementClass.Flying
+			&& unit.Properties.movementClass != MovementClass.Aquatic
+		)){
+			return false;
+		}
+		return true;
+	}
+
+	/* returns true if a given unit can cross a cell boundary */
+	bool CheckValidBoundaryCrossing(HexCell cell, HexCell neighbor, HexUnit unit){
+		if(cell == null || neighbor == null || unit == null){
+			return false;
+		}
+		if (cell.GetEdgeType(neighbor) == HexEdgeType.Cliff) {
+			return false;
+		}
+		return true;
+	}
+
+
 	/* calculates all possible cells that can be reached by a given unit from a given tile */
 	public void CalculateMovementRange(HexCell start, HexUnit unit){
 		if(unit == null){
@@ -423,13 +452,10 @@ public class HexGrid : MonoBehaviour
 
 			for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
 				HexCell neighbor = current.GetNeighbor(d);
-				if (neighbor == null){
+				if(!CheckValidCellEntry(neighbor,unit)){
 					continue;
 				}
-				if (neighbor.IsUnderwater || neighbor.Unit != null) {
-					continue;
-				}
-				if (current.GetEdgeType(neighbor) == HexEdgeType.Cliff) {
+				if(!CheckValidBoundaryCrossing(current,neighbor,unit)){
 					continue;
 				}
 				
@@ -457,8 +483,6 @@ public class HexGrid : MonoBehaviour
 				
 			}
 		}
-
-		
 	}
 
 	/* all tiles a unit can attack from their starting tile */
@@ -623,10 +647,10 @@ public class HexGrid : MonoBehaviour
 				if (neighbor == null || neighbor.SearchPhase > searchFrontierPhase) {
 					continue;
 				}
-				if (neighbor.IsUnderwater || neighbor.Unit) {
+				if(!CheckValidCellEntry(neighbor,unit)){
 					continue;
 				}
-				if (current.GetEdgeType(neighbor) == HexEdgeType.Cliff) {
+				if(!CheckValidBoundaryCrossing(current,neighbor,unit)){
 					continue;
 				}
 
@@ -661,7 +685,7 @@ public class HexGrid : MonoBehaviour
 
 	/* display the found path */
 	void ShowPath () {
-		currentPathFrom.OnMovementPath = true;
+		currentPathFrom.colorFlags.OnMovementPath = true;
 		if(currentPathFrom == currentPathTo){
 			return;
 		}
@@ -679,12 +703,12 @@ public class HexGrid : MonoBehaviour
 			HexCell current = currentPathTo;
 			while (current != currentPathFrom) {
 				current.SetLabel(current.DistanceToCell.ToString());
-				current.OnMovementPath = true;
+				current.colorFlags.OnMovementPath = true;
 				current = current.PathParent;
 			}
 		}
-		currentPathFrom.OnMovementPath = true;
-		currentPathTo.OnMovementPath = true;
+		currentPathFrom.colorFlags.OnMovementPath = true;
+		currentPathTo.colorFlags.OnMovementPath = true;
 	}
 
 	/* clear current path */
@@ -693,17 +717,17 @@ public class HexGrid : MonoBehaviour
 			HexCell current = currentPathTo;
 			while (current != currentPathFrom) {
 				current.SetLabel(null);
-				current.OnMovementPath = false;
+				current.colorFlags.OnMovementPath = false;
 				current = current.PathParent;
 			}
-			current.OnMovementPath = false;
+			current.colorFlags.OnMovementPath = false;
 			currentPathExists = false;
 		}
 		else if (currentPathFrom != null) {
-			currentPathFrom.OnMovementPath = false;
-			currentPathTo.OnMovementPath = false;
-			currentPathFrom.IsSelected = false;
-			currentPathTo.IsSelected = false;
+			currentPathFrom.colorFlags.OnMovementPath = false;
+			currentPathTo.colorFlags.OnMovementPath = false;
+			currentPathFrom.colorFlags.IsSelected = false;
+			currentPathTo.colorFlags.IsSelected = false;
 		}
 		currentPathFrom = currentPathTo = null;
 	}

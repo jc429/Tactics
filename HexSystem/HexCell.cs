@@ -38,43 +38,71 @@ public class HexCell : MonoBehaviour
 	//unit residing in this cell
 	public HexUnit Unit { get; set; }
 
-	bool isHoveredOn, isSelected, onMovementPath, inMovementRange, inAttackRange;
+	public struct ColorFlags{
+		HexCell cell;
+		bool isHoveredOn; 
+		bool isSelected; 
+		bool onMovementPath; 
+		bool inMovementRange;
+		bool inAttackRange;
+		bool inAssistRange;
 
-	public bool IsHoveredOn{
-		get{ return isHoveredOn; }
-		set{
-			isHoveredOn = value;
-			RefreshHighlight();
+		public ColorFlags(HexCell parent){
+			cell = parent;
+			isHoveredOn = isSelected = onMovementPath = inMovementRange = inAttackRange = inAssistRange = false;
 		}
+
+		public bool IsHoveredOn{
+			get{ return isHoveredOn; }
+			set{
+				isHoveredOn = value;
+				cell.RefreshHighlight();
+			}
+		}
+		public bool IsSelected{
+			get{ return isSelected; }
+			set{
+				isSelected = value;
+				cell.RefreshHighlight();
+			}
+		} 
+		public bool OnMovementPath{
+			get{ return onMovementPath; }
+			set{
+				onMovementPath = value;
+				cell.RefreshHighlight();
+			}
+		} 
+		public bool InMovementRange{
+			get{ return inMovementRange; }
+			set{
+				inMovementRange = value;
+				cell.RefreshHighlight();
+			}
+		} 
+		public bool InAttackRange{
+			get{ return inAttackRange; }
+			set{
+				inAttackRange = value;
+				cell.RefreshHighlight();
+			}
+		} 
+		public bool InAssistRange{
+			get{ return inAssistRange; }
+			set{
+				inAssistRange = value;
+				cell.RefreshHighlight();
+			}
+		} 
+		public void Clear(){
+			isHoveredOn = isSelected = onMovementPath = inMovementRange = inAttackRange = inAssistRange = false;
+		}
+
+
 	}
-	public bool IsSelected{
-		get{ return isSelected; }
-		set{
-			isSelected = value;
-			RefreshHighlight();
-		}
-	} 
-	public bool OnMovementPath{
-		get{ return onMovementPath; }
-		set{
-			onMovementPath = value;
-			RefreshHighlight();
-		}
-	} 
-	public bool InMovementRange{
-		get{ return inMovementRange; }
-		set{
-			inMovementRange = value;
-			RefreshHighlight();
-		}
-	} 
-	public bool InAttackRange{
-		get{ return inAttackRange; }
-		set{
-			inAttackRange = value;
-			RefreshHighlight();
-		}
-	} 
+	public ColorFlags colorFlags;
+
+	
 
 	/* Position of cell */
 	public Vector3 Position {
@@ -192,6 +220,11 @@ public class HexCell : MonoBehaviour
 	/* linked list of cells sharing a priority level */
 	public HexCell NextWithSamePriority { get; set; }
 
+
+	public HexCell(){
+		colorFlags = new ColorFlags(this);
+	}
+
 	
     // Start is called before the first frame update
     void Start()
@@ -210,12 +243,8 @@ public class HexCell : MonoBehaviour
 	/* turns off cell highlight */
 	public void DisableHighlight () {
 		Image highlight = uiRect.GetChild(0).GetComponent<Image>();
+		colorFlags.Clear();
 		highlight.enabled = false;
-		isHoveredOn = false;
-		isSelected = false;
-		onMovementPath = false;
-		inMovementRange = false;
-		inAttackRange = false;
 	}
 	
 	/* turns on cell highlight and sets its color */
@@ -225,21 +254,25 @@ public class HexCell : MonoBehaviour
 		highlight.enabled = true;
 	}
 
+	/* refreshes the cell's highlight so changes take place */
 	public void RefreshHighlight(){
-		if(IsHoveredOn){
+		if(colorFlags.IsHoveredOn){
 			EnableHighlight(Colors.UIColors.HoverColor);
 		}
-		else if(IsSelected){
+		else if(colorFlags.IsSelected){
 			EnableHighlight(Colors.UIColors.StartColor);
 		}
-		else if(OnMovementPath){
+		else if(colorFlags.OnMovementPath){
 			EnableHighlight(Colors.UIColors.PathColor);
 		}
-		else if(InMovementRange){
+		else if(colorFlags.InMovementRange){
 			EnableHighlight(Colors.UIColors.MoveRangeColor);
 		}
-		else if(InAttackRange){
+		else if(colorFlags.InAttackRange){
 			EnableHighlight(Colors.UIColors.AttackRangeColor);
+		}
+		else if(colorFlags.InAssistRange){
+			EnableHighlight(Colors.UIColors.AssistRangeColor);
 		}
 		else{
 			DisableHighlight();
