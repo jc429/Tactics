@@ -212,16 +212,16 @@ public class GameUI : MonoBehaviour {
 					CombatManager.StartCombat(selectedUnit,currentCell.Unit,1);
 					
 				}
-				EndSelectedUnitTurn();
+				EndSelectedUnitAction();
 			}
 		}
 	}
 
-	public void EndSelectedUnitTurn(){
+	public void EndSelectedUnitAction(){
 		if(selectedUnit == null){
 			return;
 		}
-		selectedUnit.EndTurn();
+		selectedUnit.EndAction();
 		DeselectCurrentUnit();
 		unitActionMenu.CloseMenu();
 	}

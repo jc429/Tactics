@@ -131,17 +131,26 @@ public class HexUnit : MonoBehaviour {
 	}
 
 	/* called after unit does combat or other actions */
-	public void EndTurn(){
+	public void EndAction(){
 		turnState = TurnState.Finished;
 		DeselectUnit();
 		_unitColor.SetColor(Colors.ArmyColors.GetArmyColor(0));
 		if(GameProperties.DEBUG_INFINITE_ACTIONS){
 			StartTurn();
 		}
+		else{
+			TurnManager.CheckPhase();
+		}
 	}
-
+	
 	public bool IsFinished(){
 		return turnState == TurnState.Finished;
+	}
+
+	/* handles cleanup when the entire army's turn is over */
+	public void EndTurn(){
+		turnState = TurnState.Finished;
+		_unitColor.SetColor(Colors.ArmyColors.GetArmyColor(Properties.affiliation));
 	}
 
 	/* selection  */

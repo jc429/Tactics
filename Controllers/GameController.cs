@@ -30,14 +30,25 @@ public class GameController : MonoBehaviour
 		else if(instance != this) {
 			Destroy(this.gameObject);
 		}
+		InitializeGame();
     }
 
-	public void Start(){
+	void Start(){
 		SetGamePaused(false);
 	}
 
+	void Update(){
+		if(Input.GetKeyDown(KeyCode.Space)){
+			StartGame();
+		}
+	}
+
+	void InitializeGame(){
+		ArmyManager.Initialize();
+	}
+
 	public void StartGame(){
-		ArmyManager.ClearAllArmies();
+		ArmyManager.SetAllUnitsToFinished();
 		TurnManager.StartGame();
 	}
 
