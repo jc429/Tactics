@@ -8,7 +8,6 @@ public static class GameProperties
 	public const bool DEBUG_INFINITE_ACTIONS = true;
 
 
-
 	public static class Stats{
 		public static readonly string[] statList = new string[]{"HP", "Str", "Skl", "Spd", "Def", "Res"};
 
@@ -24,7 +23,7 @@ public static class GameProperties
 
 		public static readonly int[] ClassBaseMovement = new int[]
 		//	inf		cav		fly		hvy		aqua
-		{	4,		6,		4,		2,		6	};
+		{	4,		6,		4,		3,		6	};
 
 		static readonly int[,] ClassTerrainMovementCostMatrix = new int[,]
 		{

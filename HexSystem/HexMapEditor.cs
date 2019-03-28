@@ -9,6 +9,9 @@ public class HexMapEditor : MonoBehaviour
     [SerializeField]
     HexGrid hexGrid;
     
+	[SerializeField]
+	GameObject editorPanel;
+
     public Material terrainMaterial;
 
 	/* tools for detecting click + drag inputs */
@@ -40,6 +43,7 @@ public class HexMapEditor : MonoBehaviour
     void Awake () {
 		terrainMaterial.DisableKeyword("GRID_ON");
 		SetEditMode(false);
+		SetEditorPanelActive(false);
 	}
 
     // Update is called once per frame
@@ -124,6 +128,10 @@ public class HexMapEditor : MonoBehaviour
 		//editMode = toggle;
 		//hexGrid.ShowUI(!toggle);
 		enabled = toggle;
+	}
+
+	public void SetEditorPanelActive(bool toggle){
+		editorPanel.SetActive(toggle);
 	}
 
 	public void SetTerrainTypeIndex (int index) {

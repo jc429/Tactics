@@ -36,6 +36,11 @@ public class GameController : MonoBehaviour
 		SetGamePaused(false);
 	}
 
+	public void StartGame(){
+		ArmyManager.ClearAllArmies();
+		TurnManager.StartGame();
+	}
+
 	public void SetGamePaused(bool pause){
 		gamePaused = pause;
 		if(gamePaused){

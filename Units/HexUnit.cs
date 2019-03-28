@@ -127,10 +127,22 @@ public class HexUnit : MonoBehaviour {
 	/* handles prepping the unit during the start of their turn */
 	public void StartTurn(){
 		turnState = TurnState.Idle;
+		_unitColor.SetColor(Colors.ArmyColors.GetArmyColor(Properties.affiliation));
 	}
 
+	/* called after unit does combat or other actions */
+	public void EndTurn(){
+		turnState = TurnState.Finished;
+		DeselectUnit();
+		_unitColor.SetColor(Colors.ArmyColors.GetArmyColor(0));
+		if(GameProperties.DEBUG_INFINITE_ACTIONS){
+			StartTurn();
+		}
+	}
 
-
+	public bool IsFinished(){
+		return turnState == TurnState.Finished;
+	}
 
 	/* selection  */
 	public void SelectUnit(){
@@ -162,8 +174,11 @@ public class HexUnit : MonoBehaviour {
 
 	/* set which army unit is a member of */
 	public void SetAffiliation(int aff){
+		ArmyManager.RemoveUnitFromArmy(this, Properties.affiliation);
+		ArmyManager.AssignUnitToArmy(this, aff);
 		Properties.affiliation = aff;
 		_unitColor.SetColor(Colors.ArmyColors.GetArmyColor(aff));
+		
 	}
 
 	/* returns how far unit can move (currently entirely based on unit's class) */
@@ -298,16 +313,6 @@ public class HexUnit : MonoBehaviour {
 		GameController.gameUI.OpenUnitActionMenu();
 	}
 
-	/* called after unit does combat or other actions */
-	public void FinishAction(){
-		turnState = TurnState.Finished;
-		//moveTiles.Clear();
-		//attackTiles.Clear();
-		DeselectUnit();
-		if(GameProperties.DEBUG_INFINITE_ACTIONS){
-			StartTurn();
-		}
-	}
 
 	public void ResetHP(){
 		currentHP = Properties.GetStat(CombatStat.HP);

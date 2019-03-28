@@ -35,7 +35,7 @@ public class GameUI : MonoBehaviour {
 					else if(Input.GetMouseButtonDown(1)){
 						grid.ClearPath();
 						selectedUnit.turnState = TurnState.Idle;
-						DeselectUnit();
+						DeselectCurrentUnit();
 					}
 					else{
 						DoPathfinding();
@@ -112,7 +112,7 @@ public class GameUI : MonoBehaviour {
 			if(selectedUnit.isTraveling){
 				return;
 			}
-			selectedUnit.DeselectUnit();
+			DeselectCurrentUnit();
 		}
 		if(currentCell != null){
 			currentCell.colorFlags.IsSelected = false;
@@ -136,7 +136,7 @@ public class GameUI : MonoBehaviour {
 		}
 	}
 
-	public void DeselectUnit(){
+	public void DeselectCurrentUnit(){
 		if(selectedUnit){
 			selectedUnit.DeselectUnit();
 		}
@@ -172,7 +172,13 @@ public class GameUI : MonoBehaviour {
 			selectedUnit.Travel(grid.GetPath());
 			grid.ClearPath();
 			selectedUnit.HideDisplays();
-
+		}
+		else if(currentCell.Unit == selectedUnit){
+			grid.ClearPath();
+			selectedUnit.HideDisplays();
+			selectedUnit.turnState = TurnState.PostMove;
+			GameController.hexGrid.CalculateLocalAttackRange(currentCell,selectedUnit);
+			OpenUnitActionMenu();
 		}
 	}
 
@@ -215,8 +221,8 @@ public class GameUI : MonoBehaviour {
 		if(selectedUnit == null){
 			return;
 		}
-		selectedUnit.FinishAction();
-		DeselectUnit();
+		selectedUnit.EndTurn();
+		DeselectCurrentUnit();
 		unitActionMenu.CloseMenu();
 	}
 

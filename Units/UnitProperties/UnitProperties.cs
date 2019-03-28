@@ -41,7 +41,6 @@ public class UnitProperties : System.Object{
 		}
 	}
 
-
 	/* sets a stat to the desired stat */
 	public void SetStat(CombatStat stat, int amount){
 		amount = Mathf.Clamp(amount,0,99);
@@ -65,7 +64,6 @@ public class UnitProperties : System.Object{
 			+ (ignoreBuffs ? statBuffs[(int)stat] : 0)
 			+ (ignoreDebuffs ? statDebuffs[(int)stat] : 0);
 	}
-
 
 	/* randomizes stats */
 	public void RandomizeStats(){
@@ -115,8 +113,6 @@ public class UnitProperties : System.Object{
 		ClearBuffs();
 		ClearDebuffs();
 	}
-
-
 	
 	/* save unit properties to file */
 	public void Save (BinaryWriter writer) {
