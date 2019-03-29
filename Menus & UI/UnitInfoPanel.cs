@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class UnitInfoPanel : MonoBehaviour
 {
@@ -12,14 +13,14 @@ public class UnitInfoPanel : MonoBehaviour
 	[SerializeField]
 	GameObject panel; 
 	[SerializeField]
-	Text unitName;
+	TextMeshProUGUI unitName;
 	[SerializeField]
-	Text unitMoveType, unitWeaponType, unitMoveRange, unitWeaponRange;
+	TextMeshProUGUI unitMoveType, unitWeaponType, unitMoveRange, unitWeaponRange;
 	[SerializeField]
 	DynamicMeter hpMeter, specialMeter;
 
 	[NamedArrayAttribute (new string[] {"HP", "Str", "Skl", "Spd", "Def", "Res"})]
-	public Text[] statFields;
+	public TextMeshProUGUI[] statFields;
 
 	void Awake(){
 		GameController.unitInfoPanel = this;

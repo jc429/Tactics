@@ -7,6 +7,7 @@ public class GameController : MonoBehaviour
 	[SerializeField]
 	public static bool DEBUG_MODE = true;
 
+	
 	//the active instance of the game manager
 	public static GameController instance;			
 
@@ -22,6 +23,8 @@ public class GameController : MonoBehaviour
 
 	public RectTransform hpBarCanvasParent;
 
+	static bool gameStarted = false;
+
     void Awake(){
         if (instance == null) {
 			instance = this;
@@ -35,19 +38,22 @@ public class GameController : MonoBehaviour
 
 	void Start(){
 		SetGamePaused(false);
+		StartGame();
 	}
 
 	void Update(){
-		if(Input.GetKeyDown(KeyCode.Space)){
+		if(!gameStarted && Input.GetKeyDown(KeyCode.Space)){
 			StartGame();
 		}
 	}
 
-	void InitializeGame(){
+	public void InitializeGame(){
+		gameStarted = false;
 		ArmyManager.Initialize();
 	}
 
 	public void StartGame(){
+		gameStarted = true;
 		ArmyManager.SetAllUnitsToFinished();
 		TurnManager.StartGame();
 	}

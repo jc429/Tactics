@@ -2,6 +2,7 @@
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class SaveLoadMenu : MonoBehaviour {
 
@@ -11,7 +12,8 @@ public class SaveLoadMenu : MonoBehaviour {
 
 	public HexGrid hexGrid;
 
-	public Text menuLabel, actionButtonLabel;
+	public TextMeshProUGUI menuLabel;
+	public Text actionButtonLabel;
 
 	public InputField nameInput;	//where file name is input
 
@@ -82,6 +84,7 @@ public class SaveLoadMenu : MonoBehaviour {
 			Debug.LogError("File does not exist: " + path);
 			return;
 		}
+		GameController.instance.InitializeGame();
 		using (BinaryReader reader = new BinaryReader(File.OpenRead(path))) {
 			int header = reader.ReadInt32();
 			if(header <= 1){

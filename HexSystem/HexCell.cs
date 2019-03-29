@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class HexCell : MonoBehaviour
 {
@@ -286,7 +287,7 @@ public class HexCell : MonoBehaviour
 
 	/* sets the cell label to whatever */
 	public void SetLabel (string text) {
-		Text label = uiRect.GetComponent<Text>();
+		TextMeshPro label = uiRect.GetComponent<TextMeshPro>();
 		label.text = text;
 	}
 

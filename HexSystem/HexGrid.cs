@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public enum MapShape{
 	Rect,		//square-ish map based on x and z coords
@@ -25,7 +26,7 @@ public class HexGrid : MonoBehaviour
     [SerializeField]
     HexCell cellPrefab;
     [SerializeField]
-    Text cellLabelPrefab;
+    TextMeshPro cellLabelPrefab;
 	[SerializeField]
 	HexGridChunk chunkPrefab;
 
@@ -287,7 +288,7 @@ public class HexGrid : MonoBehaviour
 	
 
         //label cell
-        Text label = Instantiate<Text>(cellLabelPrefab);
+        TextMeshPro label = Instantiate<TextMeshPro>(cellLabelPrefab);
 		label.rectTransform.anchoredPosition = new Vector2(pos.x, pos.z);
 		//label.text = cell.coordinates.ToString();
 
