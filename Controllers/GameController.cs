@@ -23,6 +23,10 @@ public class GameController : MonoBehaviour
 
 	public RectTransform hpBarCanvasParent;
 
+	public static class UIElements{
+		public static TurnDisplay turnDisplay;
+	}
+
 	static bool gameStarted = false;
 
     void Awake(){
@@ -67,5 +71,6 @@ public class GameController : MonoBehaviour
 			pauseScreen.DeactivatePauseScreen();
 		}
 	}
+
 
 }

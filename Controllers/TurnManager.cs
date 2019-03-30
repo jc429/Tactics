@@ -37,6 +37,7 @@ public static class TurnManager {
 		foreach(HexUnit unit in currentArmy){
 			unit.StartTurn();
 		}
+		GameController.UIElements.turnDisplay.StartTurnAnimation();
 	}
 
 	/* ends the current army's turn (public so it can be forcibly called without moving all units) */
@@ -75,4 +76,5 @@ public static class TurnManager {
 		return currentTurn;
 	}
 
+	
 }
