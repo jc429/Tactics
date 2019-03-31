@@ -23,6 +23,9 @@ public static class Colors{
 		public static Color NullColor = Color.gray;
 		public static Color Army1Color = Color.blue;
 		public static Color Army2Color = Color.red;
+		public static Color NullColorAccent = Colors.GetColor(220,220,220);
+		public static Color Army1ColorAccent = Colors.GetColor(66, 167, 244);
+		public static Color Army2ColorAccent = Colors.GetColor(244, 113, 66);
 
 		public static Color GetArmyColor(int army){
 			switch(army){
@@ -34,6 +37,20 @@ public static class Colors{
 				break;
 			default:
 				return NullColor;
+				break;
+			}
+		}
+		
+		public static Color GetAccentColor(int army){
+			switch(army){
+			case 1:
+				return Army1ColorAccent;
+				break;
+			case 2:
+				return Army2ColorAccent;
+				break;
+			default:
+				return NullColorAccent;
 				break;
 			}
 		}

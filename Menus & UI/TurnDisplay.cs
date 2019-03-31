@@ -2,9 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 public class TurnDisplay : MonoBehaviour
 {
+	public RectTransform turnUI;
+
 	[SerializeField]
 	float startX, endX;
 
@@ -12,13 +15,14 @@ public class TurnDisplay : MonoBehaviour
 
 	Vector2 startPos, endPos;
 
-	float speed = 1.25f;
-	RectTransform _rTransform;
+	float speed = 1.125f;
+
+	public TMP_Text turnText, phaseText;
+	public Image background;
     // Start is called before the first frame update
     void Awake(){
 		GameController.UIElements.turnDisplay = this;
-        _rTransform = GetComponent<RectTransform>();
-		startPos = endPos = _rTransform.anchoredPosition;
+		startPos = endPos = turnUI.anchoredPosition;
 		startPos.x = startX;
 		endPos.x = endX;
     }
@@ -30,20 +34,31 @@ public class TurnDisplay : MonoBehaviour
     }
 
 
-	public void StartTurnAnimation(){
-		Debug.Log("Hi");
+	public void StartTurnAnimation(int turnNo, int armyPhaseNo){
 		StopAllCoroutines();
-		_rTransform.anchoredPosition = startPos;
+		turnText.text = "Turn " + turnNo;
+		phaseText.text = "Army " + armyPhaseNo + " Phase";
+		phaseText.outlineColor = turnText.outlineColor = (Color32)Colors.ArmyColors.GetArmyColor(armyPhaseNo);
+		phaseText.color = turnText.color = Colors.ArmyColors.GetAccentColor(armyPhaseNo);
+		turnUI.anchoredPosition = startPos;
+		Color c = background.color;
+		c.a = 0;
+		background.color = c;
 		StartCoroutine(TurnAnim());
 	}
 
 	IEnumerator TurnAnim(){
+		Color c = background.color;
 		for (float t = speed * Time.deltaTime; t < 1f; t += speed * Time.deltaTime) {
 			float curvePercent = curve.Evaluate(t);
-			_rTransform.anchoredPosition = Vector2.Lerp(startPos, endPos, curvePercent);
+			turnUI.anchoredPosition = Vector2.Lerp(startPos, endPos, curvePercent);
+			c.a = (t < 0.5f) ? curvePercent : 1 - curvePercent;
+			background.color = c;
 			yield return null;
 		}
-		_rTransform.anchoredPosition = endPos;
+		turnUI.anchoredPosition = endPos;
+		c.a = 0;
+		background.color = c;
 	}
 
 }

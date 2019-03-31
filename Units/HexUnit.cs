@@ -186,7 +186,7 @@ public class HexUnit : MonoBehaviour {
 		ArmyManager.RemoveUnitFromArmy(this, Properties.affiliation);
 		ArmyManager.AssignUnitToArmy(this, aff);
 		Properties.affiliation = aff;
-		_unitColor.SetColor(Colors.ArmyColors.GetArmyColor(aff));
+		_unitColor.SetColors(Colors.ArmyColors.GetArmyColor(aff),Colors.ArmyColors.GetAccentColor(aff));
 		
 	}
 
