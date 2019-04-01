@@ -14,7 +14,7 @@ public class UnitInfoPanel : MonoBehaviour
 	GameObject panel; 
 	[SerializeField]
 	TextMeshProUGUI unitName;
-	[SerializeField]
+	public
 	TextMeshProUGUI unitMoveType, unitWeaponType, unitMoveRange, unitWeaponRange;
 	[SerializeField]
 	DynamicMeter hpMeter, specialMeter;

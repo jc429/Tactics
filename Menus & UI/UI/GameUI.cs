@@ -207,8 +207,7 @@ public class GameUI : MonoBehaviour {
 			if(selectedUnit.localAttackTiles.Contains(currentCell)){
 				if(currentCell.Unit != null && currentCell.Unit != selectedUnit){
 					//do combat
-					
-					StartCoroutine(selectedUnit.TurnToLookAt(currentCell.Position));
+					selectedUnit.FaceCell(currentCell);
 					CombatManager.StartCombat(selectedUnit,currentCell.Unit,1);
 					
 				}

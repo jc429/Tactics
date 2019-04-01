@@ -4,7 +4,8 @@ using System.IO;
 using UnityEngine;
 
 public class HexUnit : MonoBehaviour {
-
+	[SerializeField]
+	UnitAnimator _unitAnimator;
 	UnitColor _unitColor;
 
 	public static HexUnit unitPrefab;
@@ -32,23 +33,13 @@ public class HexUnit : MonoBehaviour {
 		}
 	}
 
-	// direction unit model is facing
-	float orientation;
-	float Orientation {
-		get {	return orientation;	}
-		set {
-			orientation = value;
-			transform.localRotation = Quaternion.Euler(0f, value, 0f);
-		}
-	}
-
 	// hex direction unit is facing
 	DodecDirection facing;
 	public DodecDirection Facing {
 		get {	return facing;	}
 		set {
 			facing = value;
-			Orientation = value.DegreesOfRotation();
+			_unitAnimator.Orientation = value.DegreesOfRotation();
 		}
 	}
 
@@ -64,7 +55,6 @@ public class HexUnit : MonoBehaviour {
 	// travel
 	public bool isTraveling;
 	const float travelSpeed = 4f;
-	const float rotationSpeed = 360f;
 	List<HexCell> pathToTravel;
 
 
@@ -255,7 +245,7 @@ public class HexUnit : MonoBehaviour {
 		
 		Vector3 a, b, c = pathToTravel[0].Position;
 		transform.localPosition = c;
-		yield return TurnToLookAt(pathToTravel[1].Position);
+		yield return _unitAnimator.TurnToLookAt(pathToTravel[1].Position);
 
 		float t = Time.deltaTime * travelSpeed;
 		for (int i = 1; i < pathToTravel.Count; i++) {
@@ -266,7 +256,7 @@ public class HexUnit : MonoBehaviour {
 				transform.localPosition = Bezier.GetPointUnclamped(a, b, c, t);
 				Vector3 d = Bezier.GetDerivative(a, b, c, t);
 				d.y = 0f;
-				transform.localRotation = Quaternion.LookRotation(d);
+				_unitAnimator.SetRotation(Quaternion.LookRotation(d));
 				yield return null;
 			}
 			t -= 1f;
@@ -279,14 +269,14 @@ public class HexUnit : MonoBehaviour {
 			transform.localPosition = Bezier.GetPointUnclamped(a, b, c, t);
 			Vector3 d = Bezier.GetDerivative(a, b, c, t);
 			d.y = 0f;
-			transform.localRotation = Quaternion.LookRotation(d);
+			_unitAnimator.SetRotation(Quaternion.LookRotation(d));
 			yield return null;
 		}
 
 		transform.localPosition = location.Position;
-		orientation = transform.localRotation.eulerAngles.y;
+		
 		// set facing
-		Facing = DodecDirectionExtensions.DodecDirectionFromDegrees(Mathf.RoundToInt(orientation));
+		Facing = DodecDirectionExtensions.DodecDirectionFromDegrees(Mathf.RoundToInt(_unitAnimator.Orientation));
 
 		isTraveling = false;
 		//moveTiles.Clear();
@@ -295,24 +285,9 @@ public class HexUnit : MonoBehaviour {
 		FinishTravel();
 	}
 
-
-	public IEnumerator TurnToLookAt (Vector3 point) {
-		point.y = transform.localPosition.y;
-		Quaternion fromRotation = transform.localRotation;
-		Quaternion toRotation = Quaternion.LookRotation(point - transform.localPosition);
-		float angle = Quaternion.Angle(fromRotation, toRotation);
-		float speed = rotationSpeed / angle;
-		
-		if( angle > 0){
-			for (float t = speed * Time.deltaTime; t < 1f; t += speed * Time.deltaTime) {
-				transform.localRotation = Quaternion.Slerp(fromRotation, toRotation, t);
-				yield return null;
-			}
-		}
-
-		transform.LookAt(point);
-		orientation = transform.localRotation.eulerAngles.y;
-		Facing = DodecDirectionExtensions.DodecDirectionFromDegrees(Mathf.RoundToInt(orientation));
+	/* rotates unit to face a given cell */
+	public void  FaceCell (HexCell cell) {
+		StartCoroutine(_unitAnimator.TurnToLookAt(cell.Position));
 	}
 
 	/* called after unit moves to destination */
