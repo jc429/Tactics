@@ -31,13 +31,10 @@ public static class Colors{
 			switch(army){
 			case 1:
 				return Army1Color;
-				break;
 			case 2:
 				return Army2Color;
-				break;
 			default:
 				return NullColor;
-				break;
 			}
 		}
 		
@@ -45,13 +42,10 @@ public static class Colors{
 			switch(army){
 			case 1:
 				return Army1ColorAccent;
-				break;
 			case 2:
 				return Army2ColorAccent;
-				break;
 			default:
 				return NullColorAccent;
-				break;
 			}
 		}
 	}

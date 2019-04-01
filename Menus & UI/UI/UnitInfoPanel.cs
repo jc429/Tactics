@@ -13,6 +13,8 @@ public class UnitInfoPanel : MonoBehaviour
 	[SerializeField]
 	GameObject panel; 
 	[SerializeField]
+	SkillInfoPanel skillInfoPanel; 
+	[SerializeField]
 	TextMeshProUGUI unitName;
 	public
 	TextMeshProUGUI unitMoveType, unitWeaponType, unitMoveRange, unitWeaponRange;
@@ -30,11 +32,13 @@ public class UnitInfoPanel : MonoBehaviour
 	public void OpenPanel(HexUnit unit){
 		SetUnit(unit);
 		SetActive(true);
+		skillInfoPanel.Open();
 	}
 
 	public void ClosePanel(){
 		Clear();
 		SetActive(false);
+		skillInfoPanel.Close();
 	}
 	
 	void SetActive(bool active){

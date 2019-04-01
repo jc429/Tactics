@@ -6,7 +6,7 @@ using TMPro;
 
 public class SaveLoadMenu : MonoBehaviour {
 
-	const bool OPEN_LOAD_MENU_ON_GAME_START = true;
+	static bool OPEN_LOAD_MENU_ON_GAME_START = true;
 	const int SaveFileVersionNumber = 1;
 
 
