@@ -3,19 +3,12 @@ using System.Collections.Generic;
 using System.Data;
 using UnityEngine;
 
-public class Keywords : MonoBehaviour
-{
-    public TextAsset keyFile; 
-
+public static class KeywordTable{
 	
-	private System.Data.DataSet dataSet;
-	DataTable keywordTable;
+	static DataTable keywordTable;
 
-	void Start () {
-		InitializeKeywordTable(keyFile);
-	}
 
-	void InitializeKeywordTable(TextAsset csv){
+	public static void InitializeKeywordTable(TextAsset csv){
 		keywordTable = new DataTable("Keywords");
 		string[,] temp = CSVReader.SplitCsvGrid(csv.text); 
 
@@ -44,12 +37,17 @@ public class Keywords : MonoBehaviour
 				DataRow row = keywordTable.NewRow();
 				row["id"] = id;
 				row["name"] = temp[1,y];
-				row["name"] = temp[2,y];
+				row["description"] = temp[2,y];
         		keywordTable.Rows.Add(row);
 			}
 		}
 
+		/*foreach(DataRow row in keywordTable.Rows){
+			Debug.Log(row["id"] + ", " + row["name"] + ", " + row["description"]);
+		}*/
+
 		Debug.Log("Initialization complete; " + keywordTable.Rows.Count + " rows of data processed");
+
 	}
 
 

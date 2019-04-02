@@ -6,7 +6,6 @@ public class GameController : MonoBehaviour
 {
 	[SerializeField]
 	public static bool DEBUG_MODE = true;
-
 	
 	//the active instance of the game manager
 	public static GameController instance;			
@@ -24,6 +23,8 @@ public class GameController : MonoBehaviour
 	public RectTransform hpBarCanvasParent;
 
 	public InfoPanel keywordInfoPanel;
+
+	public TextAsset keywordCSV;
 
 	public static class UIElements{
 		public static TurnDisplay turnDisplay;
@@ -61,6 +62,7 @@ public class GameController : MonoBehaviour
 	public void InitializeGame(){
 		gameStarted = false;
 		ArmyManager.Initialize();
+		KeywordTable.InitializeKeywordTable(keywordCSV);
 	}
 
 	public void StartGame(){
