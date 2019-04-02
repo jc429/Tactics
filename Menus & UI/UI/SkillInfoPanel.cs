@@ -42,7 +42,7 @@ public class SkillInfoPanel : InfoPanel
 					TMP_LinkInfo linkInfo = descriptionText.textInfo.linkInfo[linkIndex];
 
 					// Send the event to any listeners. 
-					Debug.Log(linkInfo.GetLinkID() + "," + linkInfo.GetLinkText() + "," + linkIndex);
+					//Debug.Log(linkInfo.GetLinkID() + "," + linkInfo.GetLinkText() + "," + linkIndex);
 					keywordPanel.SetNameText(linkInfo.GetLinkText());
 					Vector2 mousePos;
 					if(RectTransformUtility.ScreenPointToLocalPointInRectangle(

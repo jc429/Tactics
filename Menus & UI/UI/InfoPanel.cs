@@ -17,6 +17,9 @@ public class InfoPanel : MonoBehaviour
 	}
 
 	public void SetPosition(Vector2 pos){
+		if(_rTransform == null){
+			_rTransform = GetComponent<RectTransform>();
+		}
 		_rTransform.anchoredPosition = pos;
 	}
 	

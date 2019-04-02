@@ -104,7 +104,7 @@ public static class ArmyManager{
 
 		if(!armyLists[army].Contains(unit)){
 			armyLists[army].Add(unit);
-			Debug.Log("Unit added to army");
+			//Debug.Log("Unit added to army");
 		}
 	}
 	
