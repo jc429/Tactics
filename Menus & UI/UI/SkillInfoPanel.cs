@@ -1,23 +1,65 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using TMPro;
 
-public class SkillInfoPanel : MonoBehaviour
+public class SkillInfoPanel : InfoPanel
 {
-	[SerializeField]
-	TMP_Text skillName, skillDescription;
+	InfoPanel keywordPanel;
 
 	Skill currentSkill;
-   
-	public void Open(){
-		gameObject.SetActive(true);
+
+	int currentLink = -1;
+
+	Canvas canvas;
+
+	void Start(){
+		keywordPanel = GameController.instance.keywordInfoPanel;
+		canvas = GetComponentInParent<Canvas>();
 	}
 
-	public void Close(){
-		Clear();
-		gameObject.SetActive(false);
+	void LateUpdate(){
+		CheckLinks();
 	}
+
+	void CheckLinks(){
+		//if mouse is within text rect
+		if (TMP_TextUtilities.IsIntersectingRectTransform(descriptionText.rectTransform, Input.mousePosition, null)){
+		
+			// Check if mouse intersects with any links.
+			int linkIndex = TMP_TextUtilities.FindIntersectingLink(descriptionText, Input.mousePosition, null);
+			// Handle new Link selection.
+			if (linkIndex != currentLink){
+				currentLink = linkIndex;
+				// index of -1 means no link
+				if(linkIndex == -1){
+					//close keyword panel
+					keywordPanel.Close();
+				}
+				else{
+					// Get information about the link.
+					TMP_LinkInfo linkInfo = descriptionText.textInfo.linkInfo[linkIndex];
+
+					// Send the event to any listeners. 
+					Debug.Log(linkInfo.GetLinkID() + "," + linkInfo.GetLinkText() + "," + linkIndex);
+					keywordPanel.SetNameText(linkInfo.GetLinkText());
+					Vector2 mousePos;
+					if(RectTransformUtility.ScreenPointToLocalPointInRectangle(
+					canvas.GetComponent<RectTransform>(),Input.mousePosition,null, out mousePos)){
+						//Debug.Log(mousePos);
+						mousePos += (0.5f * canvas.GetComponent<RectTransform>().sizeDelta);
+						Vector2 offset = new Vector2(5,5);
+						keywordPanel.SetPosition(mousePos + offset);
+					}
+					
+					keywordPanel.Open();
+				}
+			}
+
+		}
+	}
+   
 
 	public void SetSkillInfo(Skill skill){
 		if(skill == null){
@@ -25,13 +67,14 @@ public class SkillInfoPanel : MonoBehaviour
 			return;
 		}
 		currentSkill = skill;
-		skillName.text = skill.name;
-		skillDescription.text = skill.description;
+		SetText(skill.name, skill.description);
 	}
 
-	public void Clear(){
+	public override void Clear(){
 		currentSkill = null;
-		skillName.text = "";
-		skillDescription.text = "";
+		nameText.text = "";
+		descriptionText.text = "";
 	}
+
+
 }

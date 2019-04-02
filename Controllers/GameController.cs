@@ -23,6 +23,8 @@ public class GameController : MonoBehaviour
 
 	public RectTransform hpBarCanvasParent;
 
+	public InfoPanel keywordInfoPanel;
+
 	public static class UIElements{
 		public static TurnDisplay turnDisplay;
 	}
@@ -42,12 +44,17 @@ public class GameController : MonoBehaviour
 
 	void Start(){
 		SetGamePaused(false);
+		keywordInfoPanel.Close();
 		StartGame();
 	}
 
 	void Update(){
 		if(!gameStarted && Input.GetKeyDown(KeyCode.Space)){
 			StartGame();
+		}
+
+		if(Input.GetKeyDown(KeyCode.B)){
+			Debug.Log(Input.mousePosition);
 		}
 	}
 
@@ -71,6 +78,8 @@ public class GameController : MonoBehaviour
 			pauseScreen.DeactivatePauseScreen();
 		}
 	}
+
+
 
 
 }

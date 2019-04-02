@@ -173,7 +173,7 @@ public class GameUI : MonoBehaviour {
 			grid.ClearPath();
 			selectedUnit.HideDisplays();
 		}
-		else if(currentCell.Unit == selectedUnit){
+		else if(currentCell != null && currentCell.Unit == selectedUnit){
 			grid.ClearPath();
 			selectedUnit.HideDisplays();
 			selectedUnit.turnState = TurnState.PostMove;
