@@ -27,7 +27,7 @@ public static class KeywordTable{
 		}
 
 		
-		Debug.Log("Initialization complete; " + keywordDictionary.Count + " key/value pairs processed");
+		Debug.Log("Keyword initialization complete; " + keywordDictionary.Count + " key/value pairs processed");
 	}
 
 

@@ -25,6 +25,7 @@ public class GameController : MonoBehaviour
 	public InfoPanel keywordInfoPanel;
 
 	public TextAsset keywordCSV;
+	public TextAsset skillsCSV;
 
 	public static class UIElements{
 		public static TurnDisplay turnDisplay;
@@ -63,6 +64,7 @@ public class GameController : MonoBehaviour
 		gameStarted = false;
 		ArmyManager.Initialize();
 		KeywordTable.InitializeKeywordTable(keywordCSV);
+		SkillTable.InitializeSkillTable(skillsCSV);
 	}
 
 	public void StartGame(){
