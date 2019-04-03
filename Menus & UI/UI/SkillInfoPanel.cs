@@ -43,7 +43,9 @@ public class SkillInfoPanel : InfoPanel
 
 					// Send the event to any listeners. 
 					//Debug.Log(linkInfo.GetLinkID() + "," + linkInfo.GetLinkText() + "," + linkIndex);
-					keywordPanel.SetNameText(linkInfo.GetLinkText());
+					KeywordInfo keyword = KeywordTable.GetKeywordInfo(linkInfo.GetLinkText());
+					keywordPanel.SetText(keyword.name,keyword.description);
+
 					Vector2 mousePos;
 					if(RectTransformUtility.ScreenPointToLocalPointInRectangle(
 					canvas.GetComponent<RectTransform>(),Input.mousePosition,null, out mousePos)){

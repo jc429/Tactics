@@ -1,54 +1,41 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using UnityEngine;
 
+public class KeywordInfo{
+	public string name;
+	public string description;
+}
+
 public static class KeywordTable{
+
+	static Dictionary<string,string> keywordDictionary;
 	
-	static DataTable keywordTable;
-
-
 	public static void InitializeKeywordTable(TextAsset csv){
-		keywordTable = new DataTable("Keywords");
+		keywordDictionary = new Dictionary<string, string>(System.StringComparer.InvariantCultureIgnoreCase);
+
+		
 		string[,] temp = CSVReader.SplitCsvGrid(csv.text); 
-
-		// id column
-		DataColumn column = new DataColumn();
-    	column.DataType = System.Type.GetType("System.Int32");
-		column.ColumnName = "id";
-		keywordTable.Columns.Add(column);
-
-		// name column
-		column = new DataColumn();
-		column.DataType = System.Type.GetType("System.String");
-		column.ColumnName = "name";
-		keywordTable.Columns.Add(column);
-
-		//description column
-		column = new DataColumn();
-		column.DataType = System.Type.GetType("System.String");
-		column.ColumnName = "description";
-		keywordTable.Columns.Add(column);
 
 		//y starts at 1 to skip the first row (which is just headers)
 		for (int y = 1; y < temp.GetUpperBound(1); y++) {
-			int id = -1;	
-			if(System.Int32.TryParse(temp[0,y], out id)){
-				DataRow row = keywordTable.NewRow();
-				row["id"] = id;
-				row["name"] = temp[1,y];
-				row["description"] = temp[2,y];
-        		keywordTable.Rows.Add(row);
+			string skillName = temp[0,y];
+			string skillDesc = temp[1,y];
+			if(skillName != null){
+				keywordDictionary.Add(skillName,skillDesc);
 			}
 		}
 
-		/*foreach(DataRow row in keywordTable.Rows){
-			Debug.Log(row["id"] + ", " + row["name"] + ", " + row["description"]);
-		}*/
-
-		Debug.Log("Initialization complete; " + keywordTable.Rows.Count + " rows of data processed");
-
+		
+		Debug.Log("Initialization complete; " + keywordDictionary.Count + " key/value pairs processed");
 	}
 
 
+	public static KeywordInfo GetKeywordInfo(string keyName){
+		KeywordInfo keyword = new KeywordInfo();
+		keyword.name = keyName;
+		keyword.description = keywordDictionary[keyName];
+
+		return keyword;
+	}
 }

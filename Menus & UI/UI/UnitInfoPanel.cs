@@ -32,7 +32,7 @@ public class UnitInfoPanel : MonoBehaviour
 	public void OpenPanel(HexUnit unit){
 		SetUnit(unit);
 		SetActive(true);
-		skillInfoPanel.Open();
+		//skillInfoPanel.Open();
 	}
 
 	public void ClosePanel(){
