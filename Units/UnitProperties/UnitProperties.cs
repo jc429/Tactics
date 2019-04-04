@@ -15,6 +15,9 @@ public class UnitProperties : System.Object{
 	[NamedArrayAttribute (new string[] {"HP", "Str", "Skl", "Spd", "Def", "Res"})]
 	public int[] statDebuffs = new int[(int)CombatStat.Total];
 
+	public int[] skillIDs = new int[7];
+	public Skill[] skills = new Skill[7];
+
 	//which army unit is a member of
 	public int affiliation;
 
@@ -108,10 +111,38 @@ public class UnitProperties : System.Object{
 		}
 	}
 
+	/* set unit's skill (slot automatically chosen based on skilltype) */
+	public void SetSkill(Skill skill){
+		int type = (int)skill.skillType;
+		skillIDs[type] = skill.skillID;
+		skills[type] = skill;
+	}
+
+	/* set unit's skill via ID (slot automatically chosen based on skilltype) */
+	public void SetSkill(int skillID){
+		if(skillID == 0){
+			return;
+		}
+		Skill skill = SkillTable.GetSkill(skillID);
+		int type = (int)skill.skillType;
+		skillIDs[type] = skillID;
+		skills[type] = skill;
+		Debug.Log(":)");
+	}
+
+	/* remove all of unit's skills */
+	public void ClearSkills(){
+		for(int i = 0; i < 7; i++){
+			skillIDs[i] = 0;
+			skills[i] = null;
+		}
+	}
+
 	public void Clear(){
 		ClearStats();
 		ClearBuffs();
 		ClearDebuffs();
+		ClearSkills();
 	}
 	
 	/* save unit properties to file */
@@ -122,8 +153,12 @@ public class UnitProperties : System.Object{
 		for(int i = 0; i < (int)CombatStat.Total; i++){
 			writer.Write(stats[i]);
 		}
+		for(int i = 0; i < 7; i++){
+			writer.Write(skillIDs[i]);
+		}
 	}
 
+	/* load unit properties from file */
 	public void Load (BinaryReader reader) {
 		movementClass = (MovementClass)reader.ReadInt32();
 		weaponType = (WeaponType)reader.ReadInt32();
@@ -131,5 +166,10 @@ public class UnitProperties : System.Object{
 		for(int i = 0; i < (int)CombatStat.Total; i++){
 			stats[i] = reader.ReadInt32();
 		}
+		for(int i = 0; i < 7; i++){
+			skillIDs[i] = reader.ReadInt32();
+			SetSkill(skillIDs[i]);
+		}
+
 	}
 }

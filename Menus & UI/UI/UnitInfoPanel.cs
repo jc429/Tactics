@@ -24,6 +24,8 @@ public class UnitInfoPanel : MonoBehaviour
 	[NamedArrayAttribute (new string[] {"HP", "Str", "Skl", "Spd", "Def", "Res"})]
 	public TextMeshProUGUI[] statFields;
 
+	public SkillIcon[] skillIcons;
+
 	void Awake(){
 		GameController.unitInfoPanel = this;
 		ClosePanel();
@@ -65,6 +67,15 @@ public class UnitInfoPanel : MonoBehaviour
 			statFields[0].text =  curHP.ToString() + "/" + maxHP.ToString();
 			hpMeter.SetMaxValue(maxHP);
 			hpMeter.SetCurrentValue(curHP);
+
+			for(int i = 0; i < 7; i++){
+				if(i >= skillIcons.Length){
+					break;
+				}
+				if(skillIcons[i] != null){
+					skillIcons[i].SetSkill(unit.Properties.skills[i]);
+				}
+			}
 		}
 	}
 

@@ -27,6 +27,8 @@ public class GameController : MonoBehaviour
 	public TextAsset keywordCSV;
 	public TextAsset skillsCSV;
 
+	public Texture2D skillSpriteSheet;
+
 	public static class UIElements{
 		public static TurnDisplay turnDisplay;
 	}
@@ -65,6 +67,7 @@ public class GameController : MonoBehaviour
 		ArmyManager.Initialize();
 		KeywordTable.InitializeKeywordTable(keywordCSV);
 		SkillTable.InitializeSkillTable(skillsCSV);
+		SkillSpriteLibrary.InitializeSpriteLibrary(skillSpriteSheet);
 	}
 
 	public void StartGame(){
