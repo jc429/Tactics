@@ -231,12 +231,9 @@ public class HexCell : MonoBehaviour
     void Start()
     {
 		DisableHighlight();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+		if(invalid){
+			uiRect.gameObject.SetActive(false);
+		}
     }
 
 

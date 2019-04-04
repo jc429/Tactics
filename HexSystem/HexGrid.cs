@@ -23,12 +23,9 @@ public class HexGrid : MonoBehaviour
 	//where the center of the map is located
 	HexCoordinates centerCoords;	//x = half of radius, z = radius - 1 
 
-    [SerializeField]
-    HexCell cellPrefab;
-    [SerializeField]
-    TextMeshPro cellLabelPrefab;
-	[SerializeField]
-	HexGridChunk chunkPrefab;
+	public HexCell cellPrefab;
+	public TextMeshPro cellLabelPrefab;
+	public HexGridChunk chunkPrefab;
 
 	HexGridChunk[] chunks;
     HexCell[] cells;

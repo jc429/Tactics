@@ -125,9 +125,16 @@ public class UnitProperties : System.Object{
 		}
 		Skill skill = SkillTable.GetSkill(skillID);
 		int type = (int)skill.skillType;
-		skillIDs[type] = skillID;
-		skills[type] = skill;
-		Debug.Log(":)");
+		if(type == 0){	//null type, something went wrong
+			//just write to slot 0
+			skillIDs[type] = skillID;
+			skills[type] = skill;
+		}
+		else{
+			skillIDs[type - 1] = skillID;
+			skills[type - 1] = skill;
+		}
+		//Debug.Log(":)");
 	}
 
 	/* remove all of unit's skills */

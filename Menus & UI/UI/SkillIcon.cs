@@ -15,7 +15,7 @@ public class SkillIcon : MonoBehaviour{
 		currentSkill = s;
 		if(s.skillID >= 0){
 			//set skill icon 
-			iconSprite.sprite = SkillSpriteLibrary.GetSpriteByID(s.skillID);
+			iconSprite.sprite = SkillSpriteLibrary.GetSpriteByID(s.spriteID);
 			iconSprite.gameObject.SetActive(true);
 		}
 		else{

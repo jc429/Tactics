@@ -4,7 +4,6 @@ using System.IO;
 using UnityEngine;
 
 public class HexUnit : MonoBehaviour {
-	[SerializeField]
 	UnitAnimator _unitAnimator;
 	UnitColor _unitColor;
 
@@ -64,6 +63,7 @@ public class HexUnit : MonoBehaviour {
 	
 	void Awake(){
 		_unitColor = GetComponent<UnitColor>();
+		_unitAnimator = GetComponent<UnitAnimator>();
 	}
 
 	void Start(){

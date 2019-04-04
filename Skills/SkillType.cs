@@ -1,11 +1,12 @@
 public enum SkillType{
-    Weapon = 0,
-    MovementArt = 1,
-    CombatArt = 2,
-    Item = 3,
-    PrimaryPassive = 4,
-    SecondaryPassive = 5,
-    AuraPassive = 6
+	Null = 0,
+    Weapon = 1,
+    MovementArt = 2,
+    CombatArt = 3,
+    Item = 4,
+    PrimaryPassive = 5,
+    SecondaryPassive = 6,
+    AuraPassive = 7
 }
 
 /*

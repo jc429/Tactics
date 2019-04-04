@@ -8,7 +8,9 @@ public class Skill{
 	public int skillID;
 	public SkillType skillType;
 	public string name;
+	[TextArea(3,10)]
 	public string description;
-	public Sprite sprite;
+	public int spriteID;
+	//public Sprite sprite;
 
 }
