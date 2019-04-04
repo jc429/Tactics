@@ -9,7 +9,7 @@ public class UnitProperties : System.Object{
 	public WeaponType weaponType;
 	
 	[NamedArrayAttribute (new string[] {"HP", "Str", "Skl", "Spd", "Def", "Res"})]
-	public int[] stats = new int[(int)CombatStat.Total];
+	public int[] baseStats = new int[(int)CombatStat.Total];
 	[NamedArrayAttribute (new string[] {"HP", "Str", "Skl", "Spd", "Def", "Res"})]
 	public int[] statBuffs = new int[(int)CombatStat.Total];
 	[NamedArrayAttribute (new string[] {"HP", "Str", "Skl", "Spd", "Def", "Res"})]
@@ -38,7 +38,7 @@ public class UnitProperties : System.Object{
 
 	public UnitProperties(){
 		for(int i = 0; i < (int)CombatStat.Total; i++){
-			stats[i] = 1;
+			baseStats[i] = 1;
 			statBuffs[i] = 0;
 			statDebuffs[i] = 0;
 		}
@@ -47,35 +47,35 @@ public class UnitProperties : System.Object{
 	/* sets a stat to the desired stat */
 	public void SetStat(CombatStat stat, int amount){
 		amount = Mathf.Clamp(amount,0,99);
-		stats[(int)stat] = amount;
+		baseStats[(int)stat] = amount;
 	}
 
 	/* returns a given stat with no modifiers */
 	public int GetStatUnmodified(CombatStat stat){
-		return stats[(int)stat];
+		return baseStats[(int)stat];
 	}
 
 	/* returns a given stat with mods applied */
 	public int GetStat(CombatStat stat, bool ignoreBuffs = false, bool ignoreDebuffs = false){
-		return stats[(int)stat] 
-			+ (ignoreBuffs ? statBuffs[(int)stat] : 0)
-			+ (ignoreDebuffs ? statDebuffs[(int)stat] : 0);
+		return baseStats[(int)stat] 
+			+ (ignoreBuffs ? 0 : statBuffs[(int)stat])
+			+ (ignoreDebuffs ? 0 : statDebuffs[(int)stat]);
 	}
 
 	public int GetStat(int stat, bool ignoreBuffs = false, bool ignoreDebuffs = false){
-		return stats[stat] 
-			+ (ignoreBuffs ? statBuffs[(int)stat] : 0)
-			+ (ignoreDebuffs ? statDebuffs[(int)stat] : 0);
+		return baseStats[stat] 
+			+ (ignoreBuffs ? 0 : statBuffs[(int)stat])
+			+ (ignoreDebuffs ? 0 : statDebuffs[(int)stat]);
 	}
 
 	/* randomizes stats */
 	public void RandomizeStats(){
-		stats[0] = 40 + Random.Range(0,20);
-		stats[1] = 30 + Random.Range(0,20);
-		stats[2] = 30 + Random.Range(0,20);
-		stats[3] = 30 + Random.Range(0,20);
-		stats[4] = 20 + Random.Range(0,20);
-		stats[5] = 20 + Random.Range(0,20);
+		baseStats[0] = 40 + Random.Range(0,20);
+		baseStats[1] = 30 + Random.Range(0,20);
+		baseStats[2] = 30 + Random.Range(0,20);
+		baseStats[3] = 30 + Random.Range(0,20);
+		baseStats[4] = 20 + Random.Range(0,20);
+		baseStats[5] = 20 + Random.Range(0,20);
 	}
 
 	/* applies a buff to the desired stat */
@@ -92,8 +92,8 @@ public class UnitProperties : System.Object{
 
 	/* resets all stats to one (not zero bc hp of 0 would break the game) */
 	void ClearStats(){
-		foreach(int i in stats){
-			stats[i] = 1;
+		foreach(int i in baseStats){
+			baseStats[i] = 1;
 		}
 	}
 
@@ -158,7 +158,7 @@ public class UnitProperties : System.Object{
 		writer.Write((int)weaponType);
 		writer.Write(affiliation);
 		for(int i = 0; i < (int)CombatStat.Total; i++){
-			writer.Write(stats[i]);
+			writer.Write(baseStats[i]);
 		}
 		for(int i = 0; i < 7; i++){
 			writer.Write(skillIDs[i]);
@@ -171,7 +171,7 @@ public class UnitProperties : System.Object{
 		weaponType = (WeaponType)reader.ReadInt32();
 		affiliation = reader.ReadInt32();
 		for(int i = 0; i < (int)CombatStat.Total; i++){
-			stats[i] = reader.ReadInt32();
+			baseStats[i] = reader.ReadInt32();
 		}
 		for(int i = 0; i < 7; i++){
 			skillIDs[i] = reader.ReadInt32();

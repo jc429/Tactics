@@ -60,7 +60,9 @@ public class UnitInfoPanel : MonoBehaviour
 			unitWeaponRange.text = unit.Properties.AttackRange.ToString();
 
 			for(int i = 0; i < statFields.Length; i++){
-				statFields[i].text = unit.Properties.GetStat(i).ToString();
+				int displayedStat = unit.Properties.GetStat(i);
+				displayedStat = Mathf.Clamp(displayedStat,0,99);
+				statFields[i].text = displayedStat.ToString();
 			}
 			int curHP = unit.currentHP;
 			int maxHP = unit.Properties.GetStat(CombatStat.HP);
