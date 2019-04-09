@@ -22,6 +22,7 @@ public static class SkillConditions{
 
 	static Dictionary<int,SkillCondition> conditionsTable;
 
+	/* opens the sqlite database and reads in all the skill conditions */
 	public static void InitializeSkillConditionsTable(string connectionString){
 		conditionsTable = new Dictionary<int, SkillCondition>();
 
@@ -46,6 +47,11 @@ public static class SkillConditions{
 			dbConnection.Close();
 		}
 
+	}
+	
+	/* grabs a skill condition from the table */
+	public static SkillCondition GetSkillCondition(int conditionNo){
+		return conditionsTable[conditionNo];
 	}
 
 }

@@ -22,6 +22,7 @@ public static class SkillEffects{
 
 	static Dictionary<int,SkillEffect> effectsTable;
 
+	/* opens the sqlite database and reads in all the skill effects */
 	public static void InitializeSkillEffectsTable(string connectionString){
 		effectsTable = new Dictionary<int, SkillEffect>();
 
@@ -46,6 +47,11 @@ public static class SkillEffects{
 			dbConnection.Close();
 		}
 
+	}
+
+	/* grabs a skill effect from the table */
+	public static SkillEffect GetSkillEffect(int effectNo){
+		return effectsTable[effectNo];
 	}
 
 }
