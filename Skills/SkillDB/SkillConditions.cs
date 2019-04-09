@@ -5,12 +5,12 @@ using System.Data;
 using Mono.Data.Sqlite;
 using UnityEngine;
 
-public class SkillCondition{
+public class SkillConditionData{
 	public int scNo;
 	public string scID;
 	public int varCount;
 
-	public SkillCondition(int no, string ID, int vCount){
+	public SkillConditionData(int no, string ID, int vCount){
 		scNo = no;
 		scID = ID;
 		varCount = vCount;
@@ -20,11 +20,11 @@ public class SkillCondition{
 
 public static class SkillConditions{
 
-	static Dictionary<int,SkillCondition> conditionsTable;
+	static Dictionary<int,SkillConditionData> conditionsTable;
 
 	/* opens the sqlite database and reads in all the skill conditions */
 	public static void InitializeSkillConditionsTable(string connectionString){
-		conditionsTable = new Dictionary<int, SkillCondition>();
+		conditionsTable = new Dictionary<int, SkillConditionData>();
 
 		using (IDbConnection dbConnection = new SqliteConnection(connectionString)){
 			dbConnection.Open();
@@ -36,7 +36,7 @@ public static class SkillConditions{
 				using(IDataReader reader = dbCmd.ExecuteReader()){
 					int rowcount = 0;
 					while(reader.Read()){
-						SkillCondition condition = new SkillCondition(reader.GetInt32(0),reader.GetString(1),reader.GetInt32(2));
+						SkillConditionData condition = new SkillConditionData(reader.GetInt32(0),reader.GetString(1),reader.GetInt32(2));
 						conditionsTable.Add(reader.GetInt32(0),condition);
 						rowcount++;
 					}
@@ -50,7 +50,7 @@ public static class SkillConditions{
 	}
 	
 	/* grabs a skill condition from the table */
-	public static SkillCondition GetSkillCondition(int conditionNo){
+	public static SkillConditionData GetSkillConditionData(int conditionNo){
 		return conditionsTable[conditionNo];
 	}
 

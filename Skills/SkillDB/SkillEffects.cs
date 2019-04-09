@@ -5,12 +5,12 @@ using System.Data;
 using Mono.Data.Sqlite;
 using UnityEngine;
 
-public class SkillEffect{
+public class SkillEffectData{
 	public int scNo;
 	public string scID;
 	public int varCount;
 
-	public SkillEffect(int no, string ID, int vCount){
+	public SkillEffectData(int no, string ID, int vCount){
 		scNo = no;
 		scID = ID;
 		varCount = vCount;
@@ -20,11 +20,11 @@ public class SkillEffect{
 
 public static class SkillEffects{
 
-	static Dictionary<int,SkillEffect> effectsTable;
+	static Dictionary<int,SkillEffectData> effectsTable;
 
 	/* opens the sqlite database and reads in all the skill effects */
 	public static void InitializeSkillEffectsTable(string connectionString){
-		effectsTable = new Dictionary<int, SkillEffect>();
+		effectsTable = new Dictionary<int, SkillEffectData>();
 
 		using (IDbConnection dbConnection = new SqliteConnection(connectionString)){
 			dbConnection.Open();
@@ -36,7 +36,7 @@ public static class SkillEffects{
 				using(IDataReader reader = dbCmd.ExecuteReader()){
 					int rowcount = 0;
 					while(reader.Read()){
-						SkillEffect effect = new SkillEffect(reader.GetInt32(0),reader.GetString(1),reader.GetInt32(2));
+						SkillEffectData effect = new SkillEffectData(reader.GetInt32(0),reader.GetString(1),reader.GetInt32(2));
 						effectsTable.Add(reader.GetInt32(0),effect);
 						rowcount++;
 					}
@@ -50,7 +50,7 @@ public static class SkillEffects{
 	}
 
 	/* grabs a skill effect from the table */
-	public static SkillEffect GetSkillEffect(int effectNo){
+	public static SkillEffectData GetSkillEffect(int effectNo){
 		return effectsTable[effectNo];
 	}
 
