@@ -1,3 +1,5 @@
+using UnityEngine;
+
 public enum SkillType{
 	Null = 0,
     Weapon = 1,
@@ -7,6 +9,13 @@ public enum SkillType{
     PrimaryPassive = 5,
     SecondaryPassive = 6,
     AuraPassive = 7
+}
+
+public static class SkillTypeExtensions{
+	public static SkillType GetSkillType(int num){
+		num = Mathf.Clamp(num, 0, 7);
+		return (SkillType)num;
+	}
 }
 
 /*

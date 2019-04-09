@@ -13,4 +13,11 @@ public class Skill{
 	public int spriteID;
 	//public Sprite sprite;
 
+
+
+	/* prints the skill out to the debug logger */
+	public void LogSkill(){
+		string skillInfo = "ID: " + skillID + ", Name: " + name;
+		Debug.Log(skillInfo);
+	}
 }
