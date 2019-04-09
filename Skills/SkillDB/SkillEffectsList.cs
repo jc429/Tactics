@@ -18,7 +18,7 @@ public class SkillEffectData{
 }
 
 
-public static class SkillEffects{
+public static class SkillEffectsList{
 
 	static Dictionary<int,SkillEffectData> effectsTable;
 
@@ -50,7 +50,7 @@ public static class SkillEffects{
 	}
 
 	/* grabs a skill effect from the table */
-	public static SkillEffectData GetSkillEffect(int effectNo){
+	public static SkillEffectData GetSkillEffectData(int effectNo){
 		return effectsTable[effectNo];
 	}
 

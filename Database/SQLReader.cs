@@ -9,10 +9,14 @@ public class SQLReader : MonoBehaviour{
 
 	private string connectionString;
 
+	public Skill skill;
+
     // Start is called before the first frame update
     void Start()
     {
        SkillDBReader.Initialize();
+
+		skill = SkillDBReader.GetSkill(1);
     }
 
     // Update is called once per frame

@@ -18,7 +18,7 @@ public class SkillConditionData{
 }
 
 
-public static class SkillConditions{
+public static class SkillConditionsList{
 
 	static Dictionary<int,SkillConditionData> conditionsTable;
 

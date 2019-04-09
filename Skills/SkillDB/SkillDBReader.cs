@@ -28,8 +28,8 @@ public static class SkillDBReader{
 
 	public static void Initialize(){
         connectionString = "URI=file:" + Application.dataPath + "/Database/skills.db";
-		SkillConditions.InitializeSkillConditionsTable(connectionString);
-		SkillEffects.InitializeSkillEffectsTable(connectionString);
+		SkillConditionsList.InitializeSkillConditionsTable(connectionString);
+		SkillEffectsList.InitializeSkillEffectsTable(connectionString);
 
 		ReadData();
     }
@@ -41,8 +41,6 @@ public static class SkillDBReader{
 
 		//	PrintSkillInfo(dbConnection);
 		//	PrintSkillLinks(dbConnection);
-
-			GetSkill(1);
 
 			dbConnection.Close();
 		}
