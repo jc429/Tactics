@@ -6,10 +6,17 @@ using UnityEngine;
 
 [System.Serializable]
 public class ConditionEffectPair{
+	public int pairID;		//mostly for debugging purposes
+
+	public SkillTriggerType triggerType;
+
+	public string conditionsID;
+	public string effectsID;
 	public SkillConditionFamily conditionFamily;
 	public SkillEffectFamily effectFamily;
 
 	public ConditionEffectPair(){
+		triggerType = SkillTriggerType.AlwaysActive;
 		conditionFamily = new SkillConditionFamily();
 		effectFamily = new SkillEffectFamily();
 	}

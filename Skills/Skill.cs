@@ -6,6 +6,7 @@ using UnityEngine.UI;
 [System.Serializable]
 public class Skill{
 	public int skillID;
+	public string skillIDString;
 	public SkillType skillType;
 	public string name;
 	[TextArea(3,10)]
@@ -13,12 +14,13 @@ public class Skill{
 	public int spriteID;
 	//public Sprite sprite;
 
-	List<ConditionEffectPair> cePairs;
+	public List<ConditionEffectPair> cePairs;
 
 
 	public Skill(){
 		ClearCEPairs();
 	}
+	
 
 	/* cleans and initializes CE Pair list if needed */
 	public void ClearCEPairs(){

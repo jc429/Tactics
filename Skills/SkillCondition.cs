@@ -6,12 +6,18 @@ using UnityEngine;
 
 [System.Serializable]
 public class SkillCondition{
+
     SkillConditionData conditionData;
 
-	List<int> vars = new List<int>();
+	int[] vars;
 
 
-
+	public SkillCondition(SkillConditionData data){
+		this.conditionData = data;
+		if(data.varCount > 0){
+			vars = new int[data.varCount];
+		}
+	}
 
 
 

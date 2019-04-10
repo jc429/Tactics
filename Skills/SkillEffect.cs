@@ -8,6 +8,14 @@ using UnityEngine;
 public class SkillEffect{
     SkillEffectData effectData;
 
-	List<int> vars = new List<int>();
+	int[] vars;
+
+	
+	public SkillEffect(SkillEffectData data){
+		this.effectData = data;
+		if(data.varCount > 0){
+			vars = new int[data.varCount];
+		}
+	}
 
 }

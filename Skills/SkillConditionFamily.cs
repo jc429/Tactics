@@ -5,7 +5,7 @@ using UnityEngine;
 /* a condition family is a group of skill conditions that are checked together (ex: if HP < X% AND opponent initiates combat) */
 
 [System.Serializable]
-public class SkillConditionFamily : MonoBehaviour
+public class SkillConditionFamily
 {
 	List<SkillCondition> skillConditions;
 

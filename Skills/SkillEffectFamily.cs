@@ -5,8 +5,8 @@ using UnityEngine;
 /* an effect family is a group of skill effects that are applied at the same time (ex: atk +5 and def +5)*/
 
 [System.Serializable]
-public class SkillEffectFamily : MonoBehaviour
-{
+public class SkillEffectFamily{
+	
 	List<SkillEffect> skillEffects;
 
 	public SkillEffectFamily(){

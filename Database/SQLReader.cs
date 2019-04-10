@@ -16,7 +16,7 @@ public class SQLReader : MonoBehaviour{
     {
        SkillDBReader.Initialize();
 
-		skill = SkillDBReader.GetSkill(1);
+		skill = SkillDBReader.LoadSkill(1);
     }
 
     // Update is called once per frame
