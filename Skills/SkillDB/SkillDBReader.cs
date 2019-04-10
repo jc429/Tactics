@@ -308,64 +308,7 @@ public static class SkillDBReader{
 		return true;
 	}
 
-	static bool LoadVariables(IDbConnection dbConnection, ref Skill skill){
-
-		using(IDbCommand dbCmd = dbConnection.CreateCommand()){
-			string conQuery = DBStrings.selectAllFrom + DBStrings.conditionVars
-					+ "WHERE" + DBStrings.skillIDEquals + StringExtensions.Enquote(skill.skillIDString);
-			dbCmd.CommandText = conQuery;
-			LogQuery(conQuery);
-			using(IDataReader reader = dbCmd.ExecuteReader()){
-				int rowCt = 0;	
-				int ordCVID = reader.GetOrdinal("CV ID");
-				int ordValue = reader.GetOrdinal("Value");
-				int ordPositionC = reader.GetOrdinal("Condition Var Position");
-				int ordConF = reader.GetOrdinal("Condition Family ID");
-				int ordConID = reader.GetOrdinal("Condition ID");
-				if(ordCVID < 0 || ordValue < 0 || ordPositionC < 0 || ordConF < 0 || ordConID < 0){
-					Debug.Log("ERROR: Column not found, aborting");
-					return false;
-				}
-				while(reader.Read()){
-
-					rowCt++;
-				}
-				LogResult(rowCt + " results found");
-				reader.Close();
-			}
-
-			string effQuery = DBStrings.selectAllFrom + DBStrings.effectVars
-					+ "WHERE" + DBStrings.skillIDEquals + StringExtensions.Enquote(skill.skillIDString);
-			dbCmd.CommandText = effQuery;
-			LogQuery(effQuery);
-			using(IDataReader reader = dbCmd.ExecuteReader()){
-				int rowCt = 0;	
-				int ordEVID = reader.GetOrdinal("EV ID");
-				int ordValue = reader.GetOrdinal("Value");
-				int ordPositionE = reader.GetOrdinal("Effect Var Position");
-				int ordEffF = reader.GetOrdinal("Effect Family ID");
-				int ordEffID = reader.GetOrdinal("Effect ID");
-				int ordTarget = reader.GetOrdinal("Effect Target");
-				if(ordEVID < 0 || ordValue < 0 || ordPositionE < 0 || ordEffF < 0 || ordEffID < 0 || ordTarget < 0){
-					Debug.Log("ERROR: Column not found, aborting");
-					return false;
-				}
-				while(reader.Read()){
-
-					rowCt++;
-				}
-				LogResult(rowCt + " results found");
-				reader.Close();
-			}
-			foreach(ConditionEffectPair cePair in skill.cePairs){
-
-
-			}
-		}
-		return true;
-	}
-
-
+	
 
 	static void LogQuery(string query){
 		if(DEBUG_LOG_QUERIES){
