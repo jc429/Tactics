@@ -13,7 +13,22 @@ public class Skill{
 	public int spriteID;
 	//public Sprite sprite;
 
+	List<ConditionEffectPair> cePairs;
 
+
+	public Skill(){
+		ClearCEPairs();
+	}
+
+	/* cleans and initializes CE Pair list if needed */
+	public void ClearCEPairs(){
+		if(cePairs != null){
+			cePairs.Clear();
+		}
+		else{
+			cePairs = new List<ConditionEffectPair>();
+		}
+	}
 
 	/* prints the skill out to the debug logger */
 	public void LogSkill(){

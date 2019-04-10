@@ -7,18 +7,18 @@ using UnityEngine;
 
 public class SkillConditionData{
 	public int scNo;
-	public string scID;
+	public ConditionID cID;
 	public int varCount;
 
 	public SkillConditionData(int no, string ID, int vCount){
 		scNo = no;
-		scID = ID;
+		cID = ConditionIDExtensions.GetConditionID(ID);
 		varCount = vCount;
 	}
 }
 
 
-public static class SkillConditionsList{
+public static class SkillConditionDataList{
 
 	static Dictionary<int,SkillConditionData> conditionsTable;
 

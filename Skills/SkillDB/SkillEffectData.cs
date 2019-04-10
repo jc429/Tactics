@@ -6,19 +6,19 @@ using Mono.Data.Sqlite;
 using UnityEngine;
 
 public class SkillEffectData{
-	public int scNo;
-	public string scID;
+	public int seNo;
+	public EffectID eID;
 	public int varCount;
 
 	public SkillEffectData(int no, string ID, int vCount){
-		scNo = no;
-		scID = ID;
+		seNo = no;
+		eID = EffectIDExtensions.GetEffectID(ID);
 		varCount = vCount;
 	}
 }
 
 
-public static class SkillEffectsList{
+public static class SkillEffectDataList{
 
 	static Dictionary<int,SkillEffectData> effectsTable;
 

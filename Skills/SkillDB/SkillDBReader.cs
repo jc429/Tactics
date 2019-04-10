@@ -28,8 +28,8 @@ public static class SkillDBReader{
 
 	public static void Initialize(){
         connectionString = "URI=file:" + Application.dataPath + "/Database/skills.db";
-		SkillConditionsList.InitializeSkillConditionsTable(connectionString);
-		SkillEffectsList.InitializeSkillEffectsTable(connectionString);
+		SkillConditionDataList.InitializeSkillConditionsTable(connectionString);
+		SkillEffectDataList.InitializeSkillEffectsTable(connectionString);
 
 		ReadData();
     }
