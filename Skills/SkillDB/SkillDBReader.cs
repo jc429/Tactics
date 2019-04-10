@@ -170,7 +170,7 @@ public static class SkillDBReader{
 					cePair.conditionFamilyID = reader.GetString(ordConF);
 					cePair.effectFamilyID = reader.GetString(ordEffF);
 
-					LoadConditionFamily(dbConnection, ref cePair);
+					LoadConditionFamily(dbConnection, skill, ref cePair);
 					LoadEffectFamily(dbConnection, skill, ref cePair);
 
 					skill.cePairs.Add(cePair);
@@ -182,7 +182,7 @@ public static class SkillDBReader{
 		return true;		//TODO: fail if something goes wrong
 	}
 
-	static bool LoadConditionFamily(IDbConnection dbConnection, ref ConditionEffectPair cePair){
+	static bool LoadConditionFamily(IDbConnection dbConnection, Skill skill, ref ConditionEffectPair cePair){
 		using(IDbCommand dbCmd = dbConnection.CreateCommand()){
 			string sqlQuery = DBStrings.selectAllFrom + DBStrings.conditionFamily 
 					+ DBStrings.naturalLeftOuterJoin + DBStrings.conditions 
@@ -207,6 +207,39 @@ public static class SkillDBReader{
 				LogResult(rowCt + " results found");
 				reader.Close();
 			}
+			/* load variables into the conditions */
+			foreach(SkillCondition condition in cePair.conditionFamily.skillConditions){
+				//obviously no need to search for vars if the condition doesnt use any
+				if(condition.GetVarCount() == 0){
+					continue;
+				}
+				string conQuery = DBStrings.selectAllFrom + DBStrings.conditionVars
+						+ "WHERE" + DBStrings.skillIDEquals + StringExtensions.Enquote(skill.skillIDString)
+						+ " AND" + DBStrings.ConFamIDEquals + StringExtensions.Enquote(cePair.conditionFamilyID)
+						+ " AND" + DBStrings.conIDEquals + StringExtensions.Enquote(condition.GetConditionIDString());
+				dbCmd.CommandText = conQuery;
+				LogQuery(conQuery);
+				using(IDataReader reader = dbCmd.ExecuteReader()){
+					int rowCt = 0;	
+					int ordCVID = reader.GetOrdinal("CV ID");
+					int ordValue = reader.GetOrdinal("Value");
+					int ordCVPos = reader.GetOrdinal("Condition Var Position");
+					if(ordCVID < 0 || ordValue < 0 || ordCVPos < 0){
+						Debug.Log("ERROR: Column not found, aborting");
+						return false;
+					}
+					while(reader.Read()){
+						string conditionVarID = reader.GetString(ordCVID);
+						int varValue = reader.GetInt32(ordValue);
+						int varPosition = reader.GetInt32(ordCVPos);
+						condition.SetVariable(varValue,varPosition);
+						rowCt++;
+					}
+					LogResult(rowCt + " results found");
+					reader.Close();
+				}
+			}
+
 		}
 		return true;
 	}

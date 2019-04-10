@@ -7,7 +7,7 @@ using UnityEngine;
 [System.Serializable]
 public class SkillConditionFamily
 {
-	List<SkillCondition> skillConditions;
+	public List<SkillCondition> skillConditions;
 
 	public SkillConditionFamily(){
 		skillConditions = new List<SkillCondition>();

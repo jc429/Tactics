@@ -20,6 +20,26 @@ public class SkillCondition{
 	}
 
 
+	public int GetVarCount(){
+		return conditionData.varCount;
+	}
+
+	public ConditionID GetConditionID(){
+		return conditionData.cID;
+	}
+
+	public string GetConditionIDString(){
+		return conditionData.cID.ToString("G");
+	}
+
+	public bool SetVariable(int value, int pos){
+		if(pos < 0 || pos >= vars.Length){
+			Debug.Log("Invalid Position!");
+			return false;
+		}
+		vars[pos] = value;
+		return true;
+	}
 
 	/* returns true if condition is fulfilled, false otherwise */
 	public bool EvaluateConditionMet(){
