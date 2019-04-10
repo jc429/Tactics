@@ -1,18 +1,24 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SkillTarget : MonoBehaviour
-{
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+public enum SkillTarget{
+    TARGET_NONE = 0,
+    TARGET_SELF = 1,
+	TARGET_FOE = 2
+}
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+public static class SkillTargetExtensions{
+
+	public static SkillTarget GetSkillTarget(string input){
+		SkillTarget id;
+		if(Enum.TryParse(input, true, out id)){
+			return id;
+		}
+		else{
+			return SkillTarget.TARGET_NONE;
+		}
+	}
+	
 }

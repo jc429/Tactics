@@ -114,7 +114,7 @@ public class UnitProperties : System.Object{
 	/* set unit's skill (slot automatically chosen based on skilltype) */
 	public void SetSkill(Skill skill){
 		int type = (int)skill.skillType;
-		skillIDs[type] = skill.skillID;
+		skillIDs[type] = skill.skillNo;
 		skills[type] = skill;
 	}
 

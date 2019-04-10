@@ -29,7 +29,7 @@ public static class SkillEffectDataList{
 		using (IDbConnection dbConnection = new SqliteConnection(connectionString)){
 			dbConnection.Open();
 			using(IDbCommand dbCmd = dbConnection.CreateCommand()){
-				string sqlQuery = SkillDBReader.DBStrings.selectAll + SkillDBReader.DBStrings.effects;
+				string sqlQuery = SkillDBReader.DBStrings.selectAllFrom + SkillDBReader.DBStrings.effects;
 
 				dbCmd.CommandText = sqlQuery;
 				//Debug.Log(sqlQuery);

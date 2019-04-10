@@ -29,7 +29,7 @@ public static class SkillConditionDataList{
 		using (IDbConnection dbConnection = new SqliteConnection(connectionString)){
 			dbConnection.Open();
 			using(IDbCommand dbCmd = dbConnection.CreateCommand()){
-				string sqlQuery = SkillDBReader.DBStrings.selectAll + SkillDBReader.DBStrings.conditions;
+				string sqlQuery = SkillDBReader.DBStrings.selectAllFrom + SkillDBReader.DBStrings.conditions;
 
 				dbCmd.CommandText = sqlQuery;
 				//Debug.Log(sqlQuery);

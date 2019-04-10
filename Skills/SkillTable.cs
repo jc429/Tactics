@@ -100,7 +100,7 @@ public static class SkillTable{
 		}
 		else{
 			Skill skill = new Skill();
-			skill.skillID = (int)row[s_ID];
+			skill.skillNo = (int)row[s_ID];
 			int skilltype = (int)row[s_Type];
 			skill.skillType = (SkillType)skilltype;
 			skill.name = (string)row[s_Name];

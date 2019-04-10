@@ -5,7 +5,7 @@ using UnityEngine;
 
 public static class GameProperties
 {
-	public const bool DEBUG_INFINITE_ACTIONS = false;
+	public static bool DEBUG_INFINITE_ACTIONS = false;
 
 
 	public static class Stats{

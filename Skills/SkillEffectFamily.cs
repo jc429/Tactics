@@ -7,7 +7,8 @@ using UnityEngine;
 [System.Serializable]
 public class SkillEffectFamily{
 	
-	List<SkillEffect> skillEffects;
+	
+	public List<SkillEffect> skillEffects;
 
 	public SkillEffectFamily(){
 		skillEffects = new List<SkillEffect>();

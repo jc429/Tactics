@@ -13,7 +13,7 @@ public class SkillIcon : MonoBehaviour{
 
 	public void SetSkill(Skill s){
 		currentSkill = s;
-		if(s.skillID >= 0){
+		if(s.skillNo >= 0){
 			//set skill icon 
 			iconSprite.sprite = SkillSpriteLibrary.GetSpriteByID(s.spriteID);
 			iconSprite.gameObject.SetActive(true);
@@ -38,7 +38,7 @@ public class SkillIcon : MonoBehaviour{
 	/* sets the skill info panel to describe the current skill */
 	public void SetPanelInfo(){
 		skillPanel.SetSkillInfo(currentSkill);
-		if(currentSkill.skillID > 0){
+		if(currentSkill.skillNo > 0){
 			skillPanel.Open();
 		}
 		else{

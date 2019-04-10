@@ -10,8 +10,8 @@ public class ConditionEffectPair{
 
 	public SkillTriggerType triggerType;
 
-	public string conditionsID;
-	public string effectsID;
+	public string conditionFamilyID;
+	public string effectFamilyID;
 	public SkillConditionFamily conditionFamily;
 	public SkillEffectFamily effectFamily;
 

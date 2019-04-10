@@ -5,7 +5,7 @@ using UnityEngine.UI;
 
 [System.Serializable]
 public class Skill{
-	public int skillID;
+	public int skillNo;
 	public string skillIDString;
 	public SkillType skillType;
 	public string name;
@@ -34,7 +34,7 @@ public class Skill{
 
 	/* prints the skill out to the debug logger */
 	public void LogSkill(){
-		string skillInfo = "ID: " + skillID + ", Name: " + name;
+		string skillInfo = "ID: " + skillIDString + ", Name: " + name;
 		Debug.Log(skillInfo);
 	}
 }
