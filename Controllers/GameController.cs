@@ -57,7 +57,9 @@ public class GameController : MonoBehaviour
 		}
 
 		if(Input.GetKeyDown(KeyCode.B)){
-			Debug.Log(Input.mousePosition);
+			//Debug.Log(Input.mousePosition);
+			ConditionIDExtensions.PrintAllEnumIDs();
+			EffectIDExtensions.PrintAllEnumIDs();
 		}
 	}
 

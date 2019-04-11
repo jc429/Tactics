@@ -36,56 +36,20 @@ public static class SkillDBReader{
 	}
 
 	private static string connectionString;
-
+	public static string ConnectionString{
+		get{
+			return connectionString;
+		}
+	}
 
 	public static void Initialize(){
         connectionString = "URI=file:" + Application.dataPath + "/Database/skills.db";
 		SkillConditionDataList.InitializeSkillConditionsTable(connectionString);
 		SkillEffectDataList.InitializeSkillEffectsTable(connectionString);
 
-		ReadData();
     }
 
-
-	static void ReadData(){
-		using (IDbConnection dbConnection = new SqliteConnection(connectionString)){
-			dbConnection.Open();
-
-		//	PrintSkillInfo(dbConnection);
-		//	PrintSkillLinks(dbConnection);
-
-			dbConnection.Close();
-		}
-	}
-
-	static void PrintSkillInfo(IDbConnection dbConnection){
-		using(IDbCommand dbCmd = dbConnection.CreateCommand()){
-			string sqlQuery = DBStrings.selectAllFrom + DBStrings.skillInfo;
-			dbCmd.CommandText = sqlQuery;
-
-			using(IDataReader reader = dbCmd.ExecuteReader()){
-				while(reader.Read()){	//reads a line
-					Debug.Log(reader.GetString(1));
-				}
-				reader.Close();
-			}
-		}
-	}
-
-	static void PrintSkillLinks(IDbConnection dbConnection){
-		using(IDbCommand dbCmd = dbConnection.CreateCommand()){
-			string sqlQuery = DBStrings.selectAllFrom + DBStrings.skillLinks;
-			dbCmd.CommandText = sqlQuery;
-
-			using(IDataReader reader = dbCmd.ExecuteReader()){
-				while(reader.Read()){
-					Debug.Log(reader.GetString(1));
-				}
-				reader.Close();
-			}
-		}
-	}
-
+	
 	/* loads a skill from the database. if infoOnly is set true, only loads the user-facing skill display info */
 	public static Skill LoadSkill(int skillID, bool infoOnly = false){
 		Skill skill = new Skill();
@@ -315,7 +279,6 @@ public static class SkillDBReader{
 		return true;
 	}
 
-	
 
 	static void LogQuery(string query){
 		if(DEBUG_LOG_QUERIES){

@@ -34,10 +34,18 @@ public static class SkillEffectDataList{
 				dbCmd.CommandText = sqlQuery;
 				//Debug.Log(sqlQuery);
 				using(IDataReader reader = dbCmd.ExecuteReader()){
+					int ordEffNo = reader.GetOrdinal("Effect No");
+					int ordEffID = reader.GetOrdinal("Effect ID");
+					int ordVarCt = reader.GetOrdinal("Var Count");
+					if(ordEffNo < 0 || ordEffID < 0 || ordVarCt < 0){
+						Debug.Log("ERROR: Column not found, aborting");
+						return;
+					}
 					int rowcount = 0;
 					while(reader.Read()){
-						SkillEffectData effect = new SkillEffectData(reader.GetInt32(0),reader.GetString(1),reader.GetInt32(2));
-						effectsTable.Add(reader.GetInt32(0),effect);
+						SkillEffectData effect = new SkillEffectData(reader.GetInt32(ordEffNo),
+								reader.GetString(ordEffID),reader.GetInt32(ordVarCt));
+						effectsTable.Add(reader.GetInt32(ordEffNo),effect);
 						rowcount++;
 					}
 					Debug.Log("Skill Effects initialized: " + rowcount + " entries evaluated.");

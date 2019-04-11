@@ -34,6 +34,13 @@ public static class SkillConditionDataList{
 				dbCmd.CommandText = sqlQuery;
 				//Debug.Log(sqlQuery);
 				using(IDataReader reader = dbCmd.ExecuteReader()){
+					int ordConNo = reader.GetOrdinal("Condition No");
+					int ordConID = reader.GetOrdinal("Condition ID");
+					int ordVarCt = reader.GetOrdinal("Var Count");
+					if(ordConNo < 0 || ordConID < 0 || ordVarCt < 0){
+						Debug.Log("ERROR: Column not found, aborting");
+						return;
+					}
 					int rowcount = 0;
 					while(reader.Read()){
 						SkillConditionData condition = new SkillConditionData(reader.GetInt32(0),reader.GetString(1),reader.GetInt32(2));

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
+using Mono.Data.Sqlite;
 using UnityEngine;
 
 public enum ConditionID{
@@ -27,6 +29,37 @@ public static class ConditionIDExtensions{
 		}
 		else{
 			return ConditionID.CN_NONE;
+		}
+	}
+
+	/* opens up the database and prints all the ConditionIDs, which can then be easily pasted above */
+	public static void PrintAllEnumIDs(){
+		using (IDbConnection dbConnection = new SqliteConnection(SkillDBReader.ConnectionString)){
+			dbConnection.Open();
+			using(IDbCommand dbCmd = dbConnection.CreateCommand()){
+
+				string sqlQuery = "SELECT \"Condition ID\",\"Condition No\" FROM " + SkillDBReader.DBStrings.conditions;
+				dbCmd.CommandText = sqlQuery;
+				using(IDataReader reader = dbCmd.ExecuteReader()){
+					int ordID = reader.GetOrdinal("Condition ID");
+					int ordNo = reader.GetOrdinal("Condition No");
+					if(ordNo < 0 || ordID < 0){
+						Debug.Log("ERROR: Column not found, aborting");
+						return;
+					}
+					int rowcount = 0;
+					string result = "public enum ConditionID{\n";
+					while(reader.Read()){
+						string s = "\t" + reader.GetString(ordID) + " = " + reader.GetInt32(ordNo) + ",\n";
+						result += s;
+						rowcount++;
+					}
+					result += "}";
+					Debug.Log(result);
+				}
+			}
+
+			dbConnection.Close();
 		}
 	}
 	
