@@ -25,7 +25,6 @@ public class GameController : MonoBehaviour
 	public InfoPanel keywordInfoPanel;
 
 	public TextAsset keywordCSV;
-	public TextAsset skillsCSV;
 
 	public Texture2D skillSpriteSheet;
 
@@ -67,7 +66,6 @@ public class GameController : MonoBehaviour
 		ArmyManager.Initialize();
 		KeywordTable.InitializeKeywordTable(keywordCSV);
 		SkillDBReader.Initialize();
-	//	SkillTable.InitializeSkillTable(skillsCSV);
 		SkillSpriteLibrary.InitializeSpriteLibrary(skillSpriteSheet);
 	}
 

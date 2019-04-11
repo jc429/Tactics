@@ -123,7 +123,8 @@ public class UnitProperties : System.Object{
 		if(skillID == 0){
 			return;
 		}
-		Skill skill = SkillTable.GetSkill(skillID);
+		//Skill skill = SkillTable.GetSkill(skillID);
+		Skill skill = SkillDBReader.LoadSkill(skillID);
 		int type = (int)skill.skillType;
 		if(type == 0){	//null type, something went wrong
 			//just write to slot 0

@@ -11,14 +11,14 @@ public static class SkillDBReader{
 	static bool DEBUG_LOG_RESULTS = true;
 
 	public static class DBStrings{
-		public const string skillInfo = "\"Skill Info\"";
-		public const string skillLinks = "\"Skill Links\"";
-		public const string conditions = "\"Conditions\"";
-		public const string conditionFamily = "\"Condition Family\"";
-		public const string conditionVars = "\"Condition Vars\"";
-		public const string effects = "\"Effects\"";
-		public const string effectFamily = "\"Effect Family\"";
-		public const string effectVars = "\"Effect Vars\"";
+		public const string skillInfo = "\"Skill Info\" ";
+		public const string skillLinks = "\"Skill Links\" ";
+		public const string conditions = "\"Conditions\" ";
+		public const string conditionFamily = "\"Condition Family\" ";
+		public const string conditionVars = "\"Condition Vars\" ";
+		public const string effects = "\"Effects\" ";
+		public const string effectFamily = "\"Effect Family\" ";
+		public const string effectVars = "\"Effect Vars\" ";
 
 		public const string selectAllFrom = "SELECT * FROM ";
 		public const string naturalLeftOuterJoin = " NATURAL LEFT OUTER JOIN ";
@@ -91,15 +91,17 @@ public static class SkillDBReader{
 		Skill skill = new Skill();
 		using (IDbConnection dbConnection = new SqliteConnection(connectionString)){
 			dbConnection.Open();
+			bool success;
+			success = LoadSkillInfo(skillID, dbConnection, ref skill);
 
-			LoadSkillInfo(skillID, dbConnection, ref skill);
 			if(infoOnly){
 				dbConnection.Close();
 				return skill;
 			}
 
-			LoadConditionEffectPairLinks(dbConnection, ref skill);
-			
+			if(success){
+				LoadConditionEffectPairLinks(dbConnection, ref skill);
+			}
 			dbConnection.Close();
 		}
 		return skill;
@@ -111,7 +113,6 @@ public static class SkillDBReader{
 
 			/* first search for skill info */
 			string sqlQuery = DBStrings.selectAllFrom + DBStrings.skillInfo 
-					//+ DBStrings.naturalLeftOuterJoin + DBStrings.skillLinks 
 					+ "WHERE" + DBStrings.skillNoEquals + skillID;
 
 			dbCmd.CommandText = sqlQuery;
@@ -127,8 +128,10 @@ public static class SkillDBReader{
 					Debug.Log("ERROR: Column not found, aborting");
 					return false;
 				}
+				bool success = false;
 				while(reader.Read()){
 					Debug.Log("Found Skill " + reader.GetString(ordSID));
+					success = true;
 					skill.skillNo = reader.GetInt32(ordSNo);
 					skill.skillIDString = reader.GetString(ordSID);
 					skill.skillType = SkillTypeExtensions.GetSkillType(reader.GetInt32(ordSType));
@@ -139,9 +142,13 @@ public static class SkillDBReader{
 					skill.LogSkill();
 				}
 				reader.Close();
+				if(!success){
+					Debug.Log("Skill Load failed! Skill ID: " + skillID);
+					return false;
+				}
 			}
 		}
-		return true;		//TODO: fail if something goes wrong
+		return true;
 	}
 
 	/* loads all relevant condition-effect pairs into the skill */
