@@ -46,6 +46,6 @@ public static class HexDirectionExtensions {
 	}
 
 	public static DodecDirection ConvertTo12Direction(this HexDirection direction){
-		return (DodecDirection)((int)direction * 2);
+		return (DodecDirection)((int)direction * 2 + 1);
 	}
 }

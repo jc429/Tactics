@@ -8,23 +8,22 @@ public class MapCamera : MonoBehaviour
 	/* pivot axes for camera */
     Transform swivel, stick;
 
-	float zoom = 1f;
+	public float zoom = 1f;
 
-	[SerializeField]
-	float stickMinZoom, stickMaxZoom;
+	public float stickMinZoom, stickMaxZoom;
 
-	[SerializeField]
-	float swivelMinZoom, swivelMaxZoom;
+	public float swivelMinZoom, swivelMaxZoom;
 
-	[SerializeField]
-	float moveSpeedMinZoom, moveSpeedMaxZoom;
+	public float moveSpeedMinZoom, moveSpeedMaxZoom;
 
-	[SerializeField]
-	float rotationSpeed;
-	float rotationAngle;
+	public float rotationSpeed;
+	public float rotationAngle;
+	public float shiftSpeed;
 
-	[SerializeField]
-	HexGrid grid;
+	DodecDirection facing;
+	bool atRest;
+
+	public HexGrid grid;
 
 	bool locked;
 
@@ -32,6 +31,8 @@ public class MapCamera : MonoBehaviour
 		GameController.mapCamera = this;
 		swivel = transform.GetChild(0);
 		stick = swivel.GetChild(0);
+		facing = DodecDirection.N;
+		atRest = true;
 	}
 
 	void Start(){
@@ -53,7 +54,7 @@ public class MapCamera : MonoBehaviour
 
 			float rotationDelta = Input.GetAxis("CamRotation");
 			if (rotationDelta != 0f) {
-				AdjustRotation(rotationDelta);
+				ShiftRotation(rotationDelta);
 			}
 
 			float xDelta = Input.GetAxis("Horizontal");
@@ -96,6 +97,37 @@ public class MapCamera : MonoBehaviour
 		else if (rotationAngle >= 360f) {
 			rotationAngle -= 360f;
 		}
+	}
+
+	/* shifts the camera direction one dodecdirection clockwise/counterclockwise */
+	void ShiftRotation(float delta){
+		if(!atRest){
+			return;
+		}
+		if(delta > 0){
+			facing = facing.Previous();
+		}
+		else{
+			facing = facing.Next();
+		}
+		atRest = false;
+		StartCoroutine(TurnToLookAt(facing));
+	}
+
+	IEnumerator TurnToLookAt (DodecDirection dir){
+		float rotation = dir.DegreesOfRotation();
+		Quaternion fromRotation = transform.localRotation;
+		Quaternion toRotation = Quaternion.Euler(new Vector3(0,dir.DegreesOfRotation(),0));
+		float angle = Quaternion.Angle(fromRotation, toRotation);
+		float speed = shiftSpeed / angle;
+		
+		if( angle > 0){
+			for (float t = speed * Time.deltaTime; t < 1f; t += speed * Time.deltaTime) {
+				transform.localRotation = Quaternion.Slerp(fromRotation, toRotation, t);
+				yield return null;
+			}
+		}
+		atRest = true;
 	}
 
 	/* Freely pans the camera */

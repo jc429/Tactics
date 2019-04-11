@@ -2,7 +2,7 @@
 
 /* used exclusively for unit facing */
 public enum DodecDirection {
-	NE, ENE, E, ESE, S, SW, WSW, W, WNW, NW, N
+	N, NE, ENE, E, ESE, SE, S, SW, WSW, W, WNW, NW
 }
 
 public static class DodecDirectionExtensions {
