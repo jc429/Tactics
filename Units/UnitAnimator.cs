@@ -4,10 +4,8 @@ using UnityEngine;
 
 public class UnitAnimator : MonoBehaviour
 {
-	[SerializeField]
-	HexUnit _unit;
-	[SerializeField]
-	GameObject model;
+	public HexUnit _unit;
+	public GameObject model;
 	
 	const float rotationSpeed = 360f;
 

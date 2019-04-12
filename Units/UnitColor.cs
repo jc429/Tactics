@@ -4,10 +4,8 @@ using UnityEngine;
 
 public class UnitColor : MonoBehaviour
 {
-    [SerializeField]
-	MeshRenderer _renderer;
-    [SerializeField]
-	MeshRenderer _accentRenderer;
+	public MeshRenderer _renderer;
+	public MeshRenderer _accentRenderer;
 
 	public void SetColor(Color c){
 		_renderer.material.color = c;

@@ -4,6 +4,30 @@ using UnityEngine;
 
 public static class CombatManager {
     
+	public static CombatForecast combatForecast;
+
+	public static void PreCalculateCombat(HexUnit attackUnit, HexUnit defendUnit, int combatRange){
+		if(attackUnit == null || defendUnit == null){
+			Debug.Log("Combat failed! Not enough members!");
+			return;
+		}
+
+		int damage;
+		int attackerCurrentHP = attackUnit.CurrentHP;
+		int defenderCurrentHP = defendUnit.CurrentHP;
+
+		//under normal condition, attacker attacks
+		damage = ResolveCombatRound(attackUnit, defendUnit, ref attackerCurrentHP, ref defenderCurrentHP);
+		if(attackerCurrentHP <= 0 || defenderCurrentHP <= 0){
+			return;
+		}
+		//defender counterattacks
+		damage = ResolveCombatRound(defendUnit, attackUnit, ref defenderCurrentHP, ref attackerCurrentHP);
+		if(attackerCurrentHP <= 0 || defenderCurrentHP <= 0){
+			return;
+		}
+
+	}
 
 	public static void StartCombat(HexUnit attackUnit, HexUnit defendUnit, int combatRange){
 		if(attackUnit == null || defendUnit == null){
@@ -12,17 +36,26 @@ public static class CombatManager {
 		}
 		Debug.Log(attackUnit.Properties.movementClass + " is attacking " + defendUnit.Properties.movementClass + "!");
 
-		
+		int damage;
 		bool roundResult;
+		int attackerCurrentHP;
+		int defenderCurrentHP;
 
 		//under normal condition, attacker attacks
-		roundResult = ResolveCombatRound(attackUnit, defendUnit);
+		attackerCurrentHP = attackUnit.CurrentHP;
+		defenderCurrentHP = defendUnit.CurrentHP;
+		damage = ResolveCombatRound(attackUnit, defendUnit, ref attackerCurrentHP, ref defenderCurrentHP);
+		roundResult = defendUnit.TakeDamage(damage);
 		if(roundResult){
 			Debug.Log("Foe successfully defeated!");
 			return;
 		}
+
 		//defender counterattacks
-		roundResult = ResolveCombatRound(defendUnit, attackUnit);
+		attackerCurrentHP = attackUnit.CurrentHP;
+		defenderCurrentHP = defendUnit.CurrentHP;
+		damage = ResolveCombatRound(defendUnit, attackUnit, ref defenderCurrentHP, ref attackerCurrentHP);
+		roundResult = attackUnit.TakeDamage(damage);
 		if(roundResult){
 			Debug.Log("Oh no! Defeated by foe's counterattack!");
 			return;
@@ -30,16 +63,15 @@ public static class CombatManager {
 		Debug.Log("Combat ended. No unit perished.");
 	}
 	
-	/* returns true if the defender takes lethal damage */
-	static bool ResolveCombatRound(HexUnit currentAttacker, HexUnit currentDefender){
+	/* returns damage to be dealt */
+	static int ResolveCombatRound(HexUnit currentAttacker, HexUnit currentDefender, ref int atkHP, ref int defHP){
 		int attackerAtk = currentAttacker.Properties.GetStatUnmodified(CombatStat.Str);
 		int defenderDef = currentDefender.Properties.GetStatUnmodified(CombatStat.Def);
 
 		int damage = attackerAtk - defenderDef;
 		//Debug.Log(attackerAtk + " - " + defenderDef + " = " + damage);
 
-		bool defenderDefeated = currentDefender.TakeDamage(damage);
-
-		return defenderDefeated;
+		return damage;
 	}
+
 }

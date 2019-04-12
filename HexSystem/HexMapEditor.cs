@@ -6,11 +6,9 @@ using UnityEngine.EventSystems;
 
 public class HexMapEditor : MonoBehaviour
 {
-    [SerializeField]
-    HexGrid hexGrid;
+    public HexGrid hexGrid;
     
-	[SerializeField]
-	GameObject editorPanel;
+	public GameObject editorPanel;
 
     public Material terrainMaterial;
 

@@ -8,8 +8,7 @@ public class TurnDisplay : MonoBehaviour
 {
 	public RectTransform turnUI;
 
-	[SerializeField]
-	float startX, endX;
+	public float startX, endX;
 
 	public AnimationCurve curve;
 

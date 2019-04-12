@@ -11,7 +11,17 @@ public class HexUnit : MonoBehaviour {
 
 	public UnitProperties Properties;
 	
-	public int currentHP;
+	int currentHP;
+	public int CurrentHP{
+		get{
+			return currentHP;
+		}
+	}
+	public int MaxHP{
+		get{
+			return Properties.GetStat(CombatStat.HP);
+		}
+	}
 	public DynamicMeter hpBar;
 	public bool isDead;
 
@@ -298,6 +308,19 @@ public class HexUnit : MonoBehaviour {
 	}
 
 
+	
+
+	/* damage received/healed during combat -- returns true if unit dies */
+	public bool SetCurrentHP(int hp){
+		currentHP = Mathf.Clamp(hp, 0, MaxHP);
+		hpBar.SetCurrentValue(currentHP);
+		if(currentHP <= 0){
+			Die();
+			return true;
+		}
+		return false;
+	}
+
 	public void ResetHP(){
 		currentHP = Properties.GetStat(CombatStat.HP);
 		hpBar.SetCurrentValue(currentHP);
@@ -305,7 +328,7 @@ public class HexUnit : MonoBehaviour {
 
 	/* damage received during combat -- returns true if unit dies */
 	public bool TakeDamage(int dmg){
-		currentHP -= dmg;
+		currentHP = Mathf.Clamp(currentHP - dmg, 0, MaxHP);
 		hpBar.SetCurrentValue(currentHP);
 		if (currentHP <= 0){
 			currentHP = 0;
@@ -313,6 +336,12 @@ public class HexUnit : MonoBehaviour {
 			return true;
 		}
 		return false;
+	}
+
+	/* damage received out of combat -- will never drop hp below 1 */
+	public void TakeChipDamage(int dmg){
+		currentHP = Mathf.Clamp(currentHP - dmg, 1, MaxHP);
+		hpBar.SetCurrentValue(currentHP);
 	}
 
 	/* preps unit for death */

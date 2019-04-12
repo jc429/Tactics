@@ -10,16 +10,11 @@ public class UnitInfoPanel : MonoBehaviour
 
 	public bool isActive;
 
-	[SerializeField]
-	GameObject panel; 
-	[SerializeField]
-	SkillInfoPanel skillInfoPanel; 
-	[SerializeField]
-	TextMeshProUGUI unitName;
-	public
-	TextMeshProUGUI unitMoveType, unitWeaponType, unitMoveRange, unitWeaponRange;
-	[SerializeField]
-	DynamicMeter hpMeter, specialMeter;
+	public GameObject panel; 
+	public SkillInfoPanel skillInfoPanel; 
+	public TextMeshProUGUI unitName;
+	public TextMeshProUGUI unitMoveType, unitWeaponType, unitMoveRange, unitWeaponRange;
+	public DynamicMeter hpMeter, specialMeter;
 
 	[NamedArrayAttribute (new string[] {"HP", "Str", "Skl", "Spd", "Def", "Res"})]
 	public TextMeshProUGUI[] statFields;
@@ -64,8 +59,8 @@ public class UnitInfoPanel : MonoBehaviour
 				displayedStat = Mathf.Clamp(displayedStat,0,99);
 				statFields[i].text = displayedStat.ToString();
 			}
-			int curHP = unit.currentHP;
-			int maxHP = unit.Properties.GetStat(CombatStat.HP);
+			int curHP = unit.CurrentHP;
+			int maxHP = unit.MaxHP;
 			statFields[0].text =  curHP.ToString() + "/" + maxHP.ToString();
 			hpMeter.SetMaxValue(maxHP);
 			hpMeter.SetCurrentValue(curHP);

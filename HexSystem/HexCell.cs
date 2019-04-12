@@ -27,6 +27,7 @@ public class HexCell : MonoBehaviour
 
 	// adjacent cells
     [SerializeField]
+	[NamedArrayAttribute (new string[] {"NE", "E", "SE", "SW", "W", "NW"})]
 	HexCell[] neighbors;
 
 	// chunk this cell is a member of 
