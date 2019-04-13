@@ -6,7 +6,7 @@ public static class CombatManager {
     
 	public static CombatForecast combatForecast;
 
-	public static void PreCalculateCombat(HexUnit attackUnit, HexUnit defendUnit, int combatRange){
+	public static void PreCalculateCombat(HexUnit attackUnit, HexUnit defendUnit){
 		if(attackUnit == null || defendUnit == null){
 			Debug.Log("Combat failed! Not enough members!");
 			return;

@@ -57,6 +57,18 @@ public class GameUI : MonoBehaviour {
 					}
 					else{
 						UpdateCurrentCell();
+						if(currentCell != null && currentCell.Unit != null){
+							if(selectedUnit.Properties.affiliation != currentCell.Unit.Properties.affiliation){
+								CombatManager.PreCalculateCombat(selectedUnit, currentCell.Unit);
+								CombatManager.combatForecast.Show();
+							}
+							else{
+								CombatManager.combatForecast.Hide();
+							}
+						}
+						else{
+							CombatManager.combatForecast.Hide();
+						}
 					}
 					break;
 				case TurnState.Finished:

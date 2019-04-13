@@ -6,6 +6,8 @@ using UnityEngine.UI;
 public class CombatForecast : MonoBehaviour
 {
 	public GameObject panel;
+	public CombatForecastUnitPanel leftUnitPanel;
+	public CombatForecastUnitPanel rightUnitPanel;
 
     void Awake()
     {
@@ -24,5 +26,10 @@ public class CombatForecast : MonoBehaviour
 
 	public void Hide(){
 		panel.SetActive(false);
+	}
+
+	public void SetUnits(HexUnit left, HexUnit right){
+		leftUnitPanel.SetUnit(left);
+		rightUnitPanel.SetUnit(right);
 	}
 }

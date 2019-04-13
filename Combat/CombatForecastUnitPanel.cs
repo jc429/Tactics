@@ -28,5 +28,6 @@ public class CombatForecastUnitPanel : MonoBehaviour
 	public void SetUnit(HexUnit unit){
 		hpBar.SetMaxValue(unit.MaxHP);
 		hpBar.SetCurrentValue(unit.CurrentHP);
+		
 	}
 }
