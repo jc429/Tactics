@@ -14,6 +14,8 @@ public class CombatForecastUnitPanel : MonoBehaviour
 	public TextMeshProUGUI unitHPPreviewTextbox;
 	public DynamicMeter hpBar;
 
+	HexUnit currentUnit;
+
     // Start is called before the first frame update
     void Awake(){
 		panelTint = GetComponent<Image>();
@@ -26,6 +28,7 @@ public class CombatForecastUnitPanel : MonoBehaviour
     }
 
 	public void SetUnit(HexUnit unit){
+		currentUnit = unit;
 		hpBar.SetMaxValue(unit.MaxHP);
 		hpBar.SetCurrentValue(unit.CurrentHP);
 		

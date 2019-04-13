@@ -719,7 +719,7 @@ public class HexGrid : MonoBehaviour
 	public void AddUnit (HexUnit unit, HexCell location, DodecDirection direction) {
 		units.Add(unit);
 		unit.transform.SetParent(transform, false);
-		unit.Location = location;
+		unit.CurrentCell = location;
 		unit.Facing = direction;
 	}
 

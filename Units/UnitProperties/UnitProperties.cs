@@ -5,6 +5,8 @@ using UnityEngine;
 
 [System.Serializable]
 public class UnitProperties : System.Object{
+	public HexUnit unit;
+
 	public MovementClass movementClass;
 	public WeaponType weaponType;
 	
@@ -123,9 +125,9 @@ public class UnitProperties : System.Object{
 		if(skillID == 0){
 			return;
 		}
-		//Skill skill = SkillTable.GetSkill(skillID);
 		Skill skill = SkillDBReader.LoadSkill(skillID);
 		int type = (int)skill.skillType;
+
 		if(type == 0){	//null type, something went wrong
 			//just write to slot 0
 			skillIDs[type] = skillID;
@@ -136,6 +138,9 @@ public class UnitProperties : System.Object{
 			skills[type - 1] = skill;
 		}
 		//Debug.Log(":)");
+
+		/* hook up event listeners and stuff here */
+		
 	}
 
 	/* remove all of unit's skills */

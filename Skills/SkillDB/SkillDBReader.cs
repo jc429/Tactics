@@ -127,9 +127,10 @@ public static class SkillDBReader{
 			using(IDataReader reader = dbCmd.ExecuteReader()){
 				//each row is a condition/effect pair
 				int ordLink = reader.GetOrdinal("Link ID");
+				int ordTrigger = reader.GetOrdinal("Trigger Type");
 				int ordConF = reader.GetOrdinal("Condition Family ID");
 				int ordEffF = reader.GetOrdinal("Effect Family ID");
-				if(ordLink < 0 || ordConF < 0 || ordEffF < 0){
+				if(ordLink < 0 || ordTrigger < 0 || ordConF < 0 || ordEffF < 0){
 					Debug.Log("ERROR: Column not found, aborting");
 					return false;
 				}
@@ -137,7 +138,8 @@ public static class SkillDBReader{
 					int pairID = reader.GetInt32(ordLink);
 					ConditionEffectPair cePair = new ConditionEffectPair();
 					cePair.pairID = pairID;
-					//cePair.triggerType = reader.GetInt32(2); //FIXME LATER
+					string triggerType = reader.GetString(ordTrigger);
+					cePair.triggerType = SkillTriggerIDExtensions.GetTriggerID(triggerType);
 					cePair.conditionFamilyID = reader.GetString(ordConF);
 					cePair.effectFamilyID = reader.GetString(ordEffF);
 

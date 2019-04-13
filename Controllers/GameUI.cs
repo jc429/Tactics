@@ -60,7 +60,7 @@ public class GameUI : MonoBehaviour {
 						if(currentCell != null && currentCell.Unit != null){
 							if(selectedUnit.Properties.affiliation != currentCell.Unit.Properties.affiliation){
 								CombatManager.PreCalculateCombat(selectedUnit, currentCell.Unit);
-								CombatManager.combatForecast.Show();
+								CombatManager.combatForecast.Show(selectedUnit, currentCell.Unit);
 							}
 							else{
 								CombatManager.combatForecast.Hide();
@@ -137,7 +137,7 @@ public class GameUI : MonoBehaviour {
 					return;
 				}
 				selectedUnit = unit;
-				startCell = unit.Location;
+				startCell = unit.CurrentCell;
 				startFacing = unit.Facing;
 				grid.CalculateMovementRange(currentCell,selectedUnit);
 				grid.CalculateTotalAttackRange(selectedUnit);
@@ -160,7 +160,7 @@ public class GameUI : MonoBehaviour {
 
 	void ReturnUnitToStart(){
 		if(selectedUnit){
-			selectedUnit.Location = startCell;
+			selectedUnit.CurrentCell = startCell;
 			selectedUnit.Facing = startFacing;
 			selectedUnit.turnState = TurnState.PreMove;
 		}
@@ -170,7 +170,7 @@ public class GameUI : MonoBehaviour {
 	void DoPathfinding () {
 		if (UpdateCurrentCell()) {
 			if (currentCell /*&& selectedUnit.IsValidDestination(currentCell)*/) {
-				grid.FindPath(selectedUnit.Location, currentCell, selectedUnit);
+				grid.FindPath(selectedUnit.CurrentCell, currentCell, selectedUnit);
 			}
 			else {
 				grid.ClearPath();
@@ -246,6 +246,6 @@ public class GameUI : MonoBehaviour {
 		GameController.unitInfoPanel.OpenPanel(selectedUnit);
 		selectedUnit.MarkMovementRange(true);
 		selectedUnit.MarkAttackRange(true);
-		grid.FindPath(selectedUnit.Location, currentCell, selectedUnit);
+		grid.FindPath(selectedUnit.CurrentCell, currentCell, selectedUnit);
 	}
 }

@@ -8,7 +8,7 @@ using UnityEngine;
 public class ConditionEffectPair{
 	public int pairID;		//mostly for debugging purposes
 
-	public SkillTriggerType triggerType;
+	public SkillTriggerID triggerType;
 
 	public string conditionFamilyID;
 	public string effectFamilyID;
@@ -16,8 +16,13 @@ public class ConditionEffectPair{
 	public SkillEffectFamily effectFamily;
 
 	public ConditionEffectPair(){
-		triggerType = SkillTriggerType.AlwaysActive;
 		conditionFamily = new SkillConditionFamily();
 		effectFamily = new SkillEffectFamily();
+	}
+
+	public bool Resolve(){
+
+
+		return true;
 	}
 }

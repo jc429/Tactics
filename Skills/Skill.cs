@@ -15,13 +15,13 @@ public class Skill{
 	//public Sprite sprite;
 
 	public List<ConditionEffectPair> cePairs;
+	
 
 
 	public Skill(){
 		ClearCEPairs();
 	}
 	
-
 	/* cleans and initializes CE Pair list if needed */
 	public void ClearCEPairs(){
 		if(cePairs != null){
@@ -30,6 +30,11 @@ public class Skill{
 		else{
 			cePairs = new List<ConditionEffectPair>();
 		}
+	}
+
+
+	public void ResolveConditionEffectPair(ConditionEffectPair cePair){
+
 	}
 
 	/* prints the skill out to the debug logger */

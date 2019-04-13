@@ -24,6 +24,11 @@ public class CombatForecast : MonoBehaviour
 		panel.SetActive(true);
 	}
 
+	public void Show(HexUnit left, HexUnit right){
+		SetUnits(left,right);
+		panel.SetActive(true);
+	}
+
 	public void Hide(){
 		panel.SetActive(false);
 	}

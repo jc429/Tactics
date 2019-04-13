@@ -9,7 +9,14 @@ public class HexUnit : MonoBehaviour {
 
 	public static HexUnit unitPrefab;
 
-	public UnitProperties Properties;
+	private UnitProperties properties;
+	public UnitProperties Properties{
+		get{
+			return properties;
+		}
+	}	
+	
+	SkillEventListeners skillEventListeners;
 	
 	int currentHP;
 	public int CurrentHP{
@@ -29,14 +36,14 @@ public class HexUnit : MonoBehaviour {
 	public TurnState turnState;
 
 	// cell unit is positioned in
-	HexCell location;
-	public HexCell Location {
-		get {	return location;	}
+	HexCell currentCell;
+	public HexCell CurrentCell {
+		get {	return currentCell;	}
 		set {
-			if (location) {
-				location.Unit = null;
+			if (currentCell) {
+				currentCell.Unit = null;
 			}
-			location = value;
+			currentCell = value;
 			value.Unit = this;
 			transform.localPosition = value.Position;
 		}
@@ -68,7 +75,10 @@ public class HexUnit : MonoBehaviour {
 
 
 	public HexUnit(){
-		Properties = new UnitProperties();
+		properties = new UnitProperties();
+		properties.unit = this;
+		skillEventListeners = new SkillEventListeners();
+		skillEventListeners.unit = this;
 	}
 	
 	void Awake(){
@@ -81,8 +91,8 @@ public class HexUnit : MonoBehaviour {
 	}
 
 	void OnEnable () {
-		if (location) {
-			transform.localPosition = location.Position;
+		if (currentCell) {
+			transform.localPosition = currentCell.Position;
 		}
 	}
 
@@ -118,9 +128,10 @@ public class HexUnit : MonoBehaviour {
 	*/
 
 	public void StartUnit(){
+		
 		Properties.RandomizeStats();
 		ResetHP();
-		GameController.hexGrid.CalculateMovementRange(location, this);
+		GameController.hexGrid.CalculateMovementRange(currentCell, this);
 		GameController.hexGrid.CalculateTotalAttackRange(this);
 	}
 
@@ -158,7 +169,7 @@ public class HexUnit : MonoBehaviour {
 		if(turnState == TurnState.Idle){
 			//if for some reason the unit doesnt have move/attack tiles calculated yet (but they always should)
 			if(moveTiles != null && moveTiles.Count == 0){
-				GameController.hexGrid.CalculateMovementRange(location,this);
+				GameController.hexGrid.CalculateMovementRange(currentCell,this);
 			}
 			if(attackTiles != null && attackTiles.Count == 0){
 				GameController.hexGrid.CalculateTotalAttackRange(this);
@@ -224,7 +235,7 @@ public class HexUnit : MonoBehaviour {
 
 	/* refresh unit's position to be standing on cell */
 	public void ValidateLocation () {
-		transform.localPosition = location.Position;
+		transform.localPosition = currentCell.Position;
 	}
 
 	/* true if unit can reach a tile */
@@ -238,7 +249,7 @@ public class HexUnit : MonoBehaviour {
 		if(isTraveling){
 			return;	
 		}
-		Location = path[path.Count - 1];
+		CurrentCell = path[path.Count - 1];
 		pathToTravel = path;
 		if(pathToTravel.Count <= 1){
 			pathToTravel = null;
@@ -283,7 +294,7 @@ public class HexUnit : MonoBehaviour {
 			yield return null;
 		}
 
-		transform.localPosition = location.Position;
+		transform.localPosition = currentCell.Position;
 		
 		// set facing
 		Facing = DodecDirectionExtensions.DodecDirectionFromDegrees(Mathf.RoundToInt(_unitAnimator.Orientation));
@@ -303,7 +314,7 @@ public class HexUnit : MonoBehaviour {
 	/* called after unit moves to destination */
 	void FinishTravel(){
 		turnState = TurnState.PostMove;
-		GameController.hexGrid.CalculateLocalAttackRange(Location,this);
+		GameController.hexGrid.CalculateLocalAttackRange(CurrentCell,this);
 		GameController.gameUI.OpenUnitActionMenu();
 	}
 
@@ -347,12 +358,12 @@ public class HexUnit : MonoBehaviour {
 	/* preps unit for death */
 	public void Die () {
 		isDead = true;
-		location.Unit = null;
+		currentCell.Unit = null;
 	}
 
 	/* save unit to file */
 	public void Save (BinaryWriter writer) {
-		location.coordinates.Save(writer);
+		currentCell.coordinates.Save(writer);
 		writer.Write((int)facing);
 		Properties.Save(writer);
 	}
