@@ -16,7 +16,7 @@ public class Skill{
 
 	public List<ConditionEffectPair> cePairs;
 	
-
+	public HexUnit unit;
 
 	public Skill(){
 		ClearCEPairs();
@@ -32,6 +32,10 @@ public class Skill{
 		}
 	}
 
+	public void AddConditionEffectPair(ConditionEffectPair cePair){
+		cePairs.Add(cePair);
+		cePair.parentSkill = this;
+	}
 
 	public void ResolveConditionEffectPair(ConditionEffectPair cePair){
 

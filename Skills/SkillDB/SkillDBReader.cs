@@ -146,7 +146,7 @@ public static class SkillDBReader{
 					LoadConditionFamily(dbConnection, skill, ref cePair);
 					LoadEffectFamily(dbConnection, skill, ref cePair);
 
-					skill.cePairs.Add(cePair);
+					skill.AddConditionEffectPair(cePair);
 				}
 				reader.Close();
 			}

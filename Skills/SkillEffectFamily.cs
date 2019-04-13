@@ -6,9 +6,16 @@ using UnityEngine;
 
 [System.Serializable]
 public class SkillEffectFamily{
-	
+	[System.NonSerialized]
+	public ConditionEffectPair parentPair;
 	
 	public List<SkillEffect> skillEffects;
+
+	HexUnit Unit{
+		get{
+			return parentPair.parentSkill.unit;
+		}
+	}
 
 	public SkillEffectFamily(){
 		skillEffects = new List<SkillEffect>();
@@ -16,6 +23,7 @@ public class SkillEffectFamily{
 
 	public void AddSkillEffect(SkillEffect effect){
 		skillEffects.Add(effect);
+		effect.parentEffectFamily = this;
 	}
 
 	public void ClearSkillEffects(){

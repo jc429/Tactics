@@ -6,10 +6,18 @@ using UnityEngine;
 
 [System.Serializable]
 public class SkillCondition{
+	[System.NonSerialized]
+	public SkillConditionFamily parentConditionFamily;
 
     SkillConditionData conditionData;
 
 	int[] vars;
+
+	HexUnit Unit{
+		get{
+			return parentConditionFamily.parentPair.parentSkill.unit;
+		}
+	}
 
 
 	public SkillCondition(SkillConditionData data){
@@ -46,6 +54,7 @@ public class SkillCondition{
 		switch(conditionData.cID){
 		case(ConditionID.CN_NONE):
 			return true;
+
 		default:
 			return false;
 		}

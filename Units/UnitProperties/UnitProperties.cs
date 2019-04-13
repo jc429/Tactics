@@ -127,6 +127,7 @@ public class UnitProperties : System.Object{
 		}
 		Skill skill = SkillDBReader.LoadSkill(skillID);
 		int type = (int)skill.skillType;
+		skill.unit = unit;
 
 		if(type == 0){	//null type, something went wrong
 			//just write to slot 0
@@ -138,6 +139,7 @@ public class UnitProperties : System.Object{
 			skills[type - 1] = skill;
 		}
 		//Debug.Log(":)");
+
 
 		/* hook up event listeners and stuff here */
 		

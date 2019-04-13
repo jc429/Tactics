@@ -6,11 +6,19 @@ using UnityEngine;
 
 [System.Serializable]
 public class SkillEffect{
+	[System.NonSerialized]
+	public SkillEffectFamily parentEffectFamily;
+
     SkillEffectData effectData;
 	SkillTarget target;
 
 	int[] vars;
 
+	HexUnit Unit{
+		get{
+			return parentEffectFamily.parentPair.parentSkill.unit;
+		}
+	}
 	
 	public SkillEffect(SkillEffectData data, SkillTarget target = SkillTarget.TARGET_NONE){
 		this.effectData = data;

@@ -6,6 +6,9 @@ using UnityEngine;
 
 [System.Serializable]
 public class ConditionEffectPair{
+	[System.NonSerialized]
+	public Skill parentSkill;
+
 	public int pairID;		//mostly for debugging purposes
 
 	public SkillTriggerID triggerType;
@@ -15,13 +18,22 @@ public class ConditionEffectPair{
 	public SkillConditionFamily conditionFamily;
 	public SkillEffectFamily effectFamily;
 
-	public ConditionEffectPair(){
-		conditionFamily = new SkillConditionFamily();
-		effectFamily = new SkillEffectFamily();
+	HexUnit Unit{
+		get{
+			return parentSkill.unit;
+		}
 	}
 
-	public bool Resolve(){
+	public ConditionEffectPair(){
+		conditionFamily = new SkillConditionFamily();
+		conditionFamily.parentPair = this;
+		effectFamily = new SkillEffectFamily();
+		effectFamily.parentPair = this;
+	}
 
+
+	public bool Resolve(){
+		bool conditionsMet = conditionFamily.CheckConditionsMet();
 
 		return true;
 	}
