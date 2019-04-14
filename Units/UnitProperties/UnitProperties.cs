@@ -186,12 +186,34 @@ public class UnitProperties : System.Object{
 
 		/* hook up event listeners and stuff here */
 		foreach(ConditionEffectPair cePair in skill.cePairs){
-			if(cePair.triggerType == SkillTriggerID.TT_ALWAYS_ACTIVE){
+			switch(cePair.triggerType){
+			case SkillTriggerID.TT_ALWAYS_ACTIVE:
 				//apply effect immediately
 				cePair.Resolve();
-			}
-			if(cePair.triggerType == SkillTriggerID.TT_COMBAT_START){
+				break;
+			case SkillTriggerID.TT_TURN_START:
 				unit.skillEventHandler.OnTurnStart += ConditionEffectPair.ResolveEvent;
+				break;
+			case SkillTriggerID.TT_TURN_END:
+				unit.skillEventHandler.OnTurnEnd += ConditionEffectPair.ResolveEvent;
+				break;
+			case SkillTriggerID.TT_COMBAT_START:
+				unit.skillEventHandler.OnCombatStart += ConditionEffectPair.ResolveEvent;
+				break;
+			case SkillTriggerID.TT_COMBAT_END:
+				unit.skillEventHandler.OnCombatEnd += ConditionEffectPair.ResolveEvent;
+				break;
+			case SkillTriggerID.TT_ASSIST_USED:
+				unit.skillEventHandler.OnAssistUsed += ConditionEffectPair.ResolveEvent;
+				break;
+			case SkillTriggerID.TT_RECEIVE_DAMAGE:
+				unit.skillEventHandler.OnTakeDamage += ConditionEffectPair.ResolveEvent;
+				break;
+			case SkillTriggerID.TT_SPECIAL_ACTIVATE:
+				unit.skillEventHandler.OnSpecialActivate += ConditionEffectPair.ResolveEvent;
+				break;
+			default:
+				break;
 			}
 		}
 	}

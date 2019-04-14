@@ -154,7 +154,7 @@ public static class SkillDBReader{
 			}
 
 		}
-		return true;		//TODO: fail if something goes wrong
+		return true;
 	}
 
 	static bool LoadConditionFamily(IDbConnection dbConnection, Skill skill, ref ConditionEffectPair cePair){

@@ -140,6 +140,7 @@ public class HexUnit : MonoBehaviour {
 		_unitColor.SetColor(Colors.ArmyColors.GetArmyColor(Properties.affiliation));
 		Properties.ClearBuffs();
 		//Properties.ClearDebuffs();
+		skillEventHandler.OnTurnStart();
 	}
 
 	/* called after unit does combat or other actions */
