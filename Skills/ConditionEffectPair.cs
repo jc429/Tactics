@@ -34,7 +34,9 @@ public class ConditionEffectPair{
 
 	public bool Resolve(){
 		bool conditionsMet = conditionFamily.CheckConditionsMet();
-
-		return true;
+		if(conditionsMet){
+			effectFamily.ApplyEffects();
+		}
+		return conditionsMet;
 	}
 }

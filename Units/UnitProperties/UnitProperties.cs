@@ -10,12 +10,22 @@ public class UnitProperties : System.Object{
 	public MovementClass movementClass;
 	public WeaponType weaponType;
 	
+	/* raw stats are the unit's stats with no skills applied */
 	[NamedArrayAttribute (new string[] {"HP", "Str", "Skl", "Spd", "Def", "Res"})]
-	public int[] baseStats = new int[(int)CombatStat.Total];
+	public int[] rawStats = new int[(int)CombatStat.Total];
+	/* any modifiers to stats provided by skills go here */
 	[NamedArrayAttribute (new string[] {"HP", "Str", "Skl", "Spd", "Def", "Res"})]
-	public int[] statBuffs = new int[(int)CombatStat.Total];
+	public int[] statModifiers = new int[(int)CombatStat.Total];
+	/* buffs applied to each stat (range 0 to +7) */
 	[NamedArrayAttribute (new string[] {"HP", "Str", "Skl", "Spd", "Def", "Res"})]
-	public int[] statDebuffs = new int[(int)CombatStat.Total];
+	public int[] fieldBuffs = new int[(int)CombatStat.Total];
+	/* debuffs applied to each stat (range 0 to -7) */
+	[NamedArrayAttribute (new string[] {"HP", "Str", "Skl", "Spd", "Def", "Res"})]
+	public int[] fieldDebuffs = new int[(int)CombatStat.Total];
+	/* manipulations to stats applied during combat */
+	[NamedArrayAttribute (new string[] {"HP", "Str", "Skl", "Spd", "Def", "Res"})]
+	public int[] combatBuffs = new int[(int)CombatStat.Total];
+
 
 	public int[] skillIDs = new int[7];
 	public Skill[] skills = new Skill[7];
@@ -40,76 +50,109 @@ public class UnitProperties : System.Object{
 
 	public UnitProperties(){
 		for(int i = 0; i < (int)CombatStat.Total; i++){
-			baseStats[i] = 1;
-			statBuffs[i] = 0;
-			statDebuffs[i] = 0;
+			rawStats[i] = 1;
+			statModifiers[i] = 0;
+			fieldBuffs[i] = 0;
+			fieldDebuffs[i] = 0;
+			combatBuffs[i] = 0;
 		}
 	}
 
 	/* sets a stat to the desired stat */
 	public void SetStat(CombatStat stat, int amount){
 		amount = Mathf.Clamp(amount,0,99);
-		baseStats[(int)stat] = amount;
+		rawStats[(int)stat] = amount;
+	}
+
+	public void ApplyStatMod(CombatStat stat, int value){
+		statModifiers[(int)stat] += value;
+	}
+	public void ApplyStatMod(int stat, int value){
+		if(stat < 0 || stat >= statModifiers.Length){
+			Debug.Log("ERROR! Trying to modify nonexistent stat " + stat);
+			return;
+		}
+		statModifiers[stat] += value;
 	}
 
 	/* returns a given stat with no modifiers */
-	public int GetStatUnmodified(CombatStat stat){
-		return baseStats[(int)stat];
+	public int GetRawStat(CombatStat stat){
+		return rawStats[(int)stat];
+	}
+
+	/* returns a given stat with no buffs/debuffs */
+	public int GetDisplayStat(CombatStat stat){
+		return rawStats[(int)stat] + statModifiers[(int)stat];
 	}
 
 	/* returns a given stat with mods applied */
 	public int GetStat(CombatStat stat, bool ignoreBuffs = false, bool ignoreDebuffs = false){
-		return baseStats[(int)stat] 
-			+ (ignoreBuffs ? 0 : statBuffs[(int)stat])
-			+ (ignoreDebuffs ? 0 : statDebuffs[(int)stat]);
+		return  rawStats[(int)stat] + statModifiers[(int)stat] 
+			+ (ignoreBuffs ? 0 : fieldBuffs[(int)stat])
+			+ (ignoreDebuffs ? 0 : fieldDebuffs[(int)stat]);
 	}
 
+	/* returns a given stat with mods applied */
 	public int GetStat(int stat, bool ignoreBuffs = false, bool ignoreDebuffs = false){
-		return baseStats[stat] 
-			+ (ignoreBuffs ? 0 : statBuffs[(int)stat])
-			+ (ignoreDebuffs ? 0 : statDebuffs[(int)stat]);
+		return rawStats[stat] + statModifiers[stat] 
+			+ (ignoreBuffs ? 0 : fieldBuffs[(int)stat])
+			+ (ignoreDebuffs ? 0 : fieldDebuffs[(int)stat]);
 	}
 
 	/* randomizes stats */
 	public void RandomizeStats(){
-		baseStats[0] = 40 + Random.Range(0,20);
-		baseStats[1] = 30 + Random.Range(0,20);
-		baseStats[2] = 30 + Random.Range(0,20);
-		baseStats[3] = 30 + Random.Range(0,20);
-		baseStats[4] = 20 + Random.Range(0,20);
-		baseStats[5] = 20 + Random.Range(0,20);
+		rawStats[0] = 40 + Random.Range(0,20);
+		rawStats[1] = 30 + Random.Range(0,20);
+		rawStats[2] = 30 + Random.Range(0,20);
+		rawStats[3] = 30 + Random.Range(0,20);
+		rawStats[4] = 20 + Random.Range(0,20);
+		rawStats[5] = 20 + Random.Range(0,20);
 	}
 
 	/* applies a buff to the desired stat */
 	public void ApplyBuff(CombatStat stat, int amount){
 		amount = Mathf.Clamp(amount,0,7);
-		statBuffs[(int)stat] = Mathf.Max(statBuffs[(int)stat],amount);
+		fieldBuffs[(int)stat] = Mathf.Max(fieldBuffs[(int)stat],amount);
 	}
 
 	/* applies a debuff to the desired stat */
 	public void ApplyDebuff(CombatStat stat, int amount){
 		amount = Mathf.Clamp(amount,-7,0);
-		statDebuffs[(int)stat] = Mathf.Min(statDebuffs[(int)stat],amount);
+		fieldDebuffs[(int)stat] = Mathf.Min(fieldDebuffs[(int)stat],amount);
 	}
 
 	/* resets all stats to one (not zero bc hp of 0 would break the game) */
 	void ClearStats(){
-		foreach(int i in baseStats){
-			baseStats[i] = 1;
+		foreach(int i in rawStats){
+			rawStats[i] = 1;
+		}
+	}
+
+	/* not really sure this should exist/be used, skills should handle the removal of modifiers on their own */
+	void ClearStatModifiers(){
+		foreach(int i in rawStats){
+			statModifiers[i] = 0;
 		}
 	}
 
 	/* resets all buffs to zero */
 	public void ClearBuffs(){
-		foreach(int i in statBuffs){
-			statBuffs[i] = 0;
+		foreach(int i in fieldBuffs){
+			fieldBuffs[i] = 0;
 		}
 	}
 
 	/* resets all debuffs to zero */
 	public void ClearDebuffs(){
-		foreach(int i in statDebuffs){
-			statDebuffs[i] = 0;
+		foreach(int i in fieldDebuffs){
+			fieldDebuffs[i] = 0;
+		}
+	}
+
+	/* resets all combat mods to zero */
+	public void ClearCombatBuffs(){
+		foreach(int i in combatBuffs){
+			combatBuffs[i] = 0;
 		}
 	}
 
@@ -142,12 +185,17 @@ public class UnitProperties : System.Object{
 
 
 		/* hook up event listeners and stuff here */
-		
+		foreach(ConditionEffectPair cePair in skill.cePairs){
+			if(cePair.triggerType == SkillTriggerID.TT_ALWAYS_ACTIVE){
+				//apply effect immediately
+				cePair.Resolve();
+			}
+		}
 	}
 
 	/* remove all of unit's skills */
 	public void ClearSkills(){
-		for(int i = 0; i < 7; i++){
+		for(int i = 0; i < skillIDs.Length; i++){
 			skillIDs[i] = 0;
 			skills[i] = null;
 		}
@@ -166,9 +214,9 @@ public class UnitProperties : System.Object{
 		writer.Write((int)weaponType);
 		writer.Write(affiliation);
 		for(int i = 0; i < (int)CombatStat.Total; i++){
-			writer.Write(baseStats[i]);
+			writer.Write(rawStats[i]);
 		}
-		for(int i = 0; i < 7; i++){
+		for(int i = 0; i < skillIDs.Length; i++){
 			writer.Write(skillIDs[i]);
 		}
 	}
@@ -179,9 +227,10 @@ public class UnitProperties : System.Object{
 		weaponType = (WeaponType)reader.ReadInt32();
 		affiliation = reader.ReadInt32();
 		for(int i = 0; i < (int)CombatStat.Total; i++){
-			baseStats[i] = reader.ReadInt32();
+			rawStats[i] = reader.ReadInt32();
+			statModifiers[i] = 0;
 		}
-		for(int i = 0; i < 7; i++){
+		for(int i = 0; i < skillIDs.Length; i++){
 			skillIDs[i] = reader.ReadInt32();
 			SetSkill(skillIDs[i]);
 		}

@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class PauseScreen : MonoBehaviour
 {
-	[SerializeField]
-	GameObject screen;
+	public GameObject screen;
 
     void Awake(){
 		GameController.pauseScreen = this;

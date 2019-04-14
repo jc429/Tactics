@@ -9,6 +9,8 @@ public class SkillEffect{
 	[System.NonSerialized]
 	public SkillEffectFamily parentEffectFamily;
 
+	public int positionInFamily;
+
     SkillEffectData effectData;
 	SkillTarget target;
 
@@ -51,5 +53,34 @@ public class SkillEffect{
 		}
 		vars[pos] = value;
 		return true;
+	}
+
+	public void Apply(){
+		HexUnit targetUnit = null;
+		switch(target){
+		case SkillTarget.TARGET_NONE:
+			break;
+		case SkillTarget.TARGET_SELF:
+			targetUnit = Unit;
+			break;
+		default:
+			break;
+		}
+
+		if(targetUnit == null){
+			return;
+		}
+
+		switch(effectData.eID){
+		case EffectID.EFF_NONE:
+			return;
+		case EffectID.EFF_MODIFY_STAT:
+			Unit.Properties.ApplyStatMod(vars[0], vars[1]);
+			Debug.Log("Effect applied! Added " + vars[1] + " to stat " + vars[0] + "!");
+			return;
+
+		default:
+			return;
+		}
 	}
 }

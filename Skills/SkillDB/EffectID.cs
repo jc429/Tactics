@@ -7,7 +7,7 @@ using UnityEngine;
 
 public enum EffectID{
 	EFF_NONE = 0,
-	EFF_ADD_ATK = 1,
+	EFF_MODIFY_STAT = 1,
 	EFF_ADD_SPD = 2,
 	EFF_ADD_DEF = 3,
 	EFF_ADD_RES = 4,

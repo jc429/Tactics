@@ -33,6 +33,7 @@ public static class SkillDBReader{
 		public const string conIDEquals = " \"Condition ID\" = ";
 		public const string effIDEquals = " \"Effect ID\" = ";
 		public const string effTargetEquals = " \"Effect Target\" = ";
+		public const string effPositionEquals = " \"Effect Position\" = ";
 	}
 
 	private static string connectionString;
@@ -51,12 +52,12 @@ public static class SkillDBReader{
 
 	
 	/* loads a skill from the database. if infoOnly is set true, only loads the user-facing skill display info */
-	public static Skill LoadSkill(int skillID, bool infoOnly = false){
+	public static Skill LoadSkill(int skillNo, bool infoOnly = false){
 		Skill skill = new Skill();
 		using (IDbConnection dbConnection = new SqliteConnection(connectionString)){
 			dbConnection.Open();
 			bool success;
-			success = LoadSkillInfo(skillID, dbConnection, ref skill);
+			success = LoadSkillInfo(skillNo, dbConnection, ref skill);
 
 			if(infoOnly){
 				dbConnection.Close();
@@ -72,12 +73,12 @@ public static class SkillDBReader{
 	}
 
 	/* loads all of the front-end skill info (name, description, etc) */
-	static bool LoadSkillInfo(int skillID, IDbConnection dbConnection, ref Skill skill){
+	static bool LoadSkillInfo(int skillNo, IDbConnection dbConnection, ref Skill skill){
 		using(IDbCommand dbCmd = dbConnection.CreateCommand()){
 
 			/* first search for skill info */
 			string sqlQuery = DBStrings.selectAllFrom + DBStrings.skillInfo 
-					+ "WHERE" + DBStrings.skillNoEquals + skillID;
+					+ "WHERE" + DBStrings.skillNoEquals + skillNo;
 
 			dbCmd.CommandText = sqlQuery;
 			LogQuery(sqlQuery);
@@ -107,7 +108,7 @@ public static class SkillDBReader{
 				}
 				reader.Close();
 				if(!success){
-					Debug.Log("Skill Load failed! Skill ID: " + skillID);
+					Debug.Log("Skill Load failed! Skill ID: " + skillNo);
 					return false;
 				}
 			}
@@ -202,7 +203,7 @@ public static class SkillDBReader{
 						return false;
 					}
 					while(reader.Read()){
-						string conditionVarID = reader.GetString(ordCVID);
+						int conditionVarID = reader.GetInt32(ordCVID);
 						int varValue = reader.GetInt32(ordValue);
 						int varPosition = reader.GetInt32(ordCVPos);
 						condition.SetVariable(varValue,varPosition);
@@ -228,7 +229,8 @@ public static class SkillDBReader{
 				int rowCt = 0;	
 				int ordEffNo = reader.GetOrdinal("Effect No");
 				int ordEffTarget = reader.GetOrdinal("Effect Target");
-				if(ordEffNo < 0 || ordEffTarget < 0){
+				int ordEffPos = reader.GetOrdinal("Effect Position");
+				if(ordEffNo < 0 || ordEffTarget < 0 || ordEffPos < 0){
 					Debug.Log("ERROR: Column not found, aborting");
 					return false;
 				}
@@ -237,6 +239,7 @@ public static class SkillDBReader{
 					SkillEffectData data = SkillEffectDataList.GetSkillEffectData(effectNo);
 					SkillTarget target = SkillTargetExtensions.GetSkillTarget(reader.GetString(ordEffTarget));
 					SkillEffect effect = new SkillEffect(data, target);
+					effect.positionInFamily = reader.GetInt32(ordEffPos);
 
 					cePair.effectFamily.AddSkillEffect(effect); 
 					rowCt++;
@@ -253,7 +256,7 @@ public static class SkillDBReader{
 				string effQuery = DBStrings.selectAllFrom + DBStrings.effectVars
 						+ "WHERE" + DBStrings.skillIDEquals + StringExtensions.Enquote(skill.skillIDString)
 						+ " AND" + DBStrings.EffFamIDEquals + StringExtensions.Enquote(cePair.effectFamilyID)
-						+ " AND" + DBStrings.effIDEquals + StringExtensions.Enquote(effect.GetEffectIDString())
+						+ " AND" + DBStrings.effPositionEquals + StringExtensions.Enquote(effect.positionInFamily.ToString())
 						+ " AND" + DBStrings.effTargetEquals + StringExtensions.Enquote(effect.GetTargetString());
 				dbCmd.CommandText = effQuery;
 				LogQuery(effQuery);
@@ -267,7 +270,7 @@ public static class SkillDBReader{
 						return false;
 					}
 					while(reader.Read()){
-						string effectVarID = reader.GetString(ordEVID);
+						int effectVarID = reader.GetInt32(ordEVID);
 						int varValue = reader.GetInt32(ordValue);
 						int varPosition = reader.GetInt32(ordEVPos);
 						effect.SetVariable(varValue,varPosition);

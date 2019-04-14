@@ -51,9 +51,16 @@ public class SkillCondition{
 
 	/* returns true if condition is fulfilled, false otherwise */
 	public bool EvaluateConditionMet(){
+		bool result;
 		switch(conditionData.cID){
 		case(ConditionID.CN_NONE):
 			return true;
+		case(ConditionID.CN_USER_INITIATES_COMBAT):
+			result = (Unit == CombatManager.combatInfo.Attacker);
+			return result;
+		case(ConditionID.CN_FOE_INITIATES_COMBAT):
+			result = (Unit == CombatManager.combatInfo.Defender);
+			return result;
 
 		default:
 			return false;

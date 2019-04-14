@@ -6,6 +6,17 @@ public static class CombatManager {
     
 	public static CombatForecast combatForecast;
 
+	public static CombatInfo combatInfo;
+
+	public static void Initialize(){
+		if(combatInfo != null){
+			combatInfo.Clear();
+		}
+		else{
+			combatInfo = new CombatInfo();
+		}
+	}
+
 	public static void PreCalculateCombat(HexUnit attackUnit, HexUnit defendUnit){
 		if(attackUnit == null || defendUnit == null){
 			Debug.Log("Combat failed! Not enough members!");
@@ -65,8 +76,8 @@ public static class CombatManager {
 	
 	/* returns damage to be dealt */
 	static int ResolveCombatRound(HexUnit currentAttacker, HexUnit currentDefender, ref int atkHP, ref int defHP){
-		int attackerAtk = currentAttacker.Properties.GetStatUnmodified(CombatStat.Str);
-		int defenderDef = currentDefender.Properties.GetStatUnmodified(CombatStat.Def);
+		int attackerAtk = currentAttacker.Properties.GetStat(CombatStat.Atk);
+		int defenderDef = currentDefender.Properties.GetStat(CombatStat.Def);
 
 		int damage = attackerAtk - defenderDef;
 		//Debug.Log(attackerAtk + " - " + defenderDef + " = " + damage);

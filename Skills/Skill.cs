@@ -38,7 +38,7 @@ public class Skill{
 	}
 
 	public void ResolveConditionEffectPair(ConditionEffectPair cePair){
-
+		cePair.Resolve();
 	}
 
 	/* prints the skill out to the debug logger */

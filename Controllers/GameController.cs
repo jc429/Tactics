@@ -66,6 +66,7 @@ public class GameController : MonoBehaviour
 	public void InitializeGame(){
 		gameStarted = false;
 		ArmyManager.Initialize();
+		CombatManager.Initialize();
 		KeywordTable.InitializeKeywordTable(keywordCSV);
 		SkillDBReader.Initialize();
 		SkillSpriteLibrary.InitializeSpriteLibrary(skillSpriteSheet);

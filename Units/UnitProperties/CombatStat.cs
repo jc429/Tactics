@@ -1,6 +1,6 @@
 public enum CombatStat{
     HP,
-    Str,
+    Atk,
     Skl,
     Spd,
     Def,

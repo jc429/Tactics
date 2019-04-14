@@ -34,4 +34,11 @@ public class SkillEffectFamily{
 			skillEffects = new List<SkillEffect>();
 		}
 	}
+
+	public void ApplyEffects(){
+		foreach(SkillEffect effect in skillEffects){
+			effect.Apply();
+		}
+	}
+
 }

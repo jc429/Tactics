@@ -319,7 +319,17 @@ public class HexUnit : MonoBehaviour {
 	}
 
 
+
+
+
+
+	public void StartCombat(){
+
+	}
 	
+	public void EndCombat(){
+		Properties.ClearCombatBuffs();
+	}
 
 	/* damage received/healed during combat -- returns true if unit dies */
 	public bool SetCurrentHP(int hp){
