@@ -192,25 +192,25 @@ public class UnitProperties : System.Object{
 				cePair.Resolve();
 				break;
 			case SkillTriggerID.TT_TURN_START:
-				unit.skillEventHandler.OnTurnStart += ConditionEffectPair.ResolveEvent;
+				unit.skillEventHandler.onTurnStart.Add(cePair);
 				break;
 			case SkillTriggerID.TT_TURN_END:
-				unit.skillEventHandler.OnTurnEnd += ConditionEffectPair.ResolveEvent;
+				unit.skillEventHandler.onTurnEnd.Add(cePair);
 				break;
 			case SkillTriggerID.TT_COMBAT_START:
-				unit.skillEventHandler.OnCombatStart += ConditionEffectPair.ResolveEvent;
+				unit.skillEventHandler.onCombatStart.Add(cePair);
 				break;
 			case SkillTriggerID.TT_COMBAT_END:
-				unit.skillEventHandler.OnCombatEnd += ConditionEffectPair.ResolveEvent;
+				unit.skillEventHandler.onCombatEnd.Add(cePair);
 				break;
 			case SkillTriggerID.TT_ASSIST_USED:
-				unit.skillEventHandler.OnAssistUsed += ConditionEffectPair.ResolveEvent;
+				unit.skillEventHandler.onAssistUsed.Add(cePair);
 				break;
 			case SkillTriggerID.TT_RECEIVE_DAMAGE:
-				unit.skillEventHandler.OnTakeDamage += ConditionEffectPair.ResolveEvent;
+				unit.skillEventHandler.onTakeDamage.Add(cePair);
 				break;
 			case SkillTriggerID.TT_SPECIAL_ACTIVATE:
-				unit.skillEventHandler.OnSpecialActivate += ConditionEffectPair.ResolveEvent;
+				unit.skillEventHandler.onSpecialActivate.Add(cePair);
 				break;
 			default:
 				break;

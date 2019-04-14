@@ -40,8 +40,4 @@ public class ConditionEffectPair{
 		}
 		return conditionsMet;
 	}
-	
-	public static bool ResolveEvent(ConditionEffectPair cePair){
-		return cePair.Resolve();
-	}
 }
