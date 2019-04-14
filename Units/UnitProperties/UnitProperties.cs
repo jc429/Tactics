@@ -190,6 +190,9 @@ public class UnitProperties : System.Object{
 				//apply effect immediately
 				cePair.Resolve();
 			}
+			if(cePair.triggerType == SkillTriggerID.TT_COMBAT_START){
+				unit.skillEventHandler.OnTurnStart += ConditionEffectPair.ResolveEvent;
+			}
 		}
 	}
 

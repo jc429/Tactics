@@ -60,6 +60,7 @@ public class GameController : MonoBehaviour
 			//Debug.Log(Input.mousePosition);
 			ConditionIDExtensions.PrintAllEnumIDs();
 			EffectIDExtensions.PrintAllEnumIDs();
+			SkillTriggerIDExtensions.PrintAllEnumIDs();
 		}
 	}
 

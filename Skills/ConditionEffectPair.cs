@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -38,5 +39,9 @@ public class ConditionEffectPair{
 			effectFamily.ApplyEffects();
 		}
 		return conditionsMet;
+	}
+	
+	public static bool ResolveEvent(ConditionEffectPair cePair){
+		return cePair.Resolve();
 	}
 }

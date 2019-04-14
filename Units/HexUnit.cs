@@ -16,7 +16,7 @@ public class HexUnit : MonoBehaviour {
 		}
 	}	
 	
-	SkillEventListeners skillEventListeners;
+	public UnitSkillEventHandler skillEventHandler;
 	
 	int currentHP;
 	public int CurrentHP{
@@ -77,8 +77,8 @@ public class HexUnit : MonoBehaviour {
 	public HexUnit(){
 		properties = new UnitProperties();
 		properties.unit = this;
-		skillEventListeners = new SkillEventListeners();
-		skillEventListeners.unit = this;
+		skillEventHandler = new UnitSkillEventHandler();
+		skillEventHandler.unit = this;
 	}
 	
 	void Awake(){
@@ -127,9 +127,8 @@ public class HexUnit : MonoBehaviour {
 	}
 	*/
 
-	public void StartUnit(){
-		
-		Properties.RandomizeStats();
+	public void StartUnit(){		
+		//Properties.RandomizeStats();
 		ResetHP();
 		GameController.hexGrid.CalculateMovementRange(currentCell, this);
 		GameController.hexGrid.CalculateTotalAttackRange(this);
@@ -139,6 +138,8 @@ public class HexUnit : MonoBehaviour {
 	public void StartTurn(){
 		turnState = TurnState.Idle;
 		_unitColor.SetColor(Colors.ArmyColors.GetArmyColor(Properties.affiliation));
+		Properties.ClearBuffs();
+		//Properties.ClearDebuffs();
 	}
 
 	/* called after unit does combat or other actions */
