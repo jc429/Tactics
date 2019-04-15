@@ -64,15 +64,17 @@ public class UnitProperties : System.Object{
 		rawStats[(int)stat] = amount;
 	}
 
+	/* applies a stat modifier */
 	public void ApplyStatMod(CombatStat stat, int value){
 		statModifiers[(int)stat] += value;
 	}
-	public void ApplyStatMod(int stat, int value){
-		if(stat < 0 || stat >= statModifiers.Length){
-			Debug.Log("ERROR! Trying to modify nonexistent stat " + stat);
-			return;
+	/* applies multiple stat modifiers */
+	public void ApplyStatMods(byte statMatrix, int value){
+		for(int i = 0; i < (int)CombatStat.Total; i++){
+			if((statMatrix & (1 << i)) != 0){
+				statModifiers[i] += value;
+			}
 		}
-		statModifiers[stat] += value;
 	}
 
 	/* returns a given stat with no modifiers */
@@ -114,11 +116,29 @@ public class UnitProperties : System.Object{
 		amount = Mathf.Clamp(amount,0,7);
 		fieldBuffs[(int)stat] = Mathf.Max(fieldBuffs[(int)stat],amount);
 	}
+	/* applies a buff to multiple stats */
+	public void ApplyBuffs(byte statMatrix, int amount){
+		amount = Mathf.Clamp(amount,0,7);
+		for(int i = 0; i < (int)CombatStat.Total; i++){
+			if((statMatrix & (1 << i)) != 0){
+				fieldBuffs[i] += amount;
+			}
+		}
+	}
 
 	/* applies a debuff to the desired stat */
 	public void ApplyDebuff(CombatStat stat, int amount){
 		amount = Mathf.Clamp(amount,-7,0);
 		fieldDebuffs[(int)stat] = Mathf.Min(fieldDebuffs[(int)stat],amount);
+	}
+	/* applies a debuff to multiple stats */
+	public void ApplyDebuffs(byte statMatrix, int amount){
+		amount = Mathf.Clamp(amount,-7,0);
+		for(int i = 0; i < (int)CombatStat.Total; i++){
+			if((statMatrix & (1 << i)) != 0){
+				fieldDebuffs[i] += amount;
+			}
+		}
 	}
 
 	/* resets all stats to one (not zero bc hp of 0 would break the game) */

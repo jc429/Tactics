@@ -100,7 +100,7 @@ public static class SkillDBReader{
 					success = true;
 					skill.skillNo = reader.GetInt32(ordSNo);
 					skill.skillIDString = reader.GetString(ordSID);
-					skill.skillType = SkillTypeExtensions.GetSkillType(reader.GetInt32(ordSType));
+					skill.skillType = SkillTypeExtensions.GetSkillType(reader.GetString(ordSType));
 					skill.name = reader.GetString(ordName);
 					skill.description = reader.GetString(ordDesc);
 					skill.spriteID = reader.GetInt32(ordSprID);

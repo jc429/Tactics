@@ -1,20 +1,30 @@
 using UnityEngine;
 
 public enum SkillType{
-	Null = 0,
-    Weapon = 1,
-    MovementArt = 2,
-    CombatArt = 3,
-    Item = 4,
-    PrimaryPassive = 5,
-    SecondaryPassive = 6,
-    AuraPassive = 7
+	ST_NULL = 0,
+    ST_WEAPON = 1,
+    ST_ASSIST = 2,
+    ST_COMBATART = 3,
+    ST_SPECIAL = 4,
+    ST_PRIMARY = 5,
+    ST_SECONDARY = 6,
+    ST_AURA = 7
 }
 
 public static class SkillTypeExtensions{
 	public static SkillType GetSkillType(int num){
 		num = Mathf.Clamp(num, 0, 7);
 		return (SkillType)num;
+	}	
+	
+	public static SkillType GetSkillType(string input){
+		SkillType type;
+		if(System.Enum.TryParse(input, true, out type)){
+			return type;
+		}
+		else{
+			return SkillType.ST_NULL;
+		}
 	}
 }
 
@@ -25,9 +35,9 @@ Weapon - has a weapon might which is combined with the user's
 
 Movement Art - a positioning skill
 
-Combat Art - charges up via special meter, usually deals high damage or applies a powerful effect 
+Combat Art - skill that disrupts the enemy in some way
 
-Item - applies a small effect, usually once per battle (e.g. heal a small amount of hp, deal minor AOE damage)
+special - activates during combat 
 
 Passives - passive skills almost always influence combat in some way.
 Primary passives generally buff the unit wielding them, usually applying stat bonuses under certain conditions.

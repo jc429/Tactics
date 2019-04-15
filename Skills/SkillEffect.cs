@@ -75,7 +75,8 @@ public class SkillEffect{
 		case EffectID.EFF_NONE:
 			return;
 		case EffectID.EFF_MODIFY_STAT:
-			Unit.Properties.ApplyStatMod(vars[0], vars[1]);
+			byte stats = (byte)Mathf.Clamp(vars[0], 0, 255);
+			Unit.Properties.ApplyStatMods(stats, vars[1]);
 			Debug.Log("Effect applied! Added " + vars[1] + " to stat " + vars[0] + "!");
 			return;
 
