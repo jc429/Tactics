@@ -140,7 +140,7 @@ public class SaveLoadMenu : MonoBehaviour {
 			SaveMap(path);
 		}
 		else {
-			Debug.Log("loading");
+			Debug.Log("Loading Map");
 			LoadMap(path);
 		}
 		Close();

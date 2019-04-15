@@ -9,7 +9,7 @@ public class HexUnit : MonoBehaviour {
 
 	public static HexUnit unitPrefab;
 
-	private UnitProperties properties;
+	public UnitProperties properties;
 	public UnitProperties Properties{
 		get{
 			return properties;
@@ -87,7 +87,7 @@ public class HexUnit : MonoBehaviour {
 	}
 
 	void Start(){
-		hpBar.SetMaxValue(Properties.GetStat(CombatStat.HP));
+		hpBar.SetMaxValue(MaxHP);
 	}
 
 	void OnEnable () {
@@ -345,7 +345,7 @@ public class HexUnit : MonoBehaviour {
 	}
 
 	public void ResetHP(){
-		currentHP = Properties.GetStat(CombatStat.HP);
+		currentHP = MaxHP;
 		hpBar.SetCurrentValue(currentHP);
 	}
 

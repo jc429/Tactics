@@ -15,6 +15,7 @@ public class UnitInfoPanel : MonoBehaviour
 	public TextMeshProUGUI unitName;
 	public TextMeshProUGUI unitMoveType, unitWeaponType, unitMoveRange, unitWeaponRange;
 	public DynamicMeter hpMeter, specialMeter;
+	public TextMeshProUGUI hpText;
 
 	[NamedArrayAttribute (new string[] {"HP", "Str", "Skl", "Spd", "Def", "Res"})]
 	public TextMeshProUGUI[] statFields;
@@ -61,7 +62,8 @@ public class UnitInfoPanel : MonoBehaviour
 			}
 			int curHP = unit.CurrentHP;
 			int maxHP = unit.MaxHP;
-			statFields[0].text =  curHP.ToString() + "/" + maxHP.ToString();
+			statFields[0].text = curHP.ToString() + "/" + maxHP.ToString();
+			hpText.text = curHP.ToString() + "/" + maxHP.ToString();
 			hpMeter.SetMaxValue(maxHP);
 			hpMeter.SetCurrentValue(curHP);
 

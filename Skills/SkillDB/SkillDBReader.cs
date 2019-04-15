@@ -7,8 +7,8 @@ using UnityEngine;
 
 public static class SkillDBReader{
 
-	static bool DEBUG_LOG_QUERIES = true;
-	static bool DEBUG_LOG_RESULTS = true;
+	static readonly bool DEBUG_LOG_QUERIES = false;
+	static readonly bool DEBUG_LOG_RESULTS = false;
 
 	public static class DBStrings{
 		public const string skillInfo = "\"Skill Info\" ";
@@ -96,7 +96,7 @@ public static class SkillDBReader{
 				}
 				bool success = false;
 				while(reader.Read()){
-					Debug.Log("Found Skill " + reader.GetString(ordSID));
+					LogResult("Found Skill " + reader.GetString(ordSID));
 					success = true;
 					skill.skillNo = reader.GetInt32(ordSNo);
 					skill.skillIDString = reader.GetString(ordSID);
@@ -105,7 +105,9 @@ public static class SkillDBReader{
 					skill.description = reader.GetString(ordDesc);
 					skill.spriteID = reader.GetInt32(ordSprID);
 
-					skill.LogSkill();
+					if(DEBUG_LOG_RESULTS){
+						skill.LogSkill();
+					}
 				}
 				reader.Close();
 				if(!success){
