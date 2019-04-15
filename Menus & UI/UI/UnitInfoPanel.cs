@@ -22,6 +22,9 @@ public class UnitInfoPanel : MonoBehaviour
 
 	public SkillIcon[] skillIcons;
 
+	public Image basePanel;
+	public Image[] subPanels;
+
 	void Awake(){
 		GameController.unitInfoPanel = this;
 		ClosePanel();
@@ -50,6 +53,11 @@ public class UnitInfoPanel : MonoBehaviour
 			Clear();
 		}
 		else{
+			ArmyColorProfile acp = ArmyManager.GetArmyColorProfile(unit.Properties.affiliation);
+			if(acp != null){
+				SetPanelColors(acp.uiColorMain, acp.uiColorAccent);
+			}
+
 			unitMoveType.text = unit.Properties.movementClass.ToString();
 			unitMoveRange.text = unit.Properties.movementClass.GetRange().ToString();
 			unitWeaponType.text = unit.Properties.weaponType.ToString();
@@ -90,5 +98,12 @@ public class UnitInfoPanel : MonoBehaviour
 		hpMeter.SetCurrentValue(1);
 		specialMeter.SetMaxValue(1);
 		specialMeter.SetCurrentValue(1);
+	}
+
+	public void SetPanelColors(Color main, Color accent){
+		basePanel.color = main;
+		foreach(Image panel in subPanels){
+			panel.color = accent;
+		}
 	}
 }

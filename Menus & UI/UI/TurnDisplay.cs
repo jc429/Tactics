@@ -37,8 +37,11 @@ public class TurnDisplay : MonoBehaviour
 		StopAllCoroutines();
 		turnText.text = "Turn " + turnNo;
 		phaseText.text = "Army " + armyPhaseNo + " Phase";
-		phaseText.outlineColor = turnText.outlineColor = (Color32)Colors.ArmyColors.GetArmyColor(armyPhaseNo);
-		phaseText.color = turnText.color = Colors.ArmyColors.GetAccentColor(armyPhaseNo);
+		ArmyColorProfile acp = ArmyManager.GetArmyColorProfile(armyPhaseNo);
+		if(acp != null){
+			phaseText.outlineColor = turnText.outlineColor = (Color32)acp.uiColorAccent;
+			phaseText.color = turnText.color = acp.uiColorMain;
+		}
 		turnUI.anchoredPosition = startPos;
 		Color c = background.color;
 		c.a = 0;

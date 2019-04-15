@@ -1,10 +1,14 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using UnityEngine;
 
 public static class ArmyManager{
 	
 	public const int numArmies = 8;
+
+	public static ArmyColorProfile[] colorProfiles = new ArmyColorProfile[numArmies];
+	public static ACPInterface acpInterface;
 
 	static List<HexUnit>[] armyLists = new List<HexUnit>[numArmies];
 
@@ -13,13 +17,13 @@ public static class ArmyManager{
 
 	public static void Initialize(){
 		ClearAllArmies();
+		LoadArmyColorProfiles();
 		currentArmy = 0;
 	}
 
 	public static void StartGame(){
 		currentArmy = GetFirstPopulatedArmyNumber();
 	}
-
 
 	public static int GetCurrentArmyNumber(){
 		return currentArmy;
@@ -97,7 +101,7 @@ public static class ArmyManager{
 	}
 
 	public static void AssignUnitToArmy(HexUnit unit, int army){
-		if(army <= 0 || army > numArmies){
+		if(army <= 0 || army >= numArmies){
 			Debug.Log("Invalid Army!");
 			return;
 		}
@@ -109,7 +113,7 @@ public static class ArmyManager{
 	}
 	
 	public static void RemoveUnitFromArmy(HexUnit unit, int army){
-		if(army <= 0 || army > numArmies){
+		if(army <= 0 || army >= numArmies){
 			Debug.Log("Invalid Army!");
 			return;
 		}
@@ -130,5 +134,47 @@ public static class ArmyManager{
 			}
 		}
 		return true;
+	}
+
+	public static ArmyColorProfile GetArmyColorProfile(int army){
+		army = Mathf.Clamp(army, 0, numArmies - 1);
+		return colorProfiles[army];
+	}
+
+
+	public static void SaveArmyColorProfiles(){
+		if(acpInterface != null){
+			colorProfiles = acpInterface.colorProfiles;
+		}
+		string path = Path.Combine(Application.persistentDataPath,"ArmyColorProfiles.cfg");
+		Debug.Log("Saving Color Profiles to: " + path);
+		using (BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Create))) {
+			writer.Write(1);
+			foreach(ArmyColorProfile acp in colorProfiles){
+				if(acp != null){
+					acp.SaveProfile(writer);	
+				}
+			}
+		}
+	}
+	
+	public static void LoadArmyColorProfiles(){
+		string path = Path.Combine(Application.persistentDataPath,"ArmyColorProfiles.cfg");
+		Debug.Log("Loading Color Profiles from: " + path);
+		if (!File.Exists(path)) {
+			Debug.Log("Color Profiles not found!");
+			return;
+		}
+		using (BinaryReader reader = new BinaryReader(File.OpenRead(path))) {
+			int header = reader.ReadInt32();
+			foreach(ArmyColorProfile acp in colorProfiles){
+				if(acp != null){
+					acp.LoadProfile(reader);	
+				}
+			}
+		}
+		if(acpInterface != null){
+			acpInterface.colorProfiles = colorProfiles;
+		}
 	}
 }

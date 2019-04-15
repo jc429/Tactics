@@ -137,7 +137,7 @@ public class HexUnit : MonoBehaviour {
 	/* handles prepping the unit during the start of their turn */
 	public void StartTurn(){
 		turnState = TurnState.Idle;
-		_unitColor.SetColor(Colors.ArmyColors.GetArmyColor(Properties.affiliation));
+		_unitColor.ResetColor();
 		Properties.ClearBuffs();
 		//Properties.ClearDebuffs();
 		skillEventHandler.OnTurnStart();
@@ -147,7 +147,7 @@ public class HexUnit : MonoBehaviour {
 	public void EndAction(){
 		turnState = TurnState.Finished;
 		DeselectUnit();
-		_unitColor.SetColor(Colors.ArmyColors.GetArmyColor(0));
+		_unitColor.SetInactiveColors();
 		if(GameProperties.DEBUG_INFINITE_ACTIONS){
 			StartTurn();
 		}
@@ -163,7 +163,7 @@ public class HexUnit : MonoBehaviour {
 	/* handles cleanup when the entire army's turn is over */
 	public void EndTurn(){
 		turnState = TurnState.Finished;
-		_unitColor.SetColor(Colors.ArmyColors.GetArmyColor(Properties.affiliation));
+		_unitColor.ResetColor();
 	}
 
 	/* selection  */
@@ -199,7 +199,8 @@ public class HexUnit : MonoBehaviour {
 		ArmyManager.RemoveUnitFromArmy(this, Properties.affiliation);
 		ArmyManager.AssignUnitToArmy(this, aff);
 		Properties.affiliation = aff;
-		_unitColor.SetColors(Colors.ArmyColors.GetArmyColor(aff),Colors.ArmyColors.GetAccentColor(aff));
+		ArmyColorProfile acp = ArmyManager.GetArmyColorProfile(aff);
+		_unitColor.SetColorProfile(acp);
 		
 	}
 

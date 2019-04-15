@@ -5,7 +5,7 @@ using UnityEngine;
 public class GameController : MonoBehaviour
 {
 	[SerializeField]
-	public static bool DEBUG_MODE = true;
+	public static readonly bool DEBUG_MODE = true;
 	
 	//the active instance of the game manager
 	public static GameController instance;			
@@ -56,15 +56,34 @@ public class GameController : MonoBehaviour
 			StartGame();
 		}
 
+		DebugInput();
+
+	}
+
+	void DebugInput(){
+		if(!DEBUG_MODE){
+			return;
+		}
+
 		if(Input.GetKeyDown(KeyCode.B)){
 			//Debug.Log(Input.mousePosition);
 			ConditionIDExtensions.PrintAllEnumIDs();
 			EffectIDExtensions.PrintAllEnumIDs();
 			SkillTriggerIDExtensions.PrintAllEnumIDs();
 		}
+
+		
+		if(Input.GetKeyDown(KeyCode.Alpha0)){
+			ArmyManager.SaveArmyColorProfiles();
+		}
+		if(Input.GetKeyDown(KeyCode.Alpha9)){
+			ArmyManager.LoadArmyColorProfiles();
+		}
 	}
 
+
 	public void InitializeGame(){
+		Debug.Log("Initializing Game...");
 		gameStarted = false;
 		ArmyManager.Initialize();
 		CombatManager.Initialize();
