@@ -174,6 +174,7 @@ public static class ArmyManager{
 			}
 		}
 		if(acpInterface != null){
+			Debug.Log("Color Profile added to interface");
 			acpInterface.colorProfiles = colorProfiles;
 		}
 	}
