@@ -54,5 +54,20 @@ public class UnitAnimator : MonoBehaviour
 		_unit.Facing = DodecDirectionExtensions.DodecDirectionFromDegrees(Mathf.RoundToInt(orientation));
 	}
 	
+	public IEnumerator PerformAttackAnimation(){
+		Vector3 pos = model.transform.localPosition;
+		float speed = 4f;
+		for (float t = speed * Time.deltaTime; t < 1f; t += speed * Time.deltaTime) {
+			pos.y = 0.5f + (0.5f * Mathf.Sin(t * Mathf.PI));
+			model.transform.localPosition = pos;
+			yield return null;
+		}
+		pos.y = 0.5f;
+		model.transform.localPosition = pos;
+	} 
+
+	public void PlayAttackAnimation(){
+		StartCoroutine(PerformAttackAnimation());
+	}
 	
 }

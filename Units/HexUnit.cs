@@ -5,6 +5,11 @@ using UnityEngine;
 
 public class HexUnit : MonoBehaviour {
 	UnitAnimator _unitAnimator;
+	public UnitAnimator Animator{
+		get{
+			return _unitAnimator;
+		}
+	}
 	UnitColor _unitColor;
 
 	public static HexUnit unitPrefab;

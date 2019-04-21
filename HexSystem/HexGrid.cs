@@ -569,6 +569,60 @@ public class HexGrid : MonoBehaviour
 		}
 	}
 
+	/* checks tiles in a straight line */
+	public int CalculateLinearActionRange(HexCell startCell, HexDirection direction, int maxDistance){
+		if(startCell == null){
+			return 0;
+		}
+		HexCell currentCell = startCell;
+		int range = 0;
+		for(int i = 0; i < maxDistance; i++){
+			HexCell neighbor = currentCell.GetNeighbor(direction);
+			if(neighbor != null){
+				if (currentCell.GetEdgeType(neighbor) == HexEdgeType.Cliff) {
+					break;
+				}
+				else{
+					range++;
+					currentCell = neighbor;
+					continue;
+				}
+			}
+			else{
+				break;
+			}
+		}
+		return range;
+	}
+
+	/* creates a list of tiles in a straight line */
+	public List<HexCell> GetLinearActionCells(HexCell startCell, HexDirection direction, int maxDistance){
+		if(startCell == null){
+			return null;
+		}
+		List<HexCell> actionCells = ListPool<HexCell>.Get();
+		HexCell currentCell = startCell;
+		int range = 0;
+		for(int i = 0; i < maxDistance; i++){
+			HexCell neighbor = currentCell.GetNeighbor(direction);
+			if(neighbor != null){
+				if (currentCell.GetEdgeType(neighbor) == HexEdgeType.Cliff) {
+					break;
+				}
+				else{
+					actionCells.Add(neighbor);
+					range++;
+					currentCell = neighbor;
+					continue;
+				}
+			}
+			else{
+				break;
+			}
+		}
+		return actionCells;
+	}
+
 	/* finds a direct path between two tiles */
 	public void FindPath (HexCell fromCell, HexCell toCell, HexUnit unit) {
 		ClearPath();

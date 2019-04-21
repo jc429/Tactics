@@ -193,11 +193,14 @@ public class UnitProperties : System.Object{
 		skill.unit = unit;
 
 		if(type == 0){	//null type, something went wrong
+			Debug.Log("WARNING: This skill has no type! Unintended behavior may follow!");
 			//just write to slot 0
+			RemoveSkill(type);
 			skillIDs[type] = skillID;
 			skills[type] = skill;
 		}
 		else{
+			RemoveSkill(type - 1);
 			skillIDs[type - 1] = skillID;
 			skills[type - 1] = skill;
 		}
@@ -238,11 +241,49 @@ public class UnitProperties : System.Object{
 		}
 	}
 
+	public void RemoveSkill(int skillPos){
+		skillIDs[skillPos] = 0;
+		Skill s = skills[skillPos];
+		if(s != null){
+			/* remove the associated event handlers for the skill */
+			foreach(ConditionEffectPair cePair in s.cePairs){
+				switch(cePair.triggerType){
+				case SkillTriggerID.TT_ALWAYS_ACTIVE:
+					break;
+				case SkillTriggerID.TT_TURN_START:
+					unit.skillEventHandler.onTurnStart.Remove(cePair);
+					break;
+				case SkillTriggerID.TT_TURN_END:
+					unit.skillEventHandler.onTurnEnd.Remove(cePair);
+					break;
+				case SkillTriggerID.TT_COMBAT_START:
+					unit.skillEventHandler.onCombatStart.Remove(cePair);
+					break;
+				case SkillTriggerID.TT_COMBAT_END:
+					unit.skillEventHandler.onCombatEnd.Remove(cePair);
+					break;
+				case SkillTriggerID.TT_ASSIST_USED:
+					unit.skillEventHandler.onAssistUsed.Remove(cePair);
+					break;
+				case SkillTriggerID.TT_RECEIVE_DAMAGE:
+					unit.skillEventHandler.onTakeDamage.Remove(cePair);
+					break;
+				case SkillTriggerID.TT_SPECIAL_ACTIVATE:
+					unit.skillEventHandler.onSpecialActivate.Remove(cePair);
+					break;
+				default:
+					break;
+				}
+			}
+		}
+		s.unit = null;
+		skills[skillPos] = null;
+	}
+
 	/* remove all of unit's skills */
 	public void ClearSkills(){
 		for(int i = 0; i < skillIDs.Length; i++){
-			skillIDs[i] = 0;
-			skills[i] = null;
+			RemoveSkill(i);
 		}
 	}
 

@@ -2,11 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public static class CombatManager {
+public class CombatManager : MonoBehaviour{
+	public static CombatManager instance;
     
 	public static CombatForecast combatForecast;
 
 	public static CombatInfo combatInfo;
+
+	void Awake(){
+		instance = this;
+	}
 
 	public static void Initialize(){
 		if(combatInfo != null){
@@ -51,10 +56,12 @@ public static class CombatManager {
 		bool roundResult;
 		int attackerCurrentHP;
 		int defenderCurrentHP;
+		Queue<HexUnit> attackOrder = new Queue<HexUnit>();
 
 		//under normal condition, attacker attacks
 		attackerCurrentHP = attackUnit.CurrentHP;
 		defenderCurrentHP = defendUnit.CurrentHP;
+		attackOrder.Enqueue(attackUnit);
 		damage = ResolveCombatRound(attackUnit, defendUnit, ref attackerCurrentHP, ref defenderCurrentHP);
 		roundResult = defendUnit.TakeDamage(damage);
 		if(roundResult){
@@ -65,6 +72,7 @@ public static class CombatManager {
 		//defender counterattacks
 		attackerCurrentHP = attackUnit.CurrentHP;
 		defenderCurrentHP = defendUnit.CurrentHP;
+		attackOrder.Enqueue(defendUnit);
 		damage = ResolveCombatRound(defendUnit, attackUnit, ref defenderCurrentHP, ref attackerCurrentHP);
 		roundResult = attackUnit.TakeDamage(damage);
 		if(roundResult){
@@ -72,6 +80,7 @@ public static class CombatManager {
 			return;
 		}
 		Debug.Log("Combat ended. No unit perished.");
+		instance.StartCoroutine(instance.PlayCombatAnimations(attackOrder));
 	}
 	
 	/* returns damage to be dealt */
@@ -84,5 +93,13 @@ public static class CombatManager {
 
 		return damage;
 	}
+
+	public IEnumerator PlayCombatAnimations(Queue<HexUnit> attackOrder){
+		while(attackOrder.Count > 0){
+			yield return attackOrder.Dequeue().Animator.PerformAttackAnimation();
+			yield return new WaitForSeconds(0.15f);
+		}
+	}
+
 
 }
