@@ -220,7 +220,7 @@ public class GameUI : MonoBehaviour {
 				if(currentCell.Unit != null && currentCell.Unit != selectedUnit){
 					//do combat
 					selectedUnit.FaceCell(currentCell);
-					CombatManager.StartCombat(selectedUnit,currentCell.Unit,1);
+					CombatManager.CalculateAndPerformCombat(selectedUnit,currentCell.Unit);
 					
 				}
 				EndSelectedUnitAction();

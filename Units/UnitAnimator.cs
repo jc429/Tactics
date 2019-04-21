@@ -7,7 +7,9 @@ public class UnitAnimator : MonoBehaviour
 	public HexUnit _unit;
 	public GameObject model;
 	
+	const float modelOffset = 0.5f;
 	const float rotationSpeed = 360f;
+	const float hopSpeed = 4f;
 
 	
 	// direction unit model is facing
@@ -56,13 +58,13 @@ public class UnitAnimator : MonoBehaviour
 	
 	public IEnumerator PerformAttackAnimation(){
 		Vector3 pos = model.transform.localPosition;
-		float speed = 4f;
-		for (float t = speed * Time.deltaTime; t < 1f; t += speed * Time.deltaTime) {
-			pos.y = 0.5f + (0.5f * Mathf.Sin(t * Mathf.PI));
+		
+		for (float t = hopSpeed * Time.deltaTime; t < 1f; t += hopSpeed * Time.deltaTime) {
+			pos.y = modelOffset + (0.5f * Mathf.Sin(t * Mathf.PI));
 			model.transform.localPosition = pos;
 			yield return null;
 		}
-		pos.y = 0.5f;
+		pos.y = modelOffset;
 		model.transform.localPosition = pos;
 	} 
 
