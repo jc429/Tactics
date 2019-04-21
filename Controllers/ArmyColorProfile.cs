@@ -20,6 +20,7 @@ public class ArmyColorProfile{
 	}
 
 	public void LoadProfile(BinaryReader reader){
+		//Debug.Log("Loading Profile");
 		primaryColor = Colors.LoadColor(reader);
 		accentColor = Colors.LoadColor(reader);
 		desaturatedColor = Colors.LoadColor(reader);

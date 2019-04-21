@@ -22,6 +22,7 @@ public static class Colors{
 		c.g = reader.ReadSingle();
 		c.b = reader.ReadSingle();
 		c.a = reader.ReadSingle();
+		//Debug.Log("Color loaded: " + c);
 		return c;
 	}
 

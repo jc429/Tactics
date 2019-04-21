@@ -167,10 +167,11 @@ public static class ArmyManager{
 		}
 		using (BinaryReader reader = new BinaryReader(File.OpenRead(path))) {
 			int header = reader.ReadInt32();
-			foreach(ArmyColorProfile acp in colorProfiles){
-				if(acp != null){
-					acp.LoadProfile(reader);	
+			for(int i = 0; i < numArmies; i++){
+				if(colorProfiles[i] == null){
+					colorProfiles[i] = new ArmyColorProfile();
 				}
+				colorProfiles[i].LoadProfile(reader);	
 			}
 		}
 		if(acpInterface != null){
