@@ -6,9 +6,6 @@ using UnityEngine;
 public class CombatInfo {
 	HexUnit attacker;
 	HexUnit defender;
-
-	Queue<HitInfo> hits = new Queue<HitInfo>();
-
 	public HexUnit Attacker{
 		get{ return attacker; }
 	}
@@ -16,18 +13,38 @@ public class CombatInfo {
 		get{ return defender; }
 	}
 
+	int attackerFinalHP;
+	int defenderFinalHP;
+	public int AttackerFinalHP{
+		get { return attackerFinalHP; }
+	}
+	public int DefenderFinalHP{
+		get { return defenderFinalHP; }
+	}
+
+	Queue<HitInfo> hits = new Queue<HitInfo>();
+
+
+
+	
+
 	public void Clear(){
 		attacker = defender = null;
+		attackerFinalHP = defenderFinalHP = 0;
 		hits.Clear();
 	}
 
 	public void SetAttackerDefender(HexUnit attackUnit, HexUnit defendUnit){
 		attacker = attackUnit;
 		defender = defendUnit;
+		attackerFinalHP = attackUnit.CurrentHP;
+		defenderFinalHP = defendUnit.CurrentHP;
 	}
 
 	public void EnqueueHitInfo(HitInfo hit){
 		hits.Enqueue(hit);
+		attackerFinalHP = hit.attackerEndHP;
+		defenderFinalHP = hit.defenderEndHP;
 	}
 
 	public HitInfo GetHitInfo(){

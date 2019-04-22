@@ -4,8 +4,8 @@ using UnityEngine;
 
 [System.Serializable]
 public class HitInfo{
-	public HexUnit attacker;
-	public HexUnit defender;
+	// if true, this means the attacker of this hit is the same as the unit who initiated the combat
+	public bool attackerIsAttackUnit;
 
 	public int attackerStartHP;
 	public int attackerEndHP;
@@ -17,9 +17,8 @@ public class HitInfo{
 
 	}
 
-	public HitInfo(HexUnit atkUnit, HexUnit defUnit, int atkHP, int defHP){
-		attacker = atkUnit;
-		defender = defUnit;
+	public HitInfo(bool isAttacker, int atkHP, int defHP){
+		attackerIsAttackUnit = isAttacker;
 		attackerStartHP = atkHP;
 		defenderStartHP = defHP;
 	}

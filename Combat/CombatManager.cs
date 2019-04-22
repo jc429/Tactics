@@ -28,24 +28,28 @@ public class CombatManager : MonoBehaviour{
 			Debug.Log("Combat failed! Not enough members!");
 			return;
 		}
-		combatInfo.Clear();
+		if(attackUnit == combatInfo.Attacker && defendUnit == combatInfo.Defender){
+			return;
+		}
 
+		combatInfo.Clear();
+		combatInfo.SetAttackerDefender(attackUnit, defendUnit);
 		int attackerCurrentHP = attackUnit.CurrentHP;
 		int defenderCurrentHP = defendUnit.CurrentHP;
 
 		//under normal condition, attacker attacks
-		HitInfo hit = ResolveCombatRound(attackUnit, defendUnit, attackerCurrentHP, defenderCurrentHP);
+		HitInfo hit = ResolveCombatRound(true, attackerCurrentHP, defenderCurrentHP);
 		combatInfo.EnqueueHitInfo(hit);
 		if(hit.attackerEndHP <= 0 || hit.defenderEndHP <= 0){
 			return;
 		}
 		//defender counterattacks
-		hit = ResolveCombatRound(defendUnit, attackUnit, hit.defenderEndHP, hit.attackerEndHP);
+		hit = ResolveCombatRound(false, hit.attackerEndHP, hit.defenderEndHP);
 		combatInfo.EnqueueHitInfo(hit);
 		if(hit.attackerEndHP <= 0 || hit.defenderEndHP <= 0){
 			return;
 		}
-
+		
 		
 	}
 
@@ -53,61 +57,38 @@ public class CombatManager : MonoBehaviour{
 		PreCalculateCombat(attackUnit, defendUnit);
 		instance.StartCoroutine(instance.PlayCombat(combatInfo));
 	}
-	/*
-	public static void StartCombat(HexUnit attackUnit, HexUnit defendUnit, int combatRange){
-		if(attackUnit == null || defendUnit == null){
-			Debug.Log("Combat failed! Not enough members!");
-			return;
-		}
-		Debug.Log(attackUnit.Properties.movementClass + " is attacking " + defendUnit.Properties.movementClass + "!");
-
-		bool roundResult;
-		int attackerCurrentHP;
-		int defenderCurrentHP;
-		Queue<HexUnit> attackOrder = new Queue<HexUnit>();
-
-		//under normal condition, attacker attacks
-		attackerCurrentHP = attackUnit.CurrentHP;
-		defenderCurrentHP = defendUnit.CurrentHP;
-		attackOrder.Enqueue(attackUnit);
-		HitInfo hit = ResolveCombatRound(attackUnit, defendUnit, attackerCurrentHP, defenderCurrentHP);
-		roundResult = defendUnit.SetCurrentHP(hit.defenderEndHP);
-		if(roundResult){
-			Debug.Log("Foe successfully defeated!");
-			return;
-		}
-
-		//defender counterattacks
-		attackerCurrentHP = hit.attackerEndHP;
-		defenderCurrentHP = hit.defenderEndHP;
-		attackOrder.Enqueue(defendUnit);
-		HitInfo hit2 = ResolveCombatRound(defendUnit, attackUnit, defenderCurrentHP, attackerCurrentHP);
-		roundResult = attackUnit.SetCurrentHP(hit.defenderEndHP);
-		if(roundResult){
-			Debug.Log("Oh no! Defeated by foe's counterattack!");
-			return;
-		}
-		Debug.Log("Combat ended. No unit perished.");
-		instance.StartCoroutine(instance.PlayCombatAnimations(attackOrder));
-	}*/
 	
 
 	/* resolves one hit between two units */
-	static HitInfo ResolveCombatRound(HexUnit currentAttacker, HexUnit currentDefender, int atkStartHP, int defStartHP){
-		HitInfo info = new HitInfo(currentAttacker, currentDefender, atkStartHP, defStartHP);
+	static HitInfo ResolveCombatRound(bool attackerIsAttackUnit, int atkStartHP, int defStartHP){
+		HitInfo info = new HitInfo(attackerIsAttackUnit, atkStartHP, defStartHP);
+
+		HexUnit currentAttacker = attackerIsAttackUnit ? combatInfo.Attacker : combatInfo.Defender;
+		HexUnit currentDefender = attackerIsAttackUnit ? combatInfo.Defender : combatInfo.Attacker;
 
 		int attackerAtk = currentAttacker.Properties.GetStat(CombatStat.Atk);
 		int defenderDef = currentDefender.Properties.GetStat(CombatStat.Def);
 
 		int damage = attackerAtk - defenderDef;
+		Debug.Log(attackerAtk + " atk vs " + defenderDef + " def: " + damage + " damage dealt to " + currentDefender.properties.weaponType);
+
 		if(damage < 0){
 			damage = 0;
 		}
-		info.defenderEndHP = info.defenderStartHP - damage;
-		if(info.defenderEndHP < 0){
-			info.defenderEndHP = 0;
+		if(attackerIsAttackUnit){
+			info.defenderEndHP = info.defenderStartHP - damage;
+			if(info.defenderEndHP < 0){
+				info.defenderEndHP = 0;
+			}
+			info.attackerEndHP = atkStartHP;
 		}
-		info.attackerEndHP = atkStartHP;
+		else{
+			info.attackerEndHP = info.attackerStartHP - damage;
+			if(info.attackerEndHP < 0){
+				info.attackerEndHP = 0;
+			}
+			info.defenderEndHP = defStartHP;
+		}
 
 		return info;
 	}
@@ -115,11 +96,14 @@ public class CombatManager : MonoBehaviour{
 	public IEnumerator PlayCombat(CombatInfo info){
 		while(info.GetHitCount() > 0){
 			HitInfo currentAttack = info.GetHitInfo();
-			yield return currentAttack.attacker.Animator.PerformAttackAnimation();
-			currentAttack.attacker.SetCurrentHP(currentAttack.attackerEndHP);
-			currentAttack.defender.SetCurrentHP(currentAttack.defenderEndHP);
+			HexUnit attacker = currentAttack.attackerIsAttackUnit ? info.Attacker : info.Defender;
+			HexUnit defender = currentAttack.attackerIsAttackUnit ? info.Defender : info.Attacker;
+			yield return attacker.Animator.PerformAttackAnimation();
+			info.Attacker.SetCurrentHP(currentAttack.attackerEndHP);
+			info.Defender.SetCurrentHP(currentAttack.defenderEndHP);
 			yield return new WaitForSeconds(0.15f);
 		}
+		combatInfo.Clear();
 	}
 
 

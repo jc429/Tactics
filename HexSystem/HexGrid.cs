@@ -626,8 +626,12 @@ public class HexGrid : MonoBehaviour
 	/* finds a direct path between two tiles */
 	public void FindPath (HexCell fromCell, HexCell toCell, HexUnit unit) {
 		ClearPath();
+		if(fromCell == null || toCell == null || unit == null){
+			return;
+		}
 		currentPathFrom = fromCell;
 		currentPathTo = toCell;
+		
 		
 		currentPathExists = CellSearch(fromCell, toCell, unit);
 		ShowPath();
