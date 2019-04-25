@@ -4,8 +4,14 @@ using System.IO;
 using UnityEngine;
 
 [System.Serializable]
-public class UnitProperties : System.Object{
-	public HexUnit unit;
+public class UnitProperties{
+	[System.NonSerialized]
+	HexUnit unit;
+	[SerializeField]
+	UnitCombatProperties combatProperties;
+	public UnitCombatProperties CombatProperties{
+		get{ return combatProperties; }
+	}
 
 	public MovementClass movementClass;
 	public WeaponType weaponType;
@@ -22,9 +28,7 @@ public class UnitProperties : System.Object{
 	/* debuffs applied to each stat (range 0 to -7) */
 	[NamedArrayAttribute (new string[] {"HP", "Str", "Skl", "Spd", "Def", "Res"})]
 	public int[] fieldDebuffs = new int[(int)CombatStat.Total];
-	/* manipulations to stats applied during combat */
-	[NamedArrayAttribute (new string[] {"HP", "Str", "Skl", "Spd", "Def", "Res"})]
-	public int[] combatBuffs = new int[(int)CombatStat.Total];
+	
 
 
 	public int[] skillIDs = new int[7];
@@ -49,13 +53,18 @@ public class UnitProperties : System.Object{
 	}
 
 	public UnitProperties(){
+		combatProperties = new UnitCombatProperties();
 		for(int i = 0; i < (int)CombatStat.Total; i++){
 			rawStats[i] = 1;
 			statModifiers[i] = 0;
 			fieldBuffs[i] = 0;
 			fieldDebuffs[i] = 0;
-			combatBuffs[i] = 0;
 		}
+	}
+
+	public void SetUnit(HexUnit hu){
+		unit = hu;
+		combatProperties.SetUnit(hu);
 	}
 
 	/* sets a stat to the desired stat */
@@ -169,13 +178,6 @@ public class UnitProperties : System.Object{
 		}
 	}
 
-	/* resets all combat mods to zero */
-	public void ClearCombatBuffs(){
-		foreach(int i in combatBuffs){
-			combatBuffs[i] = 0;
-		}
-	}
-
 	/* set unit's skill (slot automatically chosen based on skilltype) */
 	public void SetSkill(Skill skill){
 		int type = (int)skill.skillType;
@@ -275,8 +277,8 @@ public class UnitProperties : System.Object{
 					break;
 				}
 			}
+			s.unit = null;
 		}
-		s.unit = null;
 		skills[skillPos] = null;
 	}
 

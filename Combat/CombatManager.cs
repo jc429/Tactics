@@ -29,13 +29,24 @@ public class CombatManager : MonoBehaviour{
 			return;
 		}
 		if(attackUnit == combatInfo.Attacker && defendUnit == combatInfo.Defender){
-			return;
+			/* if the attacker/defender are the same, and the attacker hasnt changed tiles, no need to recalculate combat
+			but if the attacker is in a new position, recalculate combat in case AOE buffs have changed*/
+			if(attackUnit.CurrentCell == combatInfo.attackerTile){
+				return;
+			}
 		}
 
 		combatInfo.Clear();
 		combatInfo.SetAttackerDefender(attackUnit, defendUnit);
+		attackUnit.Properties.CombatProperties.CalculateStartingStats();
+		defendUnit.Properties.CombatProperties.CalculateStartingStats();
+		attackUnit.StartCombat(defendUnit);
+		defendUnit.StartCombat(attackUnit);
+
 		int attackerCurrentHP = attackUnit.CurrentHP;
 		int defenderCurrentHP = defendUnit.CurrentHP;
+
+
 
 		//under normal condition, attacker attacks
 		HitInfo hit = ResolveCombatRound(true, attackerCurrentHP, defenderCurrentHP);
@@ -52,6 +63,7 @@ public class CombatManager : MonoBehaviour{
 		
 		
 	}
+
 
 	public static void CalculateAndPerformCombat(HexUnit attackUnit, HexUnit defendUnit){
 		PreCalculateCombat(attackUnit, defendUnit);
@@ -70,7 +82,7 @@ public class CombatManager : MonoBehaviour{
 		int defenderDef = currentDefender.Properties.GetStat(CombatStat.Def);
 
 		int damage = attackerAtk - defenderDef;
-		Debug.Log(attackerAtk + " atk vs " + defenderDef + " def: " + damage + " damage dealt to " + currentDefender.properties.weaponType);
+		Debug.Log(attackerAtk + " atk vs " + defenderDef + " def: " + damage + " damage dealt to " + currentDefender.Properties.weaponType);
 
 		if(damage < 0){
 			damage = 0;

@@ -14,7 +14,8 @@ public class HexUnit : MonoBehaviour {
 
 	public static HexUnit unitPrefab;
 
-	public UnitProperties properties;
+	[SerializeField]
+	UnitProperties properties;
 	public UnitProperties Properties{
 		get{
 			return properties;
@@ -81,7 +82,7 @@ public class HexUnit : MonoBehaviour {
 
 	public HexUnit(){
 		properties = new UnitProperties();
-		properties.unit = this;
+		properties.SetUnit(this);
 		skillEventHandler = new UnitSkillEventHandler();
 		skillEventHandler.unit = this;
 	}
@@ -331,12 +332,14 @@ public class HexUnit : MonoBehaviour {
 
 
 
-	public void StartCombat(){
-
+	public void StartCombat(HexUnit foe){
+		Properties.CombatProperties.foe = foe;
+		skillEventHandler.OnCombatStart();
 	}
 	
 	public void EndCombat(){
-		Properties.ClearCombatBuffs();
+		Properties.CombatProperties.Clear();
+		skillEventHandler.OnCombatEnd();
 	}
 
 	/* damage received/healed during combat -- returns true if unit dies */

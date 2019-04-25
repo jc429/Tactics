@@ -12,6 +12,8 @@ public class CombatInfo {
 	public HexUnit Defender{
 		get{ return defender; }
 	}
+	//used to check when combat needs to be recalculated
+	public HexCell attackerTile; 
 
 	int attackerFinalHP;
 	int defenderFinalHP;
