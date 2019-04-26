@@ -70,6 +70,7 @@ public class GameController : MonoBehaviour
 			ConditionIDExtensions.PrintAllEnumIDs();
 			EffectIDExtensions.PrintAllEnumIDs();
 			SkillTriggerIDExtensions.PrintAllEnumIDs();
+			SkillTargetExtensions.PrintAllEnumIDs();
 		}
 
 		

@@ -94,5 +94,12 @@ public class UnitCombatProperties{
 	public void ModifyStat(CombatStat stat, int amount){
 		combatStatMods[(int)stat] += amount;
 	}
+	public void ModifyStats(byte statMatrix, int amount){
+		for(int i = 0; i < (int)CombatStat.Total; i++){
+			if((statMatrix & (1 << i)) != 0){
+				combatStatMods[i] += amount;
+			}
+		}
+	}
 
 }

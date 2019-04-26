@@ -20,6 +20,7 @@ public static class SkillDBReader{
 		public const string effectFamily = "\"Effect Family\" ";
 		public const string effectVars = "\"Effect Vars\" ";
 		public const string triggers = "\"Triggers\" ";
+		public const string targets = "\"Targets\" ";
 
 		public const string selectAllFrom = "SELECT * FROM ";
 		public const string naturalLeftOuterJoin = " NATURAL LEFT OUTER JOIN ";

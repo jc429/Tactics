@@ -56,28 +56,52 @@ public class SkillEffect{
 	}
 
 	public void Apply(){
-		HexUnit targetUnit = null;
+		Queue<HexUnit> targetList = new Queue<HexUnit>();
 		switch(target){
 		case SkillTarget.TARGET_NONE:
 			break;
 		case SkillTarget.TARGET_SELF:
-			targetUnit = Unit;
+			targetList.Enqueue(Unit);
+			break;
+		case SkillTarget.TARGET_COMBAT_FOE:
+			targetList.Enqueue(Unit.Properties.CombatProperties.foe);
 			break;
 		default:
 			break;
 		}
 
-		if(targetUnit == null){
-			return;
+		while(targetList.Count > 0){
+			HexUnit targetUnit = targetList.Dequeue();
+			if(targetUnit == null){
+				continue;
+			}
+			ApplyEffectToTarget(targetUnit);
 		}
+
+	}
+
+	void ApplyEffectToTarget(HexUnit targetUnit){
+		byte statChangeMatrix;
 
 		switch(effectData.eID){
 		case EffectID.EFF_NONE:
 			return;
 		case EffectID.EFF_MODIFY_STAT:
-			byte stats = (byte)Mathf.Clamp(vars[0], 0, 255);
-			Unit.Properties.ApplyStatMods(stats, vars[1]);
+			statChangeMatrix = (byte)Mathf.Clamp(vars[0], 0, 255);
+			targetUnit.Properties.ApplyStatMods(statChangeMatrix, vars[1]);
 			Debug.Log("Effect applied! Added " + vars[1] + " to stat " + vars[0] + "!");
+			return;
+		case EffectID.EFF_BUFF_STAT:
+			statChangeMatrix = (byte)Mathf.Clamp(vars[0], 0, 255);
+			targetUnit.Properties.ApplyBuffs(statChangeMatrix, vars[1]);
+			return;
+		case EffectID.EFF_DEBUFF_STAT:
+			statChangeMatrix = (byte)Mathf.Clamp(vars[0], 0, 255);
+			targetUnit.Properties.ApplyDebuffs(statChangeMatrix, vars[1]);
+			return;
+		case EffectID.EFF_MODIFY_STAT_COMBAT:
+			statChangeMatrix = (byte)Mathf.Clamp(vars[0], 0, 255);
+			targetUnit.Properties.CombatProperties.ModifyStats(statChangeMatrix, vars[1]);
 			return;
 
 		default:
