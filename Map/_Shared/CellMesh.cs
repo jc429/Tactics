@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(MeshFilter),typeof(MeshRenderer))]
-public class HexMesh : MonoBehaviour
+public class CellMesh : MonoBehaviour
 {
-    Mesh hexMesh;
+	Mesh cellMesh;
 	[System.NonSerialized] List<Vector3> vertices;
 	[System.NonSerialized] List<Color> colors;
 	[System.NonSerialized] List<int> triangles;
 	[System.NonSerialized] List<Vector3> terrainTypes;
 
-    MeshCollider meshCollider;
+	MeshCollider meshCollider;
 	public bool useCollider;
 	public bool useColors;
 
@@ -20,18 +20,17 @@ public class HexMesh : MonoBehaviour
 
 	public bool useTerrainTypes;
 
-    void Awake()
-    {
-        GetComponent<MeshFilter>().mesh = hexMesh = new Mesh();
-        if (useCollider) {
+	void Awake() {
+		GetComponent<MeshFilter>().mesh = cellMesh = new Mesh();
+		if (useCollider) {
 			meshCollider = gameObject.AddComponent<MeshCollider>();
 		}
-        hexMesh.name = "Hex Mesh";
+		cellMesh.name = "Cell Mesh";
 		
-    }
+	}
 
 	public void ClearAll() {
-		hexMesh.Clear();
+		cellMesh.Clear();
 		vertices = ListPool<Vector3>.Get();
 		if (useColors) {
 			colors = ListPool<Color>.Get();
@@ -46,49 +45,49 @@ public class HexMesh : MonoBehaviour
 	}
 
 	public void Apply () {
-		hexMesh.SetVertices(vertices);
+		cellMesh.SetVertices(vertices);
 		ListPool<Vector3>.Add(vertices);
 		if(useColors){
-			hexMesh.SetColors(colors);
+			cellMesh.SetColors(colors);
 			ListPool<Color>.Add(colors);
 		}
 		if (useUVCoordinates) {
-			hexMesh.SetUVs(0, uvs);
+			cellMesh.SetUVs(0, uvs);
 			ListPool<Vector2>.Add(uvs);
 		}
 		if (useTerrainTypes) {
-			hexMesh.SetUVs(2, terrainTypes);
+			cellMesh.SetUVs(2, terrainTypes);
 			ListPool<Vector3>.Add(terrainTypes);
 		}
-		hexMesh.SetTriangles(triangles, 0);
+		cellMesh.SetTriangles(triangles, 0);
 		ListPool<int>.Add(triangles);
-		hexMesh.RecalculateNormals();
+		cellMesh.RecalculateNormals();
 		if (useCollider) {
-			meshCollider.sharedMesh = hexMesh;
+			meshCollider.sharedMesh = cellMesh;
 		}
 	}
 
 
-    /* Creates a triangle from three points and adds it to the lists */
-    public void AddTriangle(Vector3 v1, Vector3 v2, Vector3 v3){
-        int vertexIndex = vertices.Count;
-        vertices.Add(v1);
+	/* Creates a triangle from three points and adds it to the lists */
+	public void AddTriangle(Vector3 v1, Vector3 v2, Vector3 v3){
+		int vertexIndex = vertices.Count;
+		vertices.Add(v1);
 		vertices.Add(v2);
 		vertices.Add(v3);
 		triangles.Add(vertexIndex);
 		triangles.Add(vertexIndex + 1);
 		triangles.Add(vertexIndex + 2);
-    }
+	}
 
-    /* Colors a triangle a solid color */
-    public void AddTriangleColor(Color c){
-        colors.Add(c);
-        colors.Add(c);
-        colors.Add(c);
-    }
+	/* Colors a triangle a solid color */
+	public void AddTriangleColor(Color c){
+		colors.Add(c);
+		colors.Add(c);
+		colors.Add(c);
+	}
 
-    /* colors each vertex of a triangle a different color */
-    public void AddTriangleColor (Color c1, Color c2, Color c3) {
+	/* colors each vertex of a triangle a different color */
+	public void AddTriangleColor (Color c1, Color c2, Color c3) {
 		colors.Add(c1);
 		colors.Add(c2);
 		colors.Add(c3);

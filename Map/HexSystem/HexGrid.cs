@@ -28,7 +28,7 @@ public class HexGrid : MonoBehaviour
 	public HexGridChunk chunkPrefab;
 
 	HexGridChunk[] chunks;
-    HexCell[] cells;
+	HexCell[] cells;
 	
 	public Color[] colors;
 

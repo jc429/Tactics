@@ -45,18 +45,18 @@ public class MapCell : Cell
 	}
 
 	public EdgeType GetEdgeType (QuadDirection direction) {
-		return MapMetrics.GetEdgeType(
+		return QuadMetrics.GetEdgeType(
 			elevation, neighbors[(int)direction].elevation
 		);
 	}
 
 	public EdgeType GetEdgeType (MapCell otherCell) {
-		return MapMetrics.GetEdgeType(
+		return QuadMetrics.GetEdgeType(
 			elevation, otherCell.elevation
 		);
 	}
 
-	public MapCell GetNeighbor (HexDirection direction) {
+	public MapCell GetNeighbor (QuadDirection direction) {
 		if(neighbors[(int)direction] != null && neighbors[(int)direction].invalid){
 			return null;
 		}
