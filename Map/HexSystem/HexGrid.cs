@@ -33,7 +33,7 @@ public class HexGrid : MonoBehaviour
 	public Color[] colors;
 
 	//priority queue for cell pathfinding
-	HexCellPriorityQueue searchFrontier;
+	CellPriorityQueue searchFrontier;
 
 	int searchFrontierPhase;
 
@@ -416,7 +416,7 @@ public class HexGrid : MonoBehaviour
 		if(cell == null || neighbor == null || unit == null){
 			return false;
 		}
-		if (cell.GetEdgeType(neighbor) == HexEdgeType.Cliff) {
+		if (cell.GetEdgeType(neighbor) == EdgeType.Cliff) {
 			return false;
 		}
 		return true;
@@ -579,7 +579,7 @@ public class HexGrid : MonoBehaviour
 		for(int i = 0; i < maxDistance; i++){
 			HexCell neighbor = currentCell.GetNeighbor(direction);
 			if(neighbor != null){
-				if (currentCell.GetEdgeType(neighbor) == HexEdgeType.Cliff) {
+				if (currentCell.GetEdgeType(neighbor) == EdgeType.Cliff) {
 					break;
 				}
 				else{
@@ -606,7 +606,7 @@ public class HexGrid : MonoBehaviour
 		for(int i = 0; i < maxDistance; i++){
 			HexCell neighbor = currentCell.GetNeighbor(direction);
 			if(neighbor != null){
-				if (currentCell.GetEdgeType(neighbor) == HexEdgeType.Cliff) {
+				if (currentCell.GetEdgeType(neighbor) == EdgeType.Cliff) {
 					break;
 				}
 				else{
@@ -641,7 +641,7 @@ public class HexGrid : MonoBehaviour
 	bool CellSearch (HexCell fromCell, HexCell toCell, MapUnit unit){
 		searchFrontierPhase += 2;
 		if (searchFrontier == null) {
-			searchFrontier = new HexCellPriorityQueue();
+			searchFrontier = new CellPriorityQueue();
 		}
 		else {
 			searchFrontier.Clear();
@@ -653,7 +653,7 @@ public class HexGrid : MonoBehaviour
 		searchFrontier.Enqueue(fromCell);
 		
 		while (searchFrontier.Count > 0) {
-			HexCell current = searchFrontier.Dequeue();
+			HexCell current = (HexCell)searchFrontier.Dequeue();
 			current.SearchPhase += 1;
 
 			if (current == toCell) {
@@ -731,7 +731,7 @@ public class HexGrid : MonoBehaviour
 			while (current != currentPathFrom) {
 				current.SetLabel(current.DistanceToCell.ToString());
 				current.colorFlags.OnMovementPath = true;
-				current = current.PathParent;
+				current = (HexCell)current.PathParent;
 			}
 		}
 		currentPathFrom.colorFlags.OnMovementPath = true;
@@ -745,7 +745,7 @@ public class HexGrid : MonoBehaviour
 			while (current != currentPathFrom) {
 				current.SetLabel(null);
 				current.colorFlags.OnMovementPath = false;
-				current = current.PathParent;
+				current = (HexCell)current.PathParent;
 			}
 			current.colorFlags.OnMovementPath = false;
 			currentPathExists = false;
@@ -765,7 +765,7 @@ public class HexGrid : MonoBehaviour
 			return null;
 		}
 		List<HexCell> path = ListPool<HexCell>.Get();
-		for (HexCell c = currentPathTo; c != currentPathFrom; c = c.PathParent) {
+		for (HexCell c = currentPathTo; c != currentPathFrom; c = (HexCell)c.PathParent) {
 			path.Add(c);
 		}
 		path.Add(currentPathFrom);

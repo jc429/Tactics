@@ -80,15 +80,15 @@ public static class HexMetrics
 			waterBlendFactor;
 	}
 
-	public static HexEdgeType GetEdgeType (int elevation1, int elevation2) {
+	public static EdgeType GetEdgeType (int elevation1, int elevation2) {
 		if (elevation1 == elevation2) {
-			return HexEdgeType.Flat;
+			return EdgeType.Flat;
 		}
 		int delta = elevation2 - elevation1;
 		if (delta == 1 || delta == -1) {
-			return HexEdgeType.Slope;
+			return EdgeType.Slope;
 		}
-		return HexEdgeType.Cliff;
+		return EdgeType.Cliff;
 	}
 
 	public static Vector3 TerraceLerp (Vector3 a, Vector3 b, int step) {

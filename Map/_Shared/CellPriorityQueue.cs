@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-public class HexCellPriorityQueue {
+public class CellPriorityQueue {
 
-	List<HexCell> list = new List<HexCell>();
+	List<Cell> list = new List<Cell>();
 
 	int count = 0;
 
@@ -15,7 +15,7 @@ public class HexCellPriorityQueue {
 	}
 
 	/* add a cell to the list */
-	public void Enqueue (HexCell cell) {
+	public void Enqueue (Cell cell) {
 		count += 1;
 		int priority = cell.SearchPriority;
 		if (priority < minimum) {
@@ -31,10 +31,10 @@ public class HexCellPriorityQueue {
 	}
 
 	/* remove a cell from the list */
-	public HexCell Dequeue () {
+	public Cell Dequeue () {
 		count -= 1;
 		for (; minimum < list.Count; minimum++) {
-			HexCell cell = list[minimum];
+			Cell cell = list[minimum];
 			if (cell != null) {
 				list[minimum] = cell.NextWithSamePriority;
 				return cell;
@@ -44,9 +44,9 @@ public class HexCellPriorityQueue {
 	}
 	
 	/* change a cell's priority level */
-	public void Change (HexCell cell, int oldPriority) {
-		HexCell current = list[oldPriority];
-		HexCell next = current.NextWithSamePriority;
+	public void Change (Cell cell, int oldPriority) {
+		Cell current = list[oldPriority];
+		Cell next = current.NextWithSamePriority;
 		if (current == cell) {
 			list[oldPriority] = next;
 		}

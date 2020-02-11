@@ -8,9 +8,7 @@ public struct EdgeVertices {
 		v2 = corner2;
 	}
 
-	public static EdgeVertices TerraceLerp (
-		EdgeVertices a, EdgeVertices b, int step)
-	{
+	public static EdgeVertices TerraceLerp (EdgeVertices a, EdgeVertices b, int step) {
 		EdgeVertices result;
 		result.v1 = HexMetrics.TerraceLerp(a.v1, b.v1, step);
 		result.v2 = HexMetrics.TerraceLerp(a.v2, b.v2, step);

@@ -5,116 +5,15 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
-public class HexCell : MonoBehaviour
+public class Cell : MonoBehaviour
 {
-    public HexCoordinates coordinates;
-    
+
 	//set true to disable this cell entirely
 	public bool invalid;	
 
-	// elevation of cell
-    int elevation = int.MinValue;
-
-	// water level of cell
-    int waterLevel = int.MinValue;
-
-	// cell terrain type
-	TerrainType terrain = TerrainType.Default;
-	int terrainTypeIndex;
-
-	// cell label
-    public RectTransform uiRect;
-
-	// adjacent cells
-    [SerializeField]
-	[NamedArrayAttribute (new string[] {"NE", "E", "SE", "SW", "W", "NW"})]
-	HexCell[] neighbors;
-
-	// chunk this cell is a member of 
-	public HexGridChunk chunk;
-
-	// distance to this cell from another cell
-	int distanceToCell;
-
-
-	//unit residing in this cell
-	public MapUnit Unit { get; set; }
-
-	public struct ColorFlags{
-		HexCell cell;
-		bool isHoveredOn; 
-		bool isSelected; 
-		bool onMovementPath; 
-		bool inMovementRange;
-		bool inAttackRange;
-		bool inAssistRange;
-
-		public ColorFlags(HexCell parent){
-			cell = parent;
-			isHoveredOn = isSelected = onMovementPath = inMovementRange = inAttackRange = inAssistRange = false;
-		}
-
-		public bool IsHoveredOn{
-			get{ return isHoveredOn; }
-			set{
-				isHoveredOn = value;
-				cell.RefreshHighlight();
-			}
-		}
-		public bool IsSelected{
-			get{ return isSelected; }
-			set{
-				isSelected = value;
-				cell.RefreshHighlight();
-			}
-		} 
-		public bool OnMovementPath{
-			get{ return onMovementPath; }
-			set{
-				onMovementPath = value;
-				cell.RefreshHighlight();
-			}
-		} 
-		public bool InMovementRange{
-			get{ return inMovementRange; }
-			set{
-				inMovementRange = value;
-				cell.RefreshHighlight();
-			}
-		} 
-		public bool InAttackRange{
-			get{ return inAttackRange; }
-			set{
-				inAttackRange = value;
-				cell.RefreshHighlight();
-			}
-		} 
-		public bool InAssistRange{
-			get{ return inAssistRange; }
-			set{
-				inAssistRange = value;
-				cell.RefreshHighlight();
-			}
-		} 
-		public void Clear(){
-			isHoveredOn = isSelected = onMovementPath = inMovementRange = inAttackRange = inAssistRange = false;
-		}
-
-
-	}
-	public ColorFlags colorFlags;
-
-	
-
-	/* Position of cell */
-	public Vector3 Position {
-		get {
-			return transform.localPosition;
-		}
-	}
-    
 	/* Elevation of cell */
-    public int Elevation {
+	protected int elevation = int.MinValue;
+	public int Elevation {
 		get {
 			return elevation;
 		}
@@ -131,6 +30,7 @@ public class HexCell : MonoBehaviour
 	}
 
 	/* Water Level of cell */
+	protected int waterLevel = int.MinValue;
 	public int WaterLevel {
 		get {
 			return waterLevel;
@@ -144,7 +44,18 @@ public class HexCell : MonoBehaviour
 		}
 	}
 
+	// cell terrain type
+	protected TerrainType terrain = TerrainType.Default;
+	protected int terrainTypeIndex;
+
+	// cell label
+	public RectTransform uiRect;
+
+	// chunk this cell is a member of 
+	// public MapGridChunk chunk;
+
 	/* Distance to this cell */
+	protected int distanceToCell;
 	public int DistanceToCell {
 		get {
 			return distanceToCell;
@@ -154,6 +65,25 @@ public class HexCell : MonoBehaviour
 		//	UpdateDistanceLabel();
 		}
 	}
+
+	// unit residing in this cell
+	public MapUnit Unit { get; set; }
+	
+	// flags for determining how to color cell 
+	public ColorFlags colorFlags;
+
+	/* Position of cell */
+	public Vector3 Position {
+		get {
+			return transform.localPosition;
+		}
+	}
+
+	
+
+	
+
+	
 
 	/* returns the physical location of the water surface */
 	public float WaterSurfaceY {
@@ -205,7 +135,7 @@ public class HexCell : MonoBehaviour
 	}
 
 	/* for calculating path from this cell back to search start */
-	public HexCell PathParent { get; set; }
+	public Cell PathParent { get; set; }
 
 	public int SearchHeuristic { get; set; }
 
@@ -220,22 +150,17 @@ public class HexCell : MonoBehaviour
 	public int SearchPhase { get; set; }
 
 	/* linked list of cells sharing a priority level */
-	public HexCell NextWithSamePriority { get; set; }
+	public Cell NextWithSamePriority { get; set; }
 
 
-	public HexCell(){
-		colorFlags = new ColorFlags(this);
-	}
-
-	
-    // Start is called before the first frame update
-    void Start()
-    {
+	// Start is called before the first frame update
+	void Start()
+	{
 		DisableHighlight();
 		if(invalid){
 			uiRect.gameObject.SetActive(false);
 		}
-    }
+	}
 
 
 
@@ -289,33 +214,21 @@ public class HexCell : MonoBehaviour
 		label.text = text;
 	}
 
-	/* Refreshes chunk (and, by extension, cell) and potentially neighbors */
-	void Refresh () {
-		if(chunk != null){
-			chunk.Refresh();
-			if (Unit) {
-				Unit.ValidateLocation();
-			}
-			// if this cell is neighboring any other chunks, they must be refreshed too
-			for (int i = 0; i < neighbors.Length; i++) {
-				HexCell neighbor = neighbors[i];
-				if (neighbor != null && neighbor.chunk != chunk) {
-					neighbor.chunk.Refresh();
-				}
-			}
+	protected virtual void Refresh(){
+		if (Unit) {
+			Unit.ValidateLocation();
 		}
 	}
 
 	/* Refreshes only the chunk containing this cell */
-	void RefreshSelfOnly () {
-		chunk.Refresh();
+	protected virtual void RefreshSelfOnly () {
 		if (Unit) {
 			Unit.ValidateLocation();
 		}
 	}
 
 	/* adjusts cell height when elevation is changed */
-	void RefreshPosition () {
+	protected void RefreshPosition () {
 		Vector3 position = transform.localPosition;
 		position.y = elevation * HexMetrics.elevationStep;
 		transform.localPosition = position;
@@ -325,41 +238,14 @@ public class HexCell : MonoBehaviour
 		uiRect.localPosition = uiPosition;
 	}
 
-	public HexEdgeType GetEdgeType (HexDirection direction) {
-		return HexMetrics.GetEdgeType(
-			elevation, neighbors[(int)direction].elevation
-		);
-	}
-
-	public HexEdgeType GetEdgeType (HexCell otherCell) {
-		return HexMetrics.GetEdgeType(
-			elevation, otherCell.elevation
-		);
-	}
-
-    public HexCell GetNeighbor (HexDirection direction) {
-		if(neighbors[(int)direction] != null && neighbors[(int)direction].invalid){
-			return null;
-		}
-		return neighbors[(int)direction];
-	}
-
-    public void SetNeighbor (HexDirection direction, HexCell cell) {
-		neighbors[(int)direction] = cell;
-		cell.neighbors[(int)direction.Opposite()] = this;
-	}
-
-
-
-
-	public void SaveCell(BinaryWriter writer) {
+	public virtual void SaveCell(BinaryWriter writer) {
 		writer.Write(invalid);
 		writer.Write((byte)terrainTypeIndex);
 		writer.Write((byte)elevation);
 		writer.Write((byte)waterLevel);
 	}
 
-	public void LoadCell(BinaryReader reader) {
+	public virtual void LoadCell(BinaryReader reader) {
 		invalid = reader.ReadBoolean();
 		terrainTypeIndex = reader.ReadByte();
 		terrain = (TerrainType)terrainTypeIndex;
@@ -367,5 +253,4 @@ public class HexCell : MonoBehaviour
 		RefreshPosition();
 		waterLevel = reader.ReadByte();	
 	}
-	
 }

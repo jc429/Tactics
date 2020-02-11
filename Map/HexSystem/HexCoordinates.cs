@@ -6,59 +6,59 @@ using UnityEngine;
 [System.Serializable]
 public struct HexCoordinates
 {
-    [SerializeField]
-    private int x, z;
+	[SerializeField]
+	private int x, z;
 
-    public int X{
-        get{
-            return x;
-        }
-    }
+	public int X{
+		get{
+			return x;
+		}
+	}
 
-    public int Y{
-        get {
-            return -X - Z;
-        }
-    }
+	public int Y{
+		get {
+			return -X - Z;
+		}
+	}
 
-    public int Z{
-        get{
-            return z;
-        }
-    }
+	public int Z{
+		get{
+			return z;
+		}
+	}
 
-    public HexCoordinates(int x, int z){
-        this.x = x;
-        this.z = z;
-    }
+	public HexCoordinates(int x, int z){
+		this.x = x;
+		this.z = z;
+	}
 
 
-    public static HexCoordinates FromOffsetCoordinates(int x, int z){
+	public static HexCoordinates FromOffsetCoordinates(int x, int z){
 		return new HexCoordinates(x - z / 2, z);
 	}
 
-    public static HexCoordinates FromPosition(Vector3 position){
-        float x = position.x / (HexMetrics.innerRadius * 2f);
-        float y = -x;
-        
-        //compensate for movement along z axis
-        float offset = position.z / (HexMetrics.outerRadius * 3f);
+	public static HexCoordinates FromPosition(Vector3 position){
+		float x = position.x / (HexMetrics.innerRadius * 2f);
+		float y = -x;
+			
+		//compensate for movement along z axis
+		float offset = position.z / (HexMetrics.outerRadius * 3f);
 		x -= offset;
 		y -= offset;
 
-        //round to integers
-        int iX = Mathf.RoundToInt(x);
+		//round to integers
+		int iX = Mathf.RoundToInt(x);
 		int iY = Mathf.RoundToInt(y);
 		int iZ = Mathf.RoundToInt(-x -y);
 
-        //if they dont add up to zero, something went wrong
-        if (iX + iY + iZ != 0) {
-            //calculate deltas
-            float dX = Mathf.Abs(x - iX);
+		//if they dont add up to zero, something went wrong
+		if (iX + iY + iZ != 0) {
+			//calculate deltas
+			float dX = Mathf.Abs(x - iX);
 			float dY = Mathf.Abs(y - iY);
 			float dZ = Mathf.Abs(-x -y - iZ);
 
-            //discard largest delta (aka rounding error) & recalculate component based on the other two
+			//discard largest delta (aka rounding error) & recalculate component based on the other two
 			if (dX > dY && dX > dZ) {
 				iX = -iY - iZ;
 			}
@@ -68,7 +68,7 @@ public struct HexCoordinates
 		}
 
 		return new HexCoordinates(iX, iZ);
-    }
+	}
 
 	public int DistanceTo (HexCoordinates other) {
 		return 
@@ -79,7 +79,7 @@ public struct HexCoordinates
 
 
 
-    public override string ToString () {
+	public override string ToString () {
 		return "(" + X.ToString() + ", " + Y.ToString() + ", " + Z.ToString() + ")";
 	}
 

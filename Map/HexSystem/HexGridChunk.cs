@@ -56,35 +56,35 @@ public class HexGridChunk : MonoBehaviour
 
 
 	
-    /* Triangulates All Cells */
-    public void TriangulateAll(){
-		terrain.ClearAll();
-		water.ClearAll();
-		waterShore.ClearAll();
+	/* Triangulates All Cells */
+	public void TriangulateAll(){
+	terrain.ClearAll();
+	water.ClearAll();
+	waterShore.ClearAll();
 
-		foreach(HexCell c in cellsList){
-			if(!c.invalid){
-				TriangulateCell(c);
+	foreach(HexCell c in cellsList){
+		if(!c.invalid){
+			TriangulateCell(c);
+		}
 			}
-        }
 
-		terrain.Apply();
-		water.Apply();
-		waterShore.Apply();
-		
-    }
+	terrain.Apply();
+	water.Apply();
+	waterShore.Apply();
+	
+	}
 
-    /* Creates the 6 triangles that comprise a hex cell */
-    void TriangulateCell(HexCell cell){
-        for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
+	/* Creates the 6 triangles that comprise a hex cell */
+	void TriangulateCell(HexCell cell){
+		for (HexDirection d = HexDirection.NE; d <= HexDirection.NW; d++) {
 			Triangulate(d, cell);
 		}
-    }
+	}
 
-    /* Creates a single triangle */
-    void Triangulate(HexDirection direction, HexCell cell){
-		
-        Vector3 center = cell.transform.localPosition;
+	/* Creates a single triangle */
+	void Triangulate(HexDirection direction, HexCell cell){
+	
+		Vector3 center = cell.transform.localPosition;
 		EdgeVertices e = new EdgeVertices(
 			center + HexMetrics.GetFirstSolidCorner(direction),
 			center + HexMetrics.GetSecondSolidCorner(direction)
@@ -92,41 +92,41 @@ public class HexGridChunk : MonoBehaviour
 
 		TriangulateEdgeFan(center, e, cell.TerrainTypeIndex);
 /*
-         // solid core triangle
-        terrain.AddTriangle(center, v1, v2);
-        terrain.AddTriangleColor(color1);
-        //terrain.AddTriangleColor(cell.CellColor);
+		// solid core triangle
+		terrain.AddTriangle(center, v1, v2);
+		terrain.AddTriangleColor(color1);
+		//terrain.AddTriangleColor(cell.CellColor);
 		float type = cell.TerrainTypeIndex;
 		Vector3 types;
 		types.x = types.y = types.z = type;
 		terrain.AddTriangleTerrainTypes(types);
 */
-        if (direction <= HexDirection.SE) {
+		if (direction <= HexDirection.SE) {
 			TriangulateConnection(direction, cell, e);
 		}
 
 		if (cell.IsUnderwater) {
 			TriangulateWater(direction, cell, center);
 		}
-    }
+	}
 
-    /* triangulates the joints between tiles */
-    void TriangulateConnection(HexDirection direction, HexCell cell, EdgeVertices e1){
+	/* triangulates the joints between tiles */
+	void TriangulateConnection(HexDirection direction, HexCell cell, EdgeVertices e1){
 
-        HexCell neighbor = cell.GetNeighbor(direction);
-        if(neighbor == null){
-            return;
-        }
+		HexCell neighbor = cell.GetNeighbor(direction);
+		if(neighbor == null){
+				return;
+		}
 
-        // quad stretching to edge of tile
-        Vector3 bridge = HexMetrics.GetBridge(direction);
-        bridge.y = neighbor.Position.y - cell.Position.y;
+		// quad stretching to edge of tile
+		Vector3 bridge = HexMetrics.GetBridge(direction);
+		bridge.y = neighbor.Position.y - cell.Position.y;
 		EdgeVertices e2 = new EdgeVertices(
 			e1.v1 + bridge,
 			e1.v2 + bridge
 		);
 
-		if (cell.GetEdgeType(direction) == HexEdgeType.Slope) {
+		if (cell.GetEdgeType(direction) == EdgeType.Slope) {
 			TriangulateEdgeTerraces(e1, cell, e2, neighbor);
 		}
 		else {
@@ -134,8 +134,8 @@ public class HexGridChunk : MonoBehaviour
 			TriangulateEdgeStrip(e1, color1, cell.TerrainTypeIndex, e2, color2, neighbor.TerrainTypeIndex);
 		}
 
-        // remaining corner triangles
-        HexCell nextNeighbor = cell.GetNeighbor(direction.Next());
+		// remaining corner triangles
+		HexCell nextNeighbor = cell.GetNeighbor(direction.Next());
 		if (direction <= HexDirection.E && nextNeighbor != null) {
 			Vector3 v5 = e1.v2 + HexMetrics.GetBridge(direction.Next());
 			v5.y = nextNeighbor.Elevation * HexMetrics.elevationStep;
@@ -156,9 +156,9 @@ public class HexGridChunk : MonoBehaviour
 				TriangulateCorner(v5, nextNeighbor, e1.v2, cell, e2.v2, neighbor);
 			}
 		}
-    }
+	}
 
-    void TriangulateEdgeTerraces(
+	void TriangulateEdgeTerraces(
 		EdgeVertices begin, HexCell beginCell,
 		EdgeVertices end, HexCell endCell
 	) {
@@ -187,29 +187,29 @@ public class HexGridChunk : MonoBehaviour
 		Vector3 left, HexCell leftCell,
 		Vector3 right, HexCell rightCell
 	) {
-		HexEdgeType leftEdgeType = bottomCell.GetEdgeType(leftCell);
-		HexEdgeType rightEdgeType = bottomCell.GetEdgeType(rightCell);
+		EdgeType leftEdgeType = bottomCell.GetEdgeType(leftCell);
+		EdgeType rightEdgeType = bottomCell.GetEdgeType(rightCell);
 
-		if (leftEdgeType == HexEdgeType.Slope) {
-			if (rightEdgeType == HexEdgeType.Slope) {
+		if (leftEdgeType == EdgeType.Slope) {
+			if (rightEdgeType == EdgeType.Slope) {
 				TriangulateCornerTerraces(bottom, bottomCell, left, leftCell, right, rightCell);
 			}
-			else if (rightEdgeType == HexEdgeType.Flat) {
+			else if (rightEdgeType == EdgeType.Flat) {
 				TriangulateCornerTerraces(left, leftCell, right, rightCell, bottom, bottomCell);
 			}
 			else{
 				TriangulateCornerTerracesCliff(bottom, bottomCell, left, leftCell, right, rightCell);
 			}
 		}
-		else if (rightEdgeType == HexEdgeType.Slope) {
-			if (leftEdgeType == HexEdgeType.Flat) {
+		else if (rightEdgeType == EdgeType.Slope) {
+			if (leftEdgeType == EdgeType.Flat) {
 				TriangulateCornerTerraces(right, rightCell, bottom, bottomCell, left, leftCell);
 			}
 			else{
 				TriangulateCornerCliffTerraces(bottom, bottomCell, left, leftCell, right, rightCell);
 			}
 		}
-		else if (leftCell.GetEdgeType(rightCell) == HexEdgeType.Slope) {
+		else if (leftCell.GetEdgeType(rightCell) == EdgeType.Slope) {
 			if (leftCell.Elevation < rightCell.Elevation) {
 				TriangulateCornerCliffTerraces(right, rightCell, bottom, bottomCell, left, leftCell);
 			}
@@ -286,7 +286,7 @@ public class HexGridChunk : MonoBehaviour
 
 		TriangulateBoundaryTriangle(begin, color1, left, color2, boundary, boundaryColor, types);
 
-		if (leftCell.GetEdgeType(rightCell) == HexEdgeType.Slope) {
+		if (leftCell.GetEdgeType(rightCell) == EdgeType.Slope) {
 			TriangulateBoundaryTriangle(left, color2, right, color3, boundary, boundaryColor, types);
 		}
 		else {
@@ -315,7 +315,7 @@ public class HexGridChunk : MonoBehaviour
 
 		TriangulateBoundaryTriangle(right, color3, begin, color1, boundary, boundaryColor, types);
 
-		if (leftCell.GetEdgeType(rightCell) == HexEdgeType.Slope) {
+		if (leftCell.GetEdgeType(rightCell) == EdgeType.Slope) {
 			TriangulateBoundaryTriangle(left, color2, right, color3, boundary, boundaryColor, types);
 		}
 		else {
