@@ -6,9 +6,7 @@ using UnityEngine;
 public class MapUnit : MonoBehaviour {
 	UnitAnimator _unitAnimator;
 	public UnitAnimator Animator{
-		get{
-			return _unitAnimator;
-		}
+		get{ return _unitAnimator; }
 	}
 	UnitColor _unitColor;
 
@@ -17,23 +15,17 @@ public class MapUnit : MonoBehaviour {
 	[SerializeField]
 	UnitProperties properties;
 	public UnitProperties Properties{
-		get{
-			return properties;
-		}
+		get{ return properties; }
 	}	
 	
 	public UnitSkillEventHandler skillEventHandler;
 	
 	int currentHP;
 	public int CurrentHP{
-		get{
-			return currentHP;
-		}
+		get{ return currentHP; }
 	}
 	public int MaxHP{
-		get{
-			return Properties.GetStat(CombatStat.HP);
-		}
+		get{ return Properties.GetStat(CombatStat.HP); }
 	}
 	public DynamicMeter hpBar;
 	public bool isDead;
@@ -42,8 +34,10 @@ public class MapUnit : MonoBehaviour {
 	public TurnState turnState;
 
 	// cell unit is positioned in
-	HexCell currentCell;
-	public HexCell CurrentCell {
+	//HexCell currentCell;
+	//public HexCell CurrentCell {
+	MapCell currentCell;
+	public MapCell CurrentCell {
 		get {	return currentCell;	}
 		set {
 			if (currentCell) {
@@ -55,29 +49,44 @@ public class MapUnit : MonoBehaviour {
 		}
 	}
 
+	// direction unit is facing
+	OctDirection facing;
+	public OctDirection Facing {
+		get { return facing; }
+		set {
+			facing = value;
+			_unitAnimator.Orientation = value.DegreesOfRotation();
+		}
+	}
 	// hex direction unit is facing
-	DodecDirection facing;
+	/*	DodecDirection facing;
 	public DodecDirection Facing {
 		get {	return facing;	}
 		set {
 			facing = value;
 			_unitAnimator.Orientation = value.DegreesOfRotation();
 		}
-	}
+	}*/
 
 	// how many tiles unit can move (before factoring in cost)
 	//public int moveRange = 7;
 	//tiles unit can move to
-	public List<HexCell> moveTiles;
+	public List<MapCell> moveTiles;
+	public List<HexCell> hexMoveTiles;
+
 	//tiles unit can attack in a given turn
-	public List<HexCell> attackTiles;
+	public List<MapCell> attackTiles;
+	public List<HexCell> hexAttackTiles;
+
 	//tiles unit can attack from where they are standing
-	public List<HexCell> localAttackTiles;
+	public List<MapCell> localAttackTiles;
+	public List<HexCell> hexLocalAttackTiles;
 
 	// travel
 	public bool isTraveling;
 	const float travelSpeed = 4f;
-	List<HexCell> pathToTravel;
+	List<MapCell> pathToTravel;
+	//List<HexCell> pathToTravel;
 
 
 	public MapUnit(){
@@ -136,8 +145,8 @@ public class MapUnit : MonoBehaviour {
 	public void StartUnit(){		
 		//Properties.RandomizeStats();
 		ResetHP();
-		GameController.hexGrid.CalculateMovementRange(currentCell, this);
-		GameController.hexGrid.CalculateTotalAttackRange(this);
+		GameController.mapGrid.CalculateMovementRange(currentCell, this);
+		GameController.mapGrid.CalculateTotalAttackRange(this);
 	}
 
 	/* handles prepping the unit during the start of their turn */
@@ -177,10 +186,10 @@ public class MapUnit : MonoBehaviour {
 		if(turnState == TurnState.Idle){
 			//if for some reason the unit doesnt have move/attack tiles calculated yet (but they always should)
 			if(moveTiles != null && moveTiles.Count == 0){
-				GameController.hexGrid.CalculateMovementRange(currentCell,this);
+				GameController.mapGrid.CalculateMovementRange(currentCell,this);
 			}
 			if(attackTiles != null && attackTiles.Count == 0){
-				GameController.hexGrid.CalculateTotalAttackRange(this);
+				GameController.mapGrid.CalculateTotalAttackRange(this);
 			}
 			
 			MarkMovementRange(true);
@@ -218,7 +227,7 @@ public class MapUnit : MonoBehaviour {
 	/* marks all tiles within movement range as either true or false */
 	public void MarkMovementRange(bool b){
 		if(moveTiles != null){
-			foreach(HexCell c in moveTiles){
+			foreach(MapCell c in moveTiles){
 				c.colorFlags.InMovementRange = b;
 			}
 		}
@@ -227,7 +236,7 @@ public class MapUnit : MonoBehaviour {
 	/* marks all tiles within attack range as either true or false */
 	public void MarkAttackRange(bool b){
 		if(attackTiles != null){
-			foreach(HexCell c in attackTiles){
+			foreach(MapCell c in attackTiles){
 				c.colorFlags.InAttackRange = b;
 			}
 		}
@@ -236,7 +245,7 @@ public class MapUnit : MonoBehaviour {
 	/* marks all tiles within attack range as either true or false */
 	public void MarkLocalAttackRange(bool b){
 		if(localAttackTiles != null){
-			foreach(HexCell c in localAttackTiles){
+			foreach(MapCell c in localAttackTiles){
 				c.colorFlags.InAttackRange = b;
 			}
 		}
@@ -248,12 +257,12 @@ public class MapUnit : MonoBehaviour {
 	}
 
 	/* true if unit can reach a tile */
-	public bool IsValidDestination (HexCell cell) {
+	public bool IsValidDestination (MapCell cell) {
 		return !cell.IsUnderwater && !cell.Unit;
 	}
 
 	/* travel along a path */
-	public void Travel (List<HexCell> path) {
+	public void Travel (List<MapCell> path) {
 		// abort if already in transit
 		if(isTraveling){
 			return;	
@@ -306,24 +315,24 @@ public class MapUnit : MonoBehaviour {
 		transform.localPosition = currentCell.Position;
 		
 		// set facing
-		Facing = DodecDirectionExtensions.DodecDirectionFromDegrees(Mathf.RoundToInt(_unitAnimator.Orientation));
+		Facing = OctDirectionExtensions.OctDirectionFromDegrees(Mathf.RoundToInt(_unitAnimator.Orientation));
 
 		isTraveling = false;
 		//moveTiles.Clear();
-		ListPool<HexCell>.Add(pathToTravel);
+		ListPool<MapCell>.Add(pathToTravel);
 		pathToTravel = null;
 		FinishTravel();
 	}
 
 	/* rotates unit to face a given cell */
-	public void  FaceCell (HexCell cell) {
+	public void  FaceCell (MapCell cell) {
 		StartCoroutine(_unitAnimator.TurnToLookAt(cell.Position));
 	}
 
 	/* called after unit moves to destination */
 	void FinishTravel(){
 		turnState = TurnState.PostMove;
-		GameController.hexGrid.CalculateLocalAttackRange(CurrentCell,this);
+		GameController.mapGrid.CalculateLocalAttackRange(CurrentCell,this);
 		GameController.gameUI.OpenUnitActionMenu();
 	}
 
@@ -396,6 +405,16 @@ public class MapUnit : MonoBehaviour {
 		unit.Properties.Load(reader);
 		unit.SetAffiliation(unit.Properties.affiliation);
 		grid.AddUnit(unit, grid.GetCell(coordinates), facing);
-
 	}
+
+	
+	public static void Load (BinaryReader reader, MapGrid grid) {
+		MapCoordinates coordinates = MapCoordinates.Load(reader);
+		OctDirection facing = (OctDirection)reader.ReadInt32();
+		MapUnit unit = Instantiate(unitPrefab);
+		unit.Properties.Load(reader);
+		unit.SetAffiliation(unit.Properties.affiliation);
+		grid.AddUnit(unit, grid.GetCell(coordinates), facing);
+	}
+
 }

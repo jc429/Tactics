@@ -53,7 +53,8 @@ public class UnitAnimator : MonoBehaviour
 
 		model.transform.LookAt(point);
 		orientation = model.transform.localRotation.eulerAngles.y;
-		_unit.Facing = DodecDirectionExtensions.DodecDirectionFromDegrees(Mathf.RoundToInt(orientation));
+		_unit.Facing = OctDirectionExtensions.OctDirectionFromDegrees(Mathf.RoundToInt(orientation));
+		//_unit.Facing = DodecDirectionExtensions.DodecDirectionFromDegrees(Mathf.RoundToInt(orientation));
 	}
 	
 	public IEnumerator PerformAttackAnimation(){

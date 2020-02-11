@@ -12,7 +12,8 @@ public class GameController : MonoBehaviour
 
 	public static MapCamera mapCamera;	
 
-	public static HexGrid hexGrid;
+	//public static HexGrid hexGrid;
+	public static MapGrid mapGrid;
 
 	public static GameUI gameUI;
 	public static UnitInfoPanel unitInfoPanel;
@@ -34,8 +35,8 @@ public class GameController : MonoBehaviour
 
 	static bool gameStarted = false;
 
-    void Awake(){
-        if (instance == null) {
+	void Awake(){
+		if (instance == null) {
 			instance = this;
 			DontDestroyOnLoad(this.gameObject);
 		}
@@ -43,7 +44,7 @@ public class GameController : MonoBehaviour
 			Destroy(this.gameObject);
 		}
 		InitializeGame();
-    }
+	}
 
 	void Start(){
 		SetGamePaused(false);

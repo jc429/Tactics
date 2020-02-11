@@ -51,10 +51,10 @@ public class HexGrid : MonoBehaviour
 
 	public MapUnit unitPrefab;
 
-    void Awake(){
+	void Awake(){
 		HexMetrics.colors = colors;
 		MapUnit.unitPrefab = unitPrefab;
-		GameController.hexGrid = this;
+		//GameController.hexGrid = this;
 
 		CreateMapCircle(6);
 	}
@@ -350,14 +350,14 @@ public class HexGrid : MonoBehaviour
 		//cell.SetLabel(cell.coordinates.ToString());
 	}
 
-    /* returns a cell at a given position */
-    public HexCell GetCell(Vector3 position) {
+	/* returns a cell at a given position */
+	public HexCell GetCell(Vector3 position) {
 		position = transform.InverseTransformPoint(position);
-        HexCoordinates coordinates = HexCoordinates.FromPosition(position);
+		HexCoordinates coordinates = HexCoordinates.FromPosition(position);
 
-        int index = coordinates.X + coordinates.Z * cellCountX + coordinates.Z / 2;
-        return cells[index];
-    }
+		int index = coordinates.X + coordinates.Z * cellCountX + coordinates.Z / 2;
+		return cells[index];
+	}
 
 	/* Returns a cell based on hex coordinates */
 	public HexCell GetCell (HexCoordinates coordinates) {
@@ -434,11 +434,11 @@ public class HexGrid : MonoBehaviour
 		}
 
 		// cells we can move to
-		if(unit.moveTiles == null){
-			unit.moveTiles = ListPool<HexCell>.Get();
+		if(unit.hexMoveTiles == null){
+			unit.hexMoveTiles = ListPool<HexCell>.Get();
 		}
 		else{
-			unit.moveTiles.Clear();
+			unit.hexMoveTiles.Clear();
 		}
 		
 		Queue<HexCell> frontier = new Queue<HexCell>();
@@ -469,8 +469,8 @@ public class HexGrid : MonoBehaviour
 
 				//from this point we know we can enter the cell
 
-				if(!unit.moveTiles.Contains(neighbor)){
-					unit.moveTiles.Add(neighbor);
+				if(!unit.hexMoveTiles.Contains(neighbor)){
+					unit.hexMoveTiles.Add(neighbor);
 					frontier.Enqueue(neighbor);
 				}
 
@@ -489,11 +489,11 @@ public class HexGrid : MonoBehaviour
 			return;
 		}
 
-		if(unit.attackTiles == null){
-			unit.attackTiles = ListPool<HexCell>.Get();
+		if(unit.hexAttackTiles == null){
+			unit.hexAttackTiles = ListPool<HexCell>.Get();
 		}
 		else{
-			unit.attackTiles.Clear();
+			unit.hexAttackTiles.Clear();
 		}
 
 		int unitAttackRange = unit.Properties.AttackRange;
@@ -503,8 +503,8 @@ public class HexGrid : MonoBehaviour
 			return;
 		}
 
-		foreach(HexCell cell in unit.moveTiles){
-			CheckCellsWithinRange(cell,unit.attackTiles,unitAttackRange);
+		foreach(HexCell cell in unit.hexMoveTiles){
+			CheckCellsWithinRange(cell,unit.hexAttackTiles,unitAttackRange);
 		}
 	}
 
@@ -514,11 +514,11 @@ public class HexGrid : MonoBehaviour
 			return;
 		}
 
-		if(unit.localAttackTiles == null){
-			unit.localAttackTiles = ListPool<HexCell>.Get();
+		if(unit.hexLocalAttackTiles == null){
+			unit.hexLocalAttackTiles = ListPool<HexCell>.Get();
 		}
 		else{
-			unit.localAttackTiles.Clear();
+			unit.hexLocalAttackTiles.Clear();
 		}
 		
 		int unitAttackRange = unit.Properties.AttackRange;
@@ -527,7 +527,7 @@ public class HexGrid : MonoBehaviour
 			Debug.Log("Unit cannot attack!");
 		}
 
-		CheckCellsWithinRange(cell,unit.localAttackTiles,unitAttackRange);
+		CheckCellsWithinRange(cell,unit.hexLocalAttackTiles,unitAttackRange);
 
 	}
 
@@ -777,8 +777,8 @@ public class HexGrid : MonoBehaviour
 	public void AddUnit (MapUnit unit, HexCell location, DodecDirection direction) {
 		units.Add(unit);
 		unit.transform.SetParent(transform, false);
-		unit.CurrentCell = location;
-		unit.Facing = direction;
+		//unit.CurrentCell = location;
+		//unit.Facing = direction;
 	}
 
 	/* remove unit */

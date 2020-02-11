@@ -3,17 +3,18 @@ using UnityEngine.EventSystems;
 
 public class GameUI : MonoBehaviour {
 	
-	public HexGrid grid;
+	public HexGrid hexGrid;
+	public MapGrid mapGrid;
 
 	public BasicMenu unitActionMenu;
 
-	//cell the mouse cursor is over
-	HexCell currentCell;
+	// cell the mouse cursor is over
+	MapCell currentCell;
 
 	MapUnit selectedUnit;
-	//hex cell the unit started their turn in
-	HexCell startCell;
-	DodecDirection startFacing;
+	// cell the unit started their turn in
+	MapCell startCell;
+	OctDirection startFacing;
 
 	void Awake(){
 		GameController.gameUI = this;
@@ -24,7 +25,7 @@ public class GameUI : MonoBehaviour {
 	}
 
 	void Update () {
-		grid.StartMap();
+		mapGrid.StartMap();
 		if (!EventSystem.current.IsPointerOverGameObject()) {
 			if(selectedUnit != null){
 				switch(selectedUnit.turnState){
@@ -33,7 +34,7 @@ public class GameUI : MonoBehaviour {
 						DoMove();
 					}
 					else if(Input.GetMouseButtonDown(1)){
-						grid.ClearPath();
+						mapGrid.ClearPath();
 						selectedUnit.turnState = TurnState.Idle;
 						DeselectCurrentUnit();
 					}
@@ -99,12 +100,12 @@ public class GameUI : MonoBehaviour {
 
 	public void SetEditMode (bool toggle) {
 		enabled = !toggle;
-		grid.ShowUI(!toggle);
-		grid.ClearPath();
+		mapGrid.ShowUI(!toggle);
+		mapGrid.ClearPath();
 	}
 
 	bool UpdateCurrentCell () {
-		HexCell cell = grid.GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
+		MapCell cell = mapGrid.GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
 		if (cell != currentCell) {
 			if(currentCell != null){
 				currentCell.colorFlags.IsHoveredOn = false;
@@ -119,7 +120,7 @@ public class GameUI : MonoBehaviour {
 	}
 
 	void DoSelectUnit () {
-		grid.ClearPath();
+		mapGrid.ClearPath();
 		if(selectedUnit != null){
 			if(selectedUnit.isTraveling){
 				return;
@@ -139,8 +140,8 @@ public class GameUI : MonoBehaviour {
 				selectedUnit = unit;
 				startCell = unit.CurrentCell;
 				startFacing = unit.Facing;
-				grid.CalculateMovementRange(currentCell,selectedUnit);
-				grid.CalculateTotalAttackRange(selectedUnit);
+				mapGrid.CalculateMovementRange(currentCell,selectedUnit);
+				mapGrid.CalculateTotalAttackRange(selectedUnit);
 				selectedUnit.SelectUnit();
 				GameController.unitInfoPanel.OpenPanel(selectedUnit);
 				//currentCell.IsSelected = true;
@@ -170,26 +171,26 @@ public class GameUI : MonoBehaviour {
 	void DoPathfinding () {
 		if (UpdateCurrentCell()) {
 			if (currentCell /*&& selectedUnit.IsValidDestination(currentCell)*/) {
-				grid.FindPath(selectedUnit.CurrentCell, currentCell, selectedUnit);
+				mapGrid.FindPath(selectedUnit.CurrentCell, currentCell, selectedUnit);
 			}
 			else {
-				grid.ClearPath();
+				mapGrid.ClearPath();
 			}
 		}
 	}
 
 	void DoMove () {
-		if (grid.HasPath && !selectedUnit.isTraveling) {
+		if (mapGrid.HasPath && !selectedUnit.isTraveling) {
 			GameController.unitInfoPanel.ClosePanel();
-			selectedUnit.Travel(grid.GetPath());
-			grid.ClearPath();
+			selectedUnit.Travel(mapGrid.GetPath());
+			mapGrid.ClearPath();
 			selectedUnit.HideDisplays();
 		}
 		else if(currentCell != null && currentCell.Unit == selectedUnit){
-			grid.ClearPath();
+			mapGrid.ClearPath();
 			selectedUnit.HideDisplays();
 			selectedUnit.turnState = TurnState.PostMove;
-			GameController.hexGrid.CalculateLocalAttackRange(currentCell,selectedUnit);
+			GameController.mapGrid.CalculateLocalAttackRange(currentCell,selectedUnit);
 			OpenUnitActionMenu();
 		}
 	}
@@ -246,6 +247,6 @@ public class GameUI : MonoBehaviour {
 		GameController.unitInfoPanel.OpenPanel(selectedUnit);
 		selectedUnit.MarkMovementRange(true);
 		selectedUnit.MarkAttackRange(true);
-		grid.FindPath(selectedUnit.CurrentCell, currentCell, selectedUnit);
+		mapGrid.FindPath(selectedUnit.CurrentCell, currentCell, selectedUnit);
 	}
 }
