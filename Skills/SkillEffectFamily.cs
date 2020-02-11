@@ -11,7 +11,7 @@ public class SkillEffectFamily{
 	
 	public List<SkillEffect> skillEffects;
 
-	HexUnit Unit{
+	MapUnit Unit{
 		get{
 			return parentPair.parentSkill.unit;
 		}

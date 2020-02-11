@@ -16,11 +16,11 @@ public enum CombatPropertyFlag{
 [System.Serializable]
 public class UnitCombatProperties{
 	[System.NonSerialized]
-	HexUnit unit;
+	MapUnit unit;
 	[System.NonSerialized] 
 	UnitProperties unitProperties;
 
-	public HexUnit foe;
+	public MapUnit foe;
 
 	/* stats at the start of combat */
 	[NamedArrayAttribute (new string[] {"HP", "Str", "Skl", "Spd", "Def", "Res"})]
@@ -45,7 +45,7 @@ public class UnitCombatProperties{
 		ignoreDebuffs = false;
 	}	
 
-	public void SetUnit(HexUnit hu){
+	public void SetUnit(MapUnit hu){
 		unit = hu;
 		unitProperties = hu.Properties;
 	}

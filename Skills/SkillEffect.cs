@@ -16,7 +16,7 @@ public class SkillEffect{
 
 	int[] vars;
 
-	HexUnit Unit{
+	MapUnit Unit{
 		get{
 			return parentEffectFamily.parentPair.parentSkill.unit;
 		}
@@ -56,7 +56,7 @@ public class SkillEffect{
 	}
 
 	public void Apply(){
-		Queue<HexUnit> targetList = new Queue<HexUnit>();
+		Queue<MapUnit> targetList = new Queue<MapUnit>();
 		switch(target){
 		case SkillTarget.TARGET_NONE:
 			break;
@@ -71,7 +71,7 @@ public class SkillEffect{
 		}
 
 		while(targetList.Count > 0){
-			HexUnit targetUnit = targetList.Dequeue();
+			MapUnit targetUnit = targetList.Dequeue();
 			if(targetUnit == null){
 				continue;
 			}
@@ -80,7 +80,7 @@ public class SkillEffect{
 
 	}
 
-	void ApplyEffectToTarget(HexUnit targetUnit){
+	void ApplyEffectToTarget(MapUnit targetUnit){
 		byte statChangeMatrix;
 
 		switch(effectData.eID){

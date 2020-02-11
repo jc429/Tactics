@@ -19,7 +19,7 @@ public class ConditionEffectPair{
 	public SkillConditionFamily conditionFamily;
 	public SkillEffectFamily effectFamily;
 
-	HexUnit Unit{
+	MapUnit Unit{
 		get{
 			return parentSkill.unit;
 		}

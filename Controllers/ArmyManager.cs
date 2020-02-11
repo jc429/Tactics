@@ -10,7 +10,7 @@ public static class ArmyManager{
 	public static ArmyColorProfile[] colorProfiles = new ArmyColorProfile[numArmies];
 	public static ACPInterface acpInterface;
 
-	static List<HexUnit>[] armyLists = new List<HexUnit>[numArmies];
+	static List<MapUnit>[] armyLists = new List<MapUnit>[numArmies];
 
 	/* which army is currently undergoing their turn */
 	public static int currentArmy = 0;
@@ -51,11 +51,11 @@ public static class ArmyManager{
 		return nextArmy;
 	}
 
-	public static List<HexUnit> GetCurrentArmy(){
+	public static List<MapUnit> GetCurrentArmy(){
 		return armyLists[currentArmy];
 	}
 
-	public static List<HexUnit> GetArmy(int armyNo){
+	public static List<MapUnit> GetArmy(int armyNo){
 		if(armyNo < 0 || armyNo >= numArmies){
 			Debug.Log("Invalid army request: " + armyNo);
 			return null;
@@ -64,7 +64,7 @@ public static class ArmyManager{
 		return armyLists[armyNo];
 	}
 
-	public static List<HexUnit> AdvanceToNextArmy(){
+	public static List<MapUnit> AdvanceToNextArmy(){
 		int nextArmy = (currentArmy + 1) % numArmies;
 		while(armyLists[nextArmy].Count == 0){
 			nextArmy = (nextArmy + 1) % numArmies;
@@ -81,7 +81,7 @@ public static class ArmyManager{
 		//foreach (List<HexUnit> armyList in armyLists){
 		for(int i = 0; i < numArmies; i++){
 			if(armyLists[i] == null){
-				armyLists[i] = new List<HexUnit>();
+				armyLists[i] = new List<MapUnit>();
 			}
 			armyLists[i].Clear();
 		}
@@ -94,13 +94,13 @@ public static class ArmyManager{
 	/* disables all units on the board */
 	public static void SetAllUnitsToFinished(){
 		for(int i = 0; i < numArmies; i++){
-			foreach(HexUnit unit in armyLists[i]){
+			foreach(MapUnit unit in armyLists[i]){
 				unit.EndTurn();
 			}
 		}
 	}
 
-	public static void AssignUnitToArmy(HexUnit unit, int army){
+	public static void AssignUnitToArmy(MapUnit unit, int army){
 		if(army <= 0 || army >= numArmies){
 			Debug.Log("Invalid Army!");
 			return;
@@ -112,7 +112,7 @@ public static class ArmyManager{
 		}
 	}
 	
-	public static void RemoveUnitFromArmy(HexUnit unit, int army){
+	public static void RemoveUnitFromArmy(MapUnit unit, int army){
 		if(army <= 0 || army >= numArmies){
 			Debug.Log("Invalid Army!");
 			return;
@@ -128,7 +128,7 @@ public static class ArmyManager{
 
 	/* returns true if all units in an army have expended their action */
 	public static bool ArmyDone(int army){
-		foreach(HexUnit unit in armyLists[army]){
+		foreach(MapUnit unit in armyLists[army]){
 			if(unit.IsFinished()){
 				return false;
 			}

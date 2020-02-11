@@ -10,7 +10,7 @@ public class GameUI : MonoBehaviour {
 	//cell the mouse cursor is over
 	HexCell currentCell;
 
-	HexUnit selectedUnit;
+	MapUnit selectedUnit;
 	//hex cell the unit started their turn in
 	HexCell startCell;
 	DodecDirection startFacing;
@@ -131,7 +131,7 @@ public class GameUI : MonoBehaviour {
 		}
 		UpdateCurrentCell();
 		if (currentCell) {
-			HexUnit unit = currentCell.Unit;
+			MapUnit unit = currentCell.Unit;
 			if(unit != null){
 				if(unit.isTraveling){
 					return;

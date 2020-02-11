@@ -4,12 +4,12 @@ using UnityEngine;
 
 /* provides all necessary info about a combat between two units, allowing for playback  */
 public class CombatInfo {
-	HexUnit attacker;
-	HexUnit defender;
-	public HexUnit Attacker{
+	MapUnit attacker;
+	MapUnit defender;
+	public MapUnit Attacker{
 		get{ return attacker; }
 	}
-	public HexUnit Defender{
+	public MapUnit Defender{
 		get{ return defender; }
 	}
 	//used to check when combat needs to be recalculated
@@ -36,7 +36,7 @@ public class CombatInfo {
 		hits.Clear();
 	}
 
-	public void SetAttackerDefender(HexUnit attackUnit, HexUnit defendUnit){
+	public void SetAttackerDefender(MapUnit attackUnit, MapUnit defendUnit){
 		attacker = attackUnit;
 		defender = defendUnit;
 		attackerFinalHP = attackUnit.CurrentHP;

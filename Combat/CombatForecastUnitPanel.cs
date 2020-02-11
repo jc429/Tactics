@@ -14,7 +14,7 @@ public class CombatForecastUnitPanel : MonoBehaviour
 	public TextMeshProUGUI unitHPPreviewTextbox;
 	public DynamicMeter hpBar;
 
-	HexUnit currentUnit;
+	MapUnit currentUnit;
 
     // Start is called before the first frame update
     void Awake(){
@@ -27,7 +27,7 @@ public class CombatForecastUnitPanel : MonoBehaviour
         
     }
 
-	public void SetUnit(HexUnit unit){
+	public void SetUnit(MapUnit unit){
 		currentUnit = unit;
 		unitNameTextbox.text = unit.name;
 

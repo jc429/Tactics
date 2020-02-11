@@ -16,7 +16,7 @@ public class Skill{
 
 	public List<ConditionEffectPair> cePairs;
 	
-	public HexUnit unit;
+	public MapUnit unit;
 
 	public Skill(){
 		ClearCEPairs();

@@ -10,7 +10,7 @@ public static class TurnManager {
 
 	static int turnStartArmy;
 
-	static List<HexUnit> currentArmy;
+	static List<MapUnit> currentArmy;
 
 	public static void StartGame(){
 		currentTurn = 1;
@@ -34,7 +34,7 @@ public static class TurnManager {
 	}
 
 	static void StartPhase(){
-		foreach(HexUnit unit in currentArmy){
+		foreach(MapUnit unit in currentArmy){
 			unit.StartTurn();
 		}
 		GameController.UIElements.turnDisplay.StartTurnAnimation(currentTurn,ArmyManager.GetCurrentArmyNumber());
@@ -42,7 +42,7 @@ public static class TurnManager {
 
 	/* ends the current army's turn (public so it can be forcibly called without moving all units) */
 	public static void EndPhase(){
-		foreach(HexUnit unit in currentArmy){
+		foreach(MapUnit unit in currentArmy){
 			unit.EndTurn();
 		}
 		NextPhase();
@@ -53,7 +53,7 @@ public static class TurnManager {
 		if(currentArmy == null){
 			return;
 		}
-		foreach(HexUnit unit in currentArmy){
+		foreach(MapUnit unit in currentArmy){
 			if(unit.turnState != TurnState.Finished){
 				return;
 			}

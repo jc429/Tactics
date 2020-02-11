@@ -6,7 +6,7 @@ using TMPro;
 
 public class UnitInfoPanel : MonoBehaviour
 {
-	HexUnit currentUnit;
+	MapUnit currentUnit;
 
 	public bool isActive;
 
@@ -30,7 +30,7 @@ public class UnitInfoPanel : MonoBehaviour
 		ClosePanel();
 	}
 
-	public void OpenPanel(HexUnit unit){
+	public void OpenPanel(MapUnit unit){
 		SetUnit(unit);
 		SetActive(true);
 		//skillInfoPanel.Open();
@@ -47,7 +47,7 @@ public class UnitInfoPanel : MonoBehaviour
 		panel.SetActive(active);
 	}
 
-	public void SetUnit(HexUnit unit){
+	public void SetUnit(MapUnit unit){
 		currentUnit = unit;
 		if(unit == null){
 			Clear();

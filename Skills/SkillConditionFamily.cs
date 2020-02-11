@@ -11,7 +11,7 @@ public class SkillConditionFamily {
 
 	public List<SkillCondition> skillConditions;
 
-	HexUnit Unit{
+	MapUnit Unit{
 		get{
 			return parentPair.parentSkill.unit;
 		}

@@ -6,7 +6,7 @@ using UnityEngine;
 [System.Serializable]
 public class UnitProperties{
 	[System.NonSerialized]
-	HexUnit unit;
+	MapUnit unit;
 	[SerializeField]
 	UnitCombatProperties combatProperties;
 	public UnitCombatProperties CombatProperties{
@@ -62,7 +62,7 @@ public class UnitProperties{
 		}
 	}
 
-	public void SetUnit(HexUnit hu){
+	public void SetUnit(MapUnit hu){
 		unit = hu;
 		combatProperties.SetUnit(hu);
 	}

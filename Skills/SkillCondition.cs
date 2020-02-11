@@ -13,7 +13,7 @@ public class SkillCondition{
 
 	int[] vars;
 
-	HexUnit Unit{
+	MapUnit Unit{
 		get{
 			return parentConditionFamily.parentPair.parentSkill.unit;
 		}

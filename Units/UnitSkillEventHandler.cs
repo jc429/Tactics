@@ -6,7 +6,7 @@ using UnityEngine;
 
 [System.Serializable]
 public class UnitSkillEventHandler{
-	public HexUnit unit;
+	public MapUnit unit;
 
 	public delegate bool resolveSkill();
 	

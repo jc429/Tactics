@@ -24,7 +24,7 @@ public class CombatForecast : MonoBehaviour
 		panel.SetActive(true);
 	}
 
-	public void Show(HexUnit left, HexUnit right){
+	public void Show(MapUnit left, MapUnit right){
 		SetUnits(left,right);
 		panel.SetActive(true);
 	}
@@ -33,7 +33,7 @@ public class CombatForecast : MonoBehaviour
 		panel.SetActive(false);
 	}
 
-	public void SetUnits(HexUnit left, HexUnit right){
+	public void SetUnits(MapUnit left, MapUnit right){
 		leftUnitPanel.SetUnit(left);
 		rightUnitPanel.SetUnit(right);
 	}

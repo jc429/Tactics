@@ -38,7 +38,7 @@ public class HexCell : MonoBehaviour
 
 
 	//unit residing in this cell
-	public HexUnit Unit { get; set; }
+	public MapUnit Unit { get; set; }
 
 	public struct ColorFlags{
 		HexCell cell;

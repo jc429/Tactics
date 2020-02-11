@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 
-public class HexUnit : MonoBehaviour {
+public class MapUnit : MonoBehaviour {
 	UnitAnimator _unitAnimator;
 	public UnitAnimator Animator{
 		get{
@@ -12,7 +12,7 @@ public class HexUnit : MonoBehaviour {
 	}
 	UnitColor _unitColor;
 
-	public static HexUnit unitPrefab;
+	public static MapUnit unitPrefab;
 
 	[SerializeField]
 	UnitProperties properties;
@@ -80,7 +80,7 @@ public class HexUnit : MonoBehaviour {
 	List<HexCell> pathToTravel;
 
 
-	public HexUnit(){
+	public MapUnit(){
 		properties = new UnitProperties();
 		properties.SetUnit(this);
 		skillEventHandler = new UnitSkillEventHandler();
@@ -332,7 +332,7 @@ public class HexUnit : MonoBehaviour {
 
 
 
-	public void StartCombat(HexUnit foe){
+	public void StartCombat(MapUnit foe){
 		Properties.CombatProperties.foe = foe;
 		skillEventHandler.OnCombatStart();
 	}
@@ -392,7 +392,7 @@ public class HexUnit : MonoBehaviour {
 	public static void Load (BinaryReader reader, HexGrid grid) {
 		HexCoordinates coordinates = HexCoordinates.Load(reader);
 		DodecDirection facing = (DodecDirection)reader.ReadInt32();
-		HexUnit unit = Instantiate(unitPrefab);
+		MapUnit unit = Instantiate(unitPrefab);
 		unit.Properties.Load(reader);
 		unit.SetAffiliation(unit.Properties.affiliation);
 		grid.AddUnit(unit, grid.GetCell(coordinates), facing);

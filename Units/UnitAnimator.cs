@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class UnitAnimator : MonoBehaviour
 {
-	public HexUnit _unit;
+	public MapUnit _unit;
 	public GameObject model;
 	
 	const float modelOffset = 0.5f;

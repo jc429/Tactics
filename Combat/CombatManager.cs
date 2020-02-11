@@ -23,7 +23,7 @@ public class CombatManager : MonoBehaviour{
 		combatForecast.Hide();
 	}
 
-	public static void PreCalculateCombat(HexUnit attackUnit, HexUnit defendUnit){
+	public static void PreCalculateCombat(MapUnit attackUnit, MapUnit defendUnit){
 		if(attackUnit == null || defendUnit == null){
 			Debug.Log("Combat failed! Not enough members!");
 			return;
@@ -65,7 +65,7 @@ public class CombatManager : MonoBehaviour{
 	}
 
 
-	public static void CalculateAndPerformCombat(HexUnit attackUnit, HexUnit defendUnit){
+	public static void CalculateAndPerformCombat(MapUnit attackUnit, MapUnit defendUnit){
 		PreCalculateCombat(attackUnit, defendUnit);
 		instance.StartCoroutine(instance.PlayCombat(combatInfo));
 	}
@@ -75,8 +75,8 @@ public class CombatManager : MonoBehaviour{
 	static HitInfo ResolveCombatRound(bool attackerIsAttackUnit, int atkStartHP, int defStartHP){
 		HitInfo info = new HitInfo(attackerIsAttackUnit, atkStartHP, defStartHP);
 
-		HexUnit currentAttacker = attackerIsAttackUnit ? combatInfo.Attacker : combatInfo.Defender;
-		HexUnit currentDefender = attackerIsAttackUnit ? combatInfo.Defender : combatInfo.Attacker;
+		MapUnit currentAttacker = attackerIsAttackUnit ? combatInfo.Attacker : combatInfo.Defender;
+		MapUnit currentDefender = attackerIsAttackUnit ? combatInfo.Defender : combatInfo.Attacker;
 
 		int attackerAtk = currentAttacker.Properties.GetStat(CombatStat.Atk);
 		int defenderDef = currentDefender.Properties.GetStat(CombatStat.Def);
@@ -108,8 +108,8 @@ public class CombatManager : MonoBehaviour{
 	public IEnumerator PlayCombat(CombatInfo info){
 		while(info.GetHitCount() > 0){
 			HitInfo currentAttack = info.GetHitInfo();
-			HexUnit attacker = currentAttack.attackerIsAttackUnit ? info.Attacker : info.Defender;
-			HexUnit defender = currentAttack.attackerIsAttackUnit ? info.Defender : info.Attacker;
+			MapUnit attacker = currentAttack.attackerIsAttackUnit ? info.Attacker : info.Defender;
+			MapUnit defender = currentAttack.attackerIsAttackUnit ? info.Defender : info.Attacker;
 			yield return attacker.Animator.PerformAttackAnimation();
 			info.Attacker.SetCurrentHP(currentAttack.attackerEndHP);
 			info.Defender.SetCurrentHP(currentAttack.defenderEndHP);

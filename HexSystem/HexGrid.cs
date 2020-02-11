@@ -47,13 +47,13 @@ public class HexGrid : MonoBehaviour
 	}
 
 	/* all units on the map */
-	List<HexUnit> units = new List<HexUnit>();
+	List<MapUnit> units = new List<MapUnit>();
 
-	public HexUnit unitPrefab;
+	public MapUnit unitPrefab;
 
     void Awake(){
 		HexMetrics.colors = colors;
-		HexUnit.unitPrefab = unitPrefab;
+		MapUnit.unitPrefab = unitPrefab;
 		GameController.hexGrid = this;
 
 		CreateMapCircle(6);
@@ -395,7 +395,7 @@ public class HexGrid : MonoBehaviour
 	}
 
 	/* returns true if a given unit can enter a given tile */
-	bool CheckValidCellEntry(HexCell cell, HexUnit unit){
+	bool CheckValidCellEntry(HexCell cell, MapUnit unit){
 		if(cell == null || unit == null){
 			return false;
 		}
@@ -412,7 +412,7 @@ public class HexGrid : MonoBehaviour
 	}
 
 	/* returns true if a given unit can cross a cell boundary */
-	bool CheckValidBoundaryCrossing(HexCell cell, HexCell neighbor, HexUnit unit){
+	bool CheckValidBoundaryCrossing(HexCell cell, HexCell neighbor, MapUnit unit){
 		if(cell == null || neighbor == null || unit == null){
 			return false;
 		}
@@ -424,7 +424,7 @@ public class HexGrid : MonoBehaviour
 
 
 	/* calculates all possible cells that can be reached by a given unit from a given tile */
-	public void CalculateMovementRange(HexCell start, HexUnit unit){
+	public void CalculateMovementRange(HexCell start, MapUnit unit){
 		if(unit == null){
 			return;
 		}
@@ -484,7 +484,7 @@ public class HexGrid : MonoBehaviour
 	}
 
 	/* all tiles a unit can attack from their starting tile */
-	public void CalculateTotalAttackRange(HexUnit unit){
+	public void CalculateTotalAttackRange(MapUnit unit){
 		if(unit == null){
 			return;
 		}
@@ -509,7 +509,7 @@ public class HexGrid : MonoBehaviour
 	}
 
 	/* after we have moved, which tiles can a unit attack from where they're currently standing */
-	public void CalculateLocalAttackRange(HexCell cell, HexUnit unit){
+	public void CalculateLocalAttackRange(HexCell cell, MapUnit unit){
 		if(cell == null || unit == null){
 			return;
 		}
@@ -624,7 +624,7 @@ public class HexGrid : MonoBehaviour
 	}
 
 	/* finds a direct path between two tiles */
-	public void FindPath (HexCell fromCell, HexCell toCell, HexUnit unit) {
+	public void FindPath (HexCell fromCell, HexCell toCell, MapUnit unit) {
 		ClearPath();
 		if(fromCell == null || toCell == null || unit == null){
 			return;
@@ -638,7 +638,7 @@ public class HexGrid : MonoBehaviour
 	}
 
 	/* depth-first search (A*) - finds a path between two cells relatively quickly */
-	bool CellSearch (HexCell fromCell, HexCell toCell, HexUnit unit){
+	bool CellSearch (HexCell fromCell, HexCell toCell, MapUnit unit){
 		searchFrontierPhase += 2;
 		if (searchFrontier == null) {
 			searchFrontier = new HexCellPriorityQueue();
@@ -774,7 +774,7 @@ public class HexGrid : MonoBehaviour
 	}
 
 	/* add a new unit */
-	public void AddUnit (HexUnit unit, HexCell location, DodecDirection direction) {
+	public void AddUnit (MapUnit unit, HexCell location, DodecDirection direction) {
 		units.Add(unit);
 		unit.transform.SetParent(transform, false);
 		unit.CurrentCell = location;
@@ -782,7 +782,7 @@ public class HexGrid : MonoBehaviour
 	}
 
 	/* remove unit */
-	public void RemoveUnit (HexUnit unit) {
+	public void RemoveUnit (MapUnit unit) {
 		units.Remove(unit);
 		unit.Die();
 	}
@@ -843,7 +843,7 @@ public class HexGrid : MonoBehaviour
 		if (header >= 1) {
 			int unitCount = reader.ReadInt32();
 			for (int i = 0; i < unitCount; i++) {
-				HexUnit.Load(reader, this);
+				MapUnit.Load(reader, this);
 			}
 		}
 
