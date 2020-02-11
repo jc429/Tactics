@@ -110,12 +110,12 @@ public class MapGridChunk : MonoBehaviour
 		}
 	}
 
-		/* triangulates the joints between tiles */
+	/* triangulates the joints between tiles */
 	void TriangulateConnection(QuadDirection direction, MapCell cell, EdgeVertices e1){
 
 		MapCell neighbor = cell.GetNeighbor(direction);
 		if(neighbor == null){
-				return;
+			return;
 		}
 
 		// quad stretching to edge of tile
@@ -130,10 +130,14 @@ public class MapGridChunk : MonoBehaviour
 			TriangulateEdgeTerraces(e1, cell, e2, neighbor);
 		}
 		else {
-			// ???
 			TriangulateEdgeStrip(e1, color1, cell.TerrainTypeIndex, e2, color2, neighbor.TerrainTypeIndex);
 		}
 
+		/* unlike hex maps, square map cells have 3 neighbors to deal with at a given corner */
+		// TODO: fill in corners
+
+
+		/*
 		// remaining corner triangles
 		MapCell nextNeighbor = cell.GetNeighbor(direction.Next());
 		if (direction <= QuadDirection.E && nextNeighbor != null) {
@@ -156,7 +160,7 @@ public class MapGridChunk : MonoBehaviour
 				TriangulateCorner(v5, nextNeighbor, e1.v2, cell, e2.v2, neighbor);
 			}
 		}
-		
+		*/
 	}
 
 	void TriangulateEdgeTerraces(

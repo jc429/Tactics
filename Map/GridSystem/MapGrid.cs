@@ -119,9 +119,9 @@ public class MapGrid : MonoBehaviour
 	/* Generate the cells that will populate the grid */
 	void CreateCells () {
 		cells = new MapCell[cellCountX * cellCountY];
-		for(int z = 0, i = 0; z < cellCountY; z++){
+		for(int y = 0, i = 0; y < cellCountY; y++){
 			for(int x = 0; x < cellCountX; x++){
-				CreateCell(x,z,i++);
+				CreateCell(x,y,i++);
 			}
 		}
 	}
@@ -129,9 +129,9 @@ public class MapGrid : MonoBehaviour
 	/* Creates and labels a Hex Cell */
 	void CreateCell(int x, int y, int i){
 		Vector3 pos;
-		pos.x = (x + (y * 0.5f - (y / 2))) * (HexMetrics.innerRadius * 2f);
+		pos.x = x * QuadMetrics.cellWidth;
 		pos.y = 0;
-		pos.z = y * (HexMetrics.outerRadius * 1.5f);
+		pos.z = y * QuadMetrics.cellWidth;
 
 		MapCell cell = cells[i] = Instantiate<MapCell>(cellPrefab);
     //	cell.transform.SetParent(transform,false);
@@ -146,7 +146,6 @@ public class MapGrid : MonoBehaviour
 		if(y > 0){
 			cell.SetNeighbor(QuadDirection.S, cells[i - cellCountX]);
 		}
-	
 
 		//label cell
 		TextMeshPro label = Instantiate<TextMeshPro>(cellLabelPrefab);
@@ -155,7 +154,7 @@ public class MapGrid : MonoBehaviour
 
 		cell.uiRect = label.rectTransform;
 
-		cell.Elevation = 0;
+		cell.Elevation = (int)Random.Range(0,3);
 
 		AddCellToChunk(x, y, cell);
 	}

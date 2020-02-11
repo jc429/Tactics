@@ -4,8 +4,8 @@ public static class QuadMetrics
 {
 
 	/* size of one tile */
-	public const float cellWidth = 1f;
-	public const float halfWidth = 0.5f;
+	public const float cellWidth = 2f;
+	public const float halfWidth = 1f;
 
 	/* percentage of the tile that remains solid (for edge blending) */
   public const float solidFactor = 0.85f;
@@ -26,11 +26,11 @@ public static class QuadMetrics
 
 	/* locations of tile corners */
 	static Vector3[] corners = {
+		new Vector3(-halfWidth, 0f, halfWidth),			//northwest
 		new Vector3(halfWidth, 0f, halfWidth),			//northeast
 		new Vector3(halfWidth, 0f, -halfWidth),			//southeast
 		new Vector3(-halfWidth, 0f, -halfWidth),		//southwest
-		new Vector3(-halfWidth, 0f, halfWidth),			//northwest
-		new Vector3(halfWidth, 0f, halfWidth)				//northeast again
+		new Vector3(-halfWidth, 0f, halfWidth),			//northwest again
 	};
 
 	/* how many cells per chunk */
