@@ -175,9 +175,11 @@ public class MapGrid : MonoBehaviour
 
 	/* returns a cell at a given position */
 	public MapCell GetCell(Vector3 position) {
+		Debug.Log("Pos" + position);
 		position = transform.InverseTransformPoint(position);
+		Debug.Log("transformed " + position);
 		MapCoordinates c = new MapCoordinates(position);
-
+		Debug.Log(c);
 		int index = c.X + (c.Y * cellCountX);
 		return cells[index];
 	}

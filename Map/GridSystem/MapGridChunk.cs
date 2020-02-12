@@ -126,16 +126,35 @@ public class MapGridChunk : MonoBehaviour
 			e1.v2 + bridge
 		);
 
+		
+		TriangulateEdgeStrip(e1, color1, cell.TerrainTypeIndex, e2, color2, neighbor.TerrainTypeIndex);
+		/*
 		if (cell.GetEdgeType(direction) == EdgeType.Slope) {
 			TriangulateEdgeTerraces(e1, cell, e2, neighbor);
 		}
 		else {
 			TriangulateEdgeStrip(e1, color1, cell.TerrainTypeIndex, e2, color2, neighbor.TerrainTypeIndex);
 		}
+		*/
 
 		/* unlike hex maps, square map cells have 3 neighbors to deal with at a given corner */
 		// TODO: fill in corners
+		MapCell nextNeighbor = cell.GetNeighbor(direction.Next());
+		if (direction == QuadDirection.N && nextNeighbor != null) {
+			Vector3 bridge2 = QuadMetrics.GetBridge(direction.Next());
+			bridge2.y = nextNeighbor.Position.y - cell.Position.y;
 
+			MapCell neighbor4 = nextNeighbor.GetNeighbor(direction);
+			Vector3 bridge3 = QuadMetrics.GetBridge(direction);
+			bridge3.y = neighbor4.Position.y - nextNeighbor.Position.y;
+
+			TriangulateSquareCorner(
+				e1.v2, cell,
+				e2.v2, neighbor,
+				e1.v2 + bridge2, nextNeighbor,
+				e1.v2 + bridge2 + bridge3, neighbor4
+			);
+		}
 
 		/*
 		// remaining corner triangles
@@ -185,7 +204,49 @@ public class MapGridChunk : MonoBehaviour
 		}
 
 		TriangulateEdgeStrip(e2, c2, t1, end, color2, t2);
-    }
+	}
+
+	/* for square cells*/
+	void TriangulateSquareCorner ( 
+		Vector3 inner, MapCell innerCell, 
+		Vector3 left, MapCell leftCell,
+		Vector3 right, MapCell rightCell,
+		Vector3 outer, MapCell outerCell
+	) {
+		Vector3 midIL = inner + (left - inner)*0.5f;
+		Vector3 midIR = inner + (right - inner)*0.5f;
+		Vector3 midLO = left + (outer - left)*0.5f;
+		Vector3 midRO = right + (outer - right)*0.5f;
+		
+		Vector3 types = new Vector3();
+
+		terrain.AddTriangle(inner, midIL, midIR);
+		terrain.AddTriangleColor(color1, color2, color3);
+		terrain.AddTriangleTerrainTypes(types);
+		
+		terrain.AddTriangle(left, midLO, midIL);
+		terrain.AddTriangleColor(color1, color2, color3);
+		terrain.AddTriangleTerrainTypes(types);
+		
+		terrain.AddTriangle(right, midIR, midRO);
+		terrain.AddTriangleColor(color1, color2, color3);
+		terrain.AddTriangleTerrainTypes(types);
+		
+		terrain.AddTriangle(outer, midRO, midLO);
+		terrain.AddTriangleColor(color1, color2, color3);
+		terrain.AddTriangleTerrainTypes(types);
+
+		terrain.AddTriangle(midIL, midLO, midIR);
+		terrain.AddTriangleColor(color1, color2, color3);
+		terrain.AddTriangleTerrainTypes(types);
+
+		terrain.AddTriangle(midRO, midIR, midLO);
+		terrain.AddTriangleColor(color1, color2, color3);
+		terrain.AddTriangleTerrainTypes(types);
+
+
+	}
+
 
 	void TriangulateCorner (
 		Vector3 bottom, MapCell bottomCell,

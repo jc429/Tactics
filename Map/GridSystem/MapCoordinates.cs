@@ -26,9 +26,9 @@ public struct MapCoordinates {
 		this.y = y;
 	}
 
-	public MapCoordinates(Vector2 v){
-		this.x = (int)v.x;
-		this.y = (int)v.y;
+	public MapCoordinates(Vector3 v){
+		this.x = (int)((v.x+1) * 0.5f);
+		this.y = (int)((v.z+1) * 0.5f);
 	}
 
 	public int DistanceTo (MapCoordinates other) {

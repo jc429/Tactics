@@ -108,7 +108,7 @@ public class CellMesh : MonoBehaviour
 	}
 
     /* Creates a quad */
-    public void AddQuad (Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4) {
+	public void AddQuad (Vector3 v1, Vector3 v2, Vector3 v3, Vector3 v4) {
 		int vertexIndex = vertices.Count;
 		vertices.Add(v1);
 		vertices.Add(v2);
