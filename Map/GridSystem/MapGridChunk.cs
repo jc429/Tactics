@@ -222,18 +222,30 @@ public class MapGridChunk : MonoBehaviour
 
 		terrain.AddTriangle(inner, midIL, midIR);
 		terrain.AddTriangleColor(color1, color2, color3);
+		types.x = innerCell.TerrainTypeIndex;
+		types.y = leftCell.TerrainTypeIndex;
+		types.z = rightCell.TerrainTypeIndex;
 		terrain.AddTriangleTerrainTypes(types);
 		
 		terrain.AddTriangle(left, midLO, midIL);
 		terrain.AddTriangleColor(color1, color2, color3);
+		types.x = leftCell.TerrainTypeIndex;
+		types.y = outerCell.TerrainTypeIndex;
+		types.z = innerCell.TerrainTypeIndex;
 		terrain.AddTriangleTerrainTypes(types);
 		
 		terrain.AddTriangle(right, midIR, midRO);
 		terrain.AddTriangleColor(color1, color2, color3);
+		types.x = rightCell.TerrainTypeIndex;
+		types.y = innerCell.TerrainTypeIndex;
+		types.z = outerCell.TerrainTypeIndex;
 		terrain.AddTriangleTerrainTypes(types);
 		
 		terrain.AddTriangle(outer, midRO, midLO);
 		terrain.AddTriangleColor(color1, color2, color3);
+		types.x = outerCell.TerrainTypeIndex;
+		types.y = rightCell.TerrainTypeIndex;
+		types.z = leftCell.TerrainTypeIndex;
 		terrain.AddTriangleTerrainTypes(types);
 
 		terrain.AddTriangle(midIL, midLO, midIR);

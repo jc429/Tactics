@@ -593,7 +593,7 @@ public class MapGrid : MonoBehaviour
 			}
 		}
 
-		GameController.mapCamera.ResetZoomAndCenterCamera();
+		//GameController.mapCamera.ResetZoomAndCenterCamera();
 	}
 
 }

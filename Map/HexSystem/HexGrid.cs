@@ -847,6 +847,6 @@ public class HexGrid : MonoBehaviour
 			}
 		}
 
-		GameController.mapCamera.ResetZoomAndCenterCamera();
+		GameController.hexCamera.ResetZoomAndCenterCamera();
 	}
 }

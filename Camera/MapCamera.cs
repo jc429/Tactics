@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MapCamera : MonoBehaviour
+public class HexCamera : MonoBehaviour
 {
 
 	/* pivot axes for camera */
@@ -24,11 +24,12 @@ public class MapCamera : MonoBehaviour
 	bool atRest;
 
 	public HexGrid grid;
+	// public MapGrid grid;
 
 	bool locked;
 
 	void Awake () {
-		GameController.mapCamera = this;
+		GameController.hexCamera = this;
 		swivel = transform.GetChild(0);
 		stick = swivel.GetChild(0);
 		facing = DodecDirection.N;

@@ -9,8 +9,8 @@ public class SaveLoadMenu : MonoBehaviour {
 	static bool OPEN_LOAD_MENU_ON_GAME_START = true;
 	const int SaveFileVersionNumber = 1;
 
-
-	public HexGrid hexGrid;
+	//public HexGrid hexGrid;
+	public MapGrid mapGrid;
 
 	public TextMeshProUGUI menuLabel;
 	public Text actionButtonLabel;
@@ -52,13 +52,13 @@ public class SaveLoadMenu : MonoBehaviour {
 			}
 		}
 		gameObject.SetActive(true);
-		GameController.mapCamera.LockCamera();
+		//GameController.hexCamera.LockCamera();
 
 	}
 
 	public void Close () {
 		gameObject.SetActive(false);
-		GameController.mapCamera.UnlockCamera();
+		//GameController.hexCamera.UnlockCamera();
 	}
 
 	string GetSelectedPath () {
@@ -75,7 +75,7 @@ public class SaveLoadMenu : MonoBehaviour {
 		Debug.Log("Saving to: " + path);
 		using (BinaryWriter writer = new BinaryWriter(File.Open(path, FileMode.Create))) {
 			writer.Write(SaveFileVersionNumber);
-			hexGrid.SaveGrid(writer);
+			mapGrid.SaveGrid(writer);
 		}
 	}
 
@@ -88,8 +88,8 @@ public class SaveLoadMenu : MonoBehaviour {
 		using (BinaryReader reader = new BinaryReader(File.OpenRead(path))) {
 			int header = reader.ReadInt32();
 			if(header <= 1){
-				hexGrid.LoadGrid(reader, header);
-				GameController.mapCamera.ValidatePosition();
+				mapGrid.LoadGrid(reader, header);
+				//GameController.hexCamera.ValidatePosition();
 			}
 			else {
 				Debug.LogWarning("Unknown map format: " + header);

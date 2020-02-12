@@ -1,8 +1,8 @@
 ﻿using UnityEngine;
 
-public class NewMapMenu : MonoBehaviour {
+public class NewHexMapMenu : MonoBehaviour {
 
-	public MapGrid mapGrid;
+	public HexGrid hexGrid;
 
 	public void Open () {
 		gameObject.SetActive(true);
@@ -15,23 +15,31 @@ public class NewMapMenu : MonoBehaviour {
 	}
 
 	void CreateRectMap (int x, int z) {
-		mapGrid.CreateMapRect(x, z);
+		hexGrid.CreateMapRect(x, z);
 		GameController.hexCamera.ValidatePosition();
 		Close();
 	}
 
 	public void CreateSmallMap () {
-		CreateRectMap(6, 6);
+		CreateCircleMap(4);
 	}
 
 	public void CreateMediumMap () {
-		CreateRectMap(8, 8);
+		CreateCircleMap(6);
 	}
 
 	public void CreateLargeMap () {
-		CreateRectMap(10, 10);
+		CreateCircleMap(8);
 	}
 
-	
+	void CreateCircleMap (int r) {
+		hexGrid.CreateMapCircle(r);
+		GameController.hexCamera.ValidatePosition();
+		Close();
+	}
+
+	public void CreateRoundMap () {
+		CreateCircleMap(5);
+	}
 
 }

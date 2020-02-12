@@ -4,23 +4,24 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class HexMapEditor : MonoBehaviour
+public class MapEditor : MonoBehaviour
 {
-    public HexGrid hexGrid;
+	//public HexGrid hexGrid;
+	public MapGrid mapGrid;
     
 	public GameObject editorPanel;
 
-    public Material terrainMaterial;
+	public Material terrainMaterial;
 
 	/* tools for detecting click + drag inputs */
 	bool isDrag;
-	HexDirection dragDirection;
-	HexCell previousCell;
+	QuadDirection dragDirection;
+	MapCell previousCell;
 
     
 	int activeTerrainTypeIndex;
 
-    int activeElevation;
+	int activeElevation;
 	// whether or not to apply the selected elevation
 	bool applyElevation = true;
 	
@@ -34,19 +35,19 @@ public class HexMapEditor : MonoBehaviour
 
 
 	/* for measuring cell distances */
-//	HexCell searchFromCell, searchToCell;
+//	MapCell searchFromCell, searchToCell;
 
 
 
-    void Awake () {
+	void Awake () {
 		terrainMaterial.DisableKeyword("GRID_ON");
 		SetEditMode(false);
 		SetEditorPanelActive(false);
 	}
 
     // Update is called once per frame
-    void Update(){
-        if (!EventSystem.current.IsPointerOverGameObject()) {
+	void Update(){
+		if (!EventSystem.current.IsPointerOverGameObject()) {
 			if (Input.GetMouseButton(0)) {
 				HandleInput();
 				return;
@@ -62,12 +63,12 @@ public class HexMapEditor : MonoBehaviour
 			}
 		}
 		previousCell = null;
-    }
+	}
 
 
 	
-    void HandleInput(){
-        HexCell currentCell = GetCellUnderCursor();
+	void HandleInput(){
+		MapCell currentCell = GetCellUnderCursor();
 		if (currentCell) {
 			if (previousCell && previousCell != currentCell) {
 				ValidateDrag(currentCell);
@@ -103,15 +104,15 @@ public class HexMapEditor : MonoBehaviour
     }
 
 	/* returns the cell the cursor is pointing at */
-	HexCell GetCellUnderCursor () {
-		return hexGrid.GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
+	MapCell GetCellUnderCursor () {
+		return mapGrid.GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
 	}
 
 	/* check that the input is a click + drag */
-	void ValidateDrag (HexCell currentCell) {
+	void ValidateDrag (MapCell currentCell) {
 		for (
-			dragDirection = HexDirection.NE;
-			dragDirection <= HexDirection.NW;
+			dragDirection = QuadDirection.N;
+			dragDirection <= QuadDirection.W;
 			dragDirection++
 		) {
 			if (previousCell.GetNeighbor(dragDirection) == currentCell) {
@@ -158,7 +159,7 @@ public class HexMapEditor : MonoBehaviour
 	}
 
 	public void ShowUI (bool visible) {
-		hexGrid.ShowUI(visible);
+		mapGrid.ShowUI(visible);
 	}
 
 	public void ShowGrid (bool visible) {
@@ -170,7 +171,7 @@ public class HexMapEditor : MonoBehaviour
 		}
 	}
 
-    void EditCell (HexCell cell) {
+    void EditCell (MapCell cell) {
 		if(cell != null){
 			if (activeTerrainTypeIndex >= 0) {
 				cell.TerrainTypeIndex = activeTerrainTypeIndex;
@@ -184,36 +185,36 @@ public class HexMapEditor : MonoBehaviour
 		}
 	}
 
-	void EditCells (HexCell center) {
+	void EditCells (MapCell center) {
 		int centerX = center.coordinates.X;
-		int centerZ = center.coordinates.Z;
+		int centerZ = center.coordinates.Y;
 
 		// bottom to center
 		for (int r = 0, z = centerZ - brushSize; z <= centerZ; z++, r++) {
 			for (int x = centerX - r; x <= centerX + brushSize; x++) {
-				EditCell(hexGrid.GetCell(new HexCoordinates(x, z)));
+				EditCell(mapGrid.GetCell(new MapCoordinates(x, z)));
 			}
 		}
 
 		// top to row above center
 		for (int r = 0, z = centerZ + brushSize; z > centerZ; z--, r++) {
 			for (int x = centerX - brushSize; x <= centerX + r; x++) {
-				EditCell(hexGrid.GetCell(new HexCoordinates(x, z)));
+				EditCell(mapGrid.GetCell(new MapCoordinates(x, z)));
 			}
 		}
 	}
 	
 	/* spawn a unit */
 	void CreateUnit () {
-		HexCell cell = GetCellUnderCursor();
+		MapCell cell = GetCellUnderCursor();
 		if (cell && !cell.Unit) {
-			hexGrid.AddUnit(Instantiate(MapUnit.unitPrefab), cell, HexDirectionExtensions.RandomDirection().ConvertTo12Direction()); 
+			mapGrid.AddUnit(Instantiate(MapUnit.unitPrefab), cell, QuadDirectionExtensions.RandomDirection().ConvertToOctDirection()); 
 		}
 	}
 
 	/* KILL */
 	void DestroyUnit () {
-		HexCell cell = GetCellUnderCursor();
+		MapCell cell = GetCellUnderCursor();
 		if (cell && cell.Unit) {
 			cell.Unit.Die();
 		}
