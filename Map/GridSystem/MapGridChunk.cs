@@ -13,9 +13,17 @@ public class MapGridChunk : MonoBehaviour
 	bool refreshQueued = false;
 
 	/* colors for splat map */
-	static Color color1 = new Color(1f, 0f, 0f);
-	static Color color2 = new Color(0f, 1f, 0f);
-	static Color color3 = new Color(0f, 0f, 1f);
+	static Color colorR = new Color(1f, 0f, 0f, 0f);
+	static Color colorG = new Color(0f, 1f, 0f, 0f);
+	static Color colorB = new Color(0f, 0f, 1f, 0f);
+	/* splat mid tones*/ 
+	static Color colorRG = new Color(0.5f, 0.5f, 0f, 0f);
+	static Color colorRB = new Color(0.5f, 0f, 0.5f, 0f);
+	static Color colorGB = new Color(0f, 0.5f, 0.5f, 0f);
+	static Color colorRA = new Color(0.5f, 0f, 0f, 0.5f);
+	static Color colorBA = new Color(0f, 0.5f, 0f, 0.5f);
+	static Color colorGA = new Color(0f, 0f, 0.5f, 0.5f);
+	static Color colorRGB = new Color(0.3333f, 0.3333f, 0.3333f, 0f);
 
 
 	void Awake () {
@@ -127,7 +135,7 @@ public class MapGridChunk : MonoBehaviour
 		);
 
 		
-		TriangulateEdgeStrip(e1, color1, cell.TerrainTypeIndex, e2, color2, neighbor.TerrainTypeIndex);
+		TriangulateEdgeStrip(e1, colorR, cell.TerrainTypeIndex, e2, colorG, neighbor.TerrainTypeIndex);
 		/*
 		if (cell.GetEdgeType(direction) == EdgeType.Slope) {
 			TriangulateEdgeTerraces(e1, cell, e2, neighbor);
@@ -188,22 +196,22 @@ public class MapGridChunk : MonoBehaviour
 	) {
         
 		EdgeVertices e2 = EdgeVertices.TerraceLerp(begin, end, 1);
-		Color c2 = QuadMetrics.TerraceLerp(color1, color2, 1);
+		Color c2 = QuadMetrics.TerraceLerp(colorR, colorG, 1);
 		float t1 = beginCell.TerrainTypeIndex;
 		float t2 = endCell.TerrainTypeIndex;
 
-		TriangulateEdgeStrip(begin, color1, t1, e2, c2, t2);
+		TriangulateEdgeStrip(begin, colorR, t1, e2, c2, t2);
 
 		for (int i = 2; i < QuadMetrics.terraceSteps; i++) {
 			EdgeVertices e1 = e2;
 			Color c1 = c2;
 			e2 = EdgeVertices.TerraceLerp(begin, end, i);
 			//c2 = QuadMetrics.TerraceLerp(beginCell.color, endCell.color, i);
-			c2 = QuadMetrics.TerraceLerp(color1, color2, i);
+			c2 = QuadMetrics.TerraceLerp(colorR, colorG, i);
 			TriangulateEdgeStrip(e1, c1, t1, e2, c2, t2);
 		}
 
-		TriangulateEdgeStrip(e2, c2, t1, end, color2, t2);
+		TriangulateEdgeStrip(e2, c2, t1, end, colorG, t2);
 	}
 
 	/* for square cells*/
@@ -217,45 +225,85 @@ public class MapGridChunk : MonoBehaviour
 		Vector3 midIR = inner + (right - inner)*0.5f;
 		Vector3 midLO = left + (outer - left)*0.5f;
 		Vector3 midRO = right + (outer - right)*0.5f;
+		Vector3 center = inner + (outer - inner)*0.5f;
 		
 		Vector3 types = new Vector3();
 
+
+		/*** Outer Triangles ***/
 		terrain.AddTriangle(inner, midIL, midIR);
-		terrain.AddTriangleColor(color1, color2, color3);
+		terrain.AddTriangleColor(colorR, colorRG, colorRB);
 		types.x = innerCell.TerrainTypeIndex;
 		types.y = leftCell.TerrainTypeIndex;
 		types.z = rightCell.TerrainTypeIndex;
 		terrain.AddTriangleTerrainTypes(types);
-		
+
 		terrain.AddTriangle(left, midLO, midIL);
-		terrain.AddTriangleColor(color1, color2, color3);
+		terrain.AddTriangleColor(colorR, colorRG, colorRB);
 		types.x = leftCell.TerrainTypeIndex;
 		types.y = outerCell.TerrainTypeIndex;
 		types.z = innerCell.TerrainTypeIndex;
 		terrain.AddTriangleTerrainTypes(types);
 		
 		terrain.AddTriangle(right, midIR, midRO);
-		terrain.AddTriangleColor(color1, color2, color3);
+		terrain.AddTriangleColor(colorR, colorRG, colorRB);
 		types.x = rightCell.TerrainTypeIndex;
 		types.y = innerCell.TerrainTypeIndex;
 		types.z = outerCell.TerrainTypeIndex;
 		terrain.AddTriangleTerrainTypes(types);
 		
 		terrain.AddTriangle(outer, midRO, midLO);
-		terrain.AddTriangleColor(color1, color2, color3);
+		terrain.AddTriangleColor(colorR, colorRG, colorRB);
 		types.x = outerCell.TerrainTypeIndex;
 		types.y = rightCell.TerrainTypeIndex;
 		types.z = leftCell.TerrainTypeIndex;
 		terrain.AddTriangleTerrainTypes(types);
 
+
+		/*** Inner Triangles ***/
+		terrain.AddTriangle(midIL, center, midIR);
+		terrain.AddTriangleColor(colorRG, colorGB, colorRB);
+		types.x = innerCell.TerrainTypeIndex;
+		types.y = leftCell.TerrainTypeIndex;
+		types.z = rightCell.TerrainTypeIndex;
+		terrain.AddTriangleTerrainTypes(types);
+
+		terrain.AddTriangle(midLO, center, midIL);
+		terrain.AddTriangleColor(colorRG, colorGB, colorRB);
+		types.x = leftCell.TerrainTypeIndex;
+		types.y = outerCell.TerrainTypeIndex;
+		types.z = innerCell.TerrainTypeIndex;
+		terrain.AddTriangleTerrainTypes(types);
+
+		terrain.AddTriangle(midRO, center, midLO);
+		terrain.AddTriangleColor(colorRG, colorGB, colorRB);
+		types.x = outerCell.TerrainTypeIndex;
+		types.y = rightCell.TerrainTypeIndex;
+		types.z = leftCell.TerrainTypeIndex;
+		terrain.AddTriangleTerrainTypes(types);
+
+		terrain.AddTriangle(midIR, center, midRO);
+		terrain.AddTriangleColor(colorRG, colorGB, colorRB);
+		types.x = rightCell.TerrainTypeIndex;
+		types.y = innerCell.TerrainTypeIndex;
+		types.z = outerCell.TerrainTypeIndex;
+		terrain.AddTriangleTerrainTypes(types);
+
+		/*
 		terrain.AddTriangle(midIL, midLO, midIR);
-		terrain.AddTriangleColor(color1, color2, color3);
+		terrain.AddTriangleColor(colorR, colorG, colorB);
+		types.x = ((float)innerCell.TerrainTypeIndex + (float)leftCell.TerrainTypeIndex)*0.5f;
+		types.y = ((float)outerCell.TerrainTypeIndex + (float)leftCell.TerrainTypeIndex)*0.5f;
+		types.z = ((float)innerCell.TerrainTypeIndex + (float)rightCell.TerrainTypeIndex)*0.5f;
 		terrain.AddTriangleTerrainTypes(types);
 
 		terrain.AddTriangle(midRO, midIR, midLO);
-		terrain.AddTriangleColor(color1, color2, color3);
+		terrain.AddTriangleColor(colorRB, colorG, colorRG);
+		types.x = outerCell.TerrainTypeIndex;
+		types.y = rightCell.TerrainTypeIndex;
+		types.z = leftCell.TerrainTypeIndex;
 		terrain.AddTriangleTerrainTypes(types);
-
+		*/
 
 	}
 
@@ -297,7 +345,7 @@ public class MapGridChunk : MonoBehaviour
 		}
 		else{ 
 			terrain.AddTriangle(bottom, left, right);
-			terrain.AddTriangleColor(color1, color2, color3);
+			terrain.AddTriangleColor(colorR, colorG, colorB);
 			Vector3 types;
 			types.x = bottomCell.TerrainTypeIndex;
 			types.y = leftCell.TerrainTypeIndex;
@@ -314,8 +362,8 @@ public class MapGridChunk : MonoBehaviour
 		
 		Vector3 v3 = QuadMetrics.TerraceLerp(begin, left, 1);
 		Vector3 v4 = QuadMetrics.TerraceLerp(begin, right, 1);
-		Color c3 = QuadMetrics.TerraceLerp(color1, color2, 1);
-		Color c4 = QuadMetrics.TerraceLerp(color1, color3, 1);
+		Color c3 = QuadMetrics.TerraceLerp(colorR, colorG, 1);
+		Color c4 = QuadMetrics.TerraceLerp(colorR, colorB, 1);
 		Vector3 types;
 		types.x = beginCell.TerrainTypeIndex;
 		types.y = leftCell.TerrainTypeIndex;
@@ -332,15 +380,15 @@ public class MapGridChunk : MonoBehaviour
 			Color c2 = c4;
 			v3 = QuadMetrics.TerraceLerp(begin, left, i);
 			v4 = QuadMetrics.TerraceLerp(begin, right, i);
-			c3 = QuadMetrics.TerraceLerp(color1, color2, i);
-			c4 = QuadMetrics.TerraceLerp(color1, color3, i);
+			c3 = QuadMetrics.TerraceLerp(colorR, colorG, i);
+			c4 = QuadMetrics.TerraceLerp(colorR, colorB, i);
 			terrain.AddQuad(v1, v2, v3, v4);
 			terrain.AddQuadColor(c1, c2, c3, c4);
 			terrain.AddQuadTerrainTypes(types);
 		}
 
 		terrain.AddQuad(v3, v4, left, right);
-		terrain.AddQuadColor(c3, c4, color2, color3);
+		terrain.AddQuadColor(c3, c4, colorG, colorB);
 		terrain.AddQuadTerrainTypes(types);
 		
 	}
@@ -356,20 +404,20 @@ public class MapGridChunk : MonoBehaviour
 			b = -b;
 		}
 		Vector3 boundary = Vector3.Lerp(begin, right, b);
-		Color boundaryColor = Color.Lerp(color1, color3, b);
+		Color boundaryColor = Color.Lerp(colorR, colorB, b);
 		Vector3 types;
 		types.x = beginCell.TerrainTypeIndex;
 		types.y = leftCell.TerrainTypeIndex;
 		types.z = rightCell.TerrainTypeIndex;
 
-		TriangulateBoundaryTriangle(begin, color1, left, color2, boundary, boundaryColor, types);
+		TriangulateBoundaryTriangle(begin, colorR, left, colorG, boundary, boundaryColor, types);
 
 		if (leftCell.GetEdgeType(rightCell) == EdgeType.Slope) {
-			TriangulateBoundaryTriangle(left, color2, right, color3, boundary, boundaryColor, types);
+			TriangulateBoundaryTriangle(left, colorG, right, colorB, boundary, boundaryColor, types);
 		}
 		else {
 			terrain.AddTriangle(left, right, boundary);	
-			terrain.AddTriangleColor(color2, color3, boundaryColor);
+			terrain.AddTriangleColor(colorG, colorB, boundaryColor);
 			terrain.AddTriangleTerrainTypes(types);
 		}
 	}
@@ -385,20 +433,20 @@ public class MapGridChunk : MonoBehaviour
 			b = -b;
 		}
 		Vector3 boundary = Vector3.Lerp(begin, left, b);
-		Color boundaryColor = Color.Lerp(color1, color2, b);
+		Color boundaryColor = Color.Lerp(colorR, colorG, b);
 		Vector3 types;
 		types.x = beginCell.TerrainTypeIndex;
 		types.y = leftCell.TerrainTypeIndex;
 		types.z = rightCell.TerrainTypeIndex;
 
-		TriangulateBoundaryTriangle(right, color3, begin, color1, boundary, boundaryColor, types);
+		TriangulateBoundaryTriangle(right, colorB, begin, colorR, boundary, boundaryColor, types);
 
 		if (leftCell.GetEdgeType(rightCell) == EdgeType.Slope) {
-			TriangulateBoundaryTriangle(left, color2, right, color3, boundary, boundaryColor, types);
+			TriangulateBoundaryTriangle(left, colorG, right, colorB, boundary, boundaryColor, types);
 		}
 		else {
 			terrain.AddTriangle(left, right, boundary);
-			terrain.AddTriangleColor(color2, color3, boundaryColor);
+			terrain.AddTriangleColor(colorG, colorB, boundaryColor);
 			terrain.AddTriangleTerrainTypes(types);
 		}
 	}
@@ -508,7 +556,7 @@ public class MapGridChunk : MonoBehaviour
 	
 	void TriangulateEdgeFan (Vector3 center, EdgeVertices edge, float type) {
 		terrain.AddTriangle(center, edge.v1, edge.v2);
-		terrain.AddTriangleColor(color1);
+		terrain.AddTriangleColor(colorR);
 
 		Vector3 types;
 		types.x = types.y = types.z = type;
