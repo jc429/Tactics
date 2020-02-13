@@ -24,6 +24,7 @@ public class MapGridChunk : MonoBehaviour
 	static Color colorBA = new Color(0f, 0.5f, 0f, 0.5f);
 	static Color colorGA = new Color(0f, 0f, 0.5f, 0.5f);
 	static Color colorRGB = new Color(0.3333f, 0.3333f, 0.3333f, 0f);
+	static Color colorRGBA = new Color(0.25f, 0.25f, 0.25f, 0.25f);
 
 
 	void Awake () {
@@ -227,7 +228,7 @@ public class MapGridChunk : MonoBehaviour
 		Vector3 midRO = right + (outer - right)*0.5f;
 		Vector3 center = inner + (outer - inner)*0.5f;
 		
-		Vector3 types = new Vector3();
+		Vector4 types = new Vector4();
 
 
 		/*** Outer Triangles ***/
@@ -262,31 +263,35 @@ public class MapGridChunk : MonoBehaviour
 
 		/*** Inner Triangles ***/
 		terrain.AddTriangle(midIL, center, midIR);
-		terrain.AddTriangleColor(colorRG, colorGB, colorRB);
+		terrain.AddTriangleColor(colorRG, colorRGBA, colorRB);
 		types.x = innerCell.TerrainTypeIndex;
 		types.y = leftCell.TerrainTypeIndex;
 		types.z = rightCell.TerrainTypeIndex;
+		types.w = outerCell.TerrainTypeIndex;
 		terrain.AddTriangleTerrainTypes(types);
 
 		terrain.AddTriangle(midLO, center, midIL);
-		terrain.AddTriangleColor(colorRG, colorGB, colorRB);
+		terrain.AddTriangleColor(colorRG, colorRGBA, colorRB);
 		types.x = leftCell.TerrainTypeIndex;
 		types.y = outerCell.TerrainTypeIndex;
 		types.z = innerCell.TerrainTypeIndex;
+		types.w = rightCell.TerrainTypeIndex;
 		terrain.AddTriangleTerrainTypes(types);
 
 		terrain.AddTriangle(midRO, center, midLO);
-		terrain.AddTriangleColor(colorRG, colorGB, colorRB);
+		terrain.AddTriangleColor(colorRG, colorRGBA, colorRB);
 		types.x = outerCell.TerrainTypeIndex;
 		types.y = rightCell.TerrainTypeIndex;
 		types.z = leftCell.TerrainTypeIndex;
+		types.w = innerCell.TerrainTypeIndex;
 		terrain.AddTriangleTerrainTypes(types);
 
 		terrain.AddTriangle(midIR, center, midRO);
-		terrain.AddTriangleColor(colorRG, colorGB, colorRB);
+		terrain.AddTriangleColor(colorRG, colorRGBA, colorRB);
 		types.x = rightCell.TerrainTypeIndex;
 		types.y = innerCell.TerrainTypeIndex;
 		types.z = outerCell.TerrainTypeIndex;
+		types.w = leftCell.TerrainTypeIndex;
 		terrain.AddTriangleTerrainTypes(types);
 
 		/*

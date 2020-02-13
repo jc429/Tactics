@@ -9,7 +9,7 @@ public class CellMesh : MonoBehaviour
 	[System.NonSerialized] List<Vector3> vertices;
 	[System.NonSerialized] List<Color> colors;
 	[System.NonSerialized] List<int> triangles;
-	[System.NonSerialized] List<Vector3> terrainTypes;
+	[System.NonSerialized] List<Vector4> terrainTypes;
 
 	MeshCollider meshCollider;
 	public bool useCollider;
@@ -39,7 +39,7 @@ public class CellMesh : MonoBehaviour
 			uvs = ListPool<Vector2>.Get();
 		}
 		if (useTerrainTypes) {
-			terrainTypes = ListPool<Vector3>.Get();
+			terrainTypes = ListPool<Vector4>.Get();
 		}
 		triangles = ListPool<int>.Get();
 	}
@@ -57,7 +57,7 @@ public class CellMesh : MonoBehaviour
 		}
 		if (useTerrainTypes) {
 			cellMesh.SetUVs(2, terrainTypes);
-			ListPool<Vector3>.Add(terrainTypes);
+			ListPool<Vector4>.Add(terrainTypes);
 		}
 		cellMesh.SetTriangles(triangles, 0);
 		ListPool<int>.Add(triangles);
@@ -101,7 +101,7 @@ public class CellMesh : MonoBehaviour
 	}
 
 	/* Adds terrain type info to a triangle */
-	public void AddTriangleTerrainTypes (Vector3 types) {
+	public void AddTriangleTerrainTypes (Vector4 types) {
 		terrainTypes.Add(types);
 		terrainTypes.Add(types);
 		terrainTypes.Add(types);
@@ -155,7 +155,7 @@ public class CellMesh : MonoBehaviour
 	}
 
 	/* Adds terrain type info to a quad */
-	public void AddQuadTerrainTypes (Vector3 types) {
+	public void AddQuadTerrainTypes (Vector4 types) {
 		terrainTypes.Add(types);
 		terrainTypes.Add(types);
 		terrainTypes.Add(types);
