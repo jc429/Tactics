@@ -137,15 +137,15 @@ public class MapGridChunk : MonoBehaviour
 		);
 
 		
-		TriangulateEdgeStrip(e1, splatColorR, cell.TerrainTypeIndex, e2, splatColorG, neighbor.TerrainTypeIndex);
-		/*
+		//TriangulateEdgeStrip(e1, splatColorR, cell.TerrainTypeIndex, e2, splatColorG, neighbor.TerrainTypeIndex);
+		
 		if (cell.GetEdgeType(direction) == EdgeType.Slope) {
 			TriangulateEdgeTerraces(e1, cell, e2, neighbor);
 		}
 		else {
-			TriangulateEdgeStrip(e1, splatColor1, cell.TerrainTypeIndex, e2, splatColor2, neighbor.TerrainTypeIndex);
+			TriangulateEdgeStrip(e1, splatColorR, cell.TerrainTypeIndex, e2, splatColorG, neighbor.TerrainTypeIndex);
 		}
-		*/
+		
 
 		/* unlike hex maps, square map cells have 3 neighbors to deal with at a given corner */
 		// TODO: fill in corners
@@ -158,12 +158,45 @@ public class MapGridChunk : MonoBehaviour
 			Vector3 bridge3 = QuadMetrics.GetBridge(direction);
 			bridge3.y = neighbor4.Position.y - nextNeighbor.Position.y;
 
-			TriangulateSquareCorner(
-				e1.v2, cell,
-				e2.v2, neighbor,
-				e1.v2 + bridge2, nextNeighbor,
-				e1.v2 + bridge2 + bridge3, neighbor4
-			);
+			//start from one of the lowest cells
+			if(cell.Elevation <= neighbor.Elevation
+			&& cell.Elevation <= nextNeighbor.Elevation
+			&& cell.Elevation <= neighbor4.Elevation){
+				TriangulateSquareCorner(
+					e1.v2, cell, 
+					e2.v2, neighbor,
+					e1.v2 + bridge2, nextNeighbor,
+					e1.v2 + bridge2 + bridge3, neighbor4
+				);
+			}
+			else if(neighbor.Elevation <= cell.Elevation
+			&& neighbor.Elevation <= nextNeighbor.Elevation
+			&& neighbor.Elevation <= neighbor4.Elevation){
+				TriangulateSquareCorner(
+					e2.v2, neighbor,
+					e1.v2 + bridge2 + bridge3, neighbor4,
+					e1.v2, cell,
+					e1.v2 + bridge2, nextNeighbor
+				);
+			}
+			else if(nextNeighbor.Elevation <= cell.Elevation
+			&& nextNeighbor.Elevation <= neighbor.Elevation
+			&& nextNeighbor.Elevation <= neighbor4.Elevation){
+				TriangulateSquareCorner(
+					e1.v2 + bridge2, nextNeighbor,
+					e1.v2, cell,
+					e1.v2 + bridge2 + bridge3, neighbor4,
+					e2.v2, neighbor
+				);
+			}
+			else{
+				TriangulateSquareCorner(
+					e1.v2 + bridge2 + bridge3, neighbor4,
+					e1.v2 + bridge2, nextNeighbor,
+					e2.v2, neighbor,
+					e1.v2, cell
+				);
+			}
 		}
 
 		/*
@@ -232,6 +265,7 @@ public class MapGridChunk : MonoBehaviour
 		float tallest  = Mathf.Max(inner.y, left.y, right.y, outer.y);
 		center.y = shortest + (tallest - shortest)*0.5f;
 		
+		
 		Vector4 types = new Vector4();
 		types.x = innerCell.TerrainTypeIndex;
 		types.y = leftCell.TerrainTypeIndex;
@@ -240,6 +274,355 @@ public class MapGridChunk : MonoBehaviour
 
 
 	/*** New Method: 8 way intersection ***/ 
+
+		//terrace wrapping around a corner 
+		if(innerCell.GetEdgeType(leftCell) == EdgeType.Slope
+		&& innerCell.GetEdgeType(rightCell) == EdgeType.Slope
+		&& leftCell.Elevation == rightCell.Elevation){
+			if(innerCell.Elevation < leftCell.Elevation
+			&& innerCell.Elevation < outerCell.Elevation){
+				TriangulateSquareCornerTerraceWrap(
+					inner, innerCell, 
+					left, leftCell,
+					right, rightCell,
+					outer, outerCell
+				);
+			}
+			else if(innerCell.Elevation < leftCell.Elevation
+			&& innerCell.Elevation == outerCell.Elevation){
+				TriangulateSquareCornerTerraceValley(
+					left, leftCell,
+					outer, outerCell,
+					inner, innerCell, 
+					right, rightCell
+				);
+			}
+			return;
+		}
+		else if(outerCell.GetEdgeType(leftCell) == EdgeType.Slope
+		&& outerCell.GetEdgeType(rightCell) == EdgeType.Slope
+		&& leftCell.Elevation == rightCell.Elevation){
+			if(outerCell.Elevation > leftCell.Elevation
+			&& outerCell.Elevation > innerCell.Elevation){
+				TriangulateSquareCornerTerraceWrap(
+					outer, outerCell,
+					right, rightCell,
+					left, leftCell,
+					inner, innerCell 
+				);
+			}
+			return;
+		}
+		
+		// terrace bridges 
+		if(innerCell.GetEdgeType(leftCell) == EdgeType.Slope
+		&& rightCell.GetEdgeType(outerCell) == EdgeType.Slope){
+			if(innerCell.Elevation == rightCell.Elevation 
+			&& leftCell.Elevation == outerCell.Elevation){
+				TriangulateSquareCornerTerraceBridge(
+					inner, innerCell, 
+					left, leftCell,
+					right, rightCell,
+					outer, outerCell
+				);
+				return;
+			}
+		}
+		else if(innerCell.GetEdgeType(rightCell) == EdgeType.Slope
+		&& leftCell.GetEdgeType(outerCell) == EdgeType.Slope){
+			if(innerCell.Elevation == leftCell.Elevation 
+			&& rightCell.Elevation == outerCell.Elevation){
+				TriangulateSquareCornerTerraceBridge(
+					left, leftCell,
+					outer, outerCell,
+					inner, innerCell, 
+					right, rightCell
+				);
+				return;
+			}
+		}
+
+		// edge from inner cell to left cell
+		if(innerCell.GetEdgeType(leftCell) == EdgeType.Slope){
+			TriangulateSquareCornerTerraceToCenter(
+				inner, innerCell, left, leftCell,
+				center, rightCell, outerCell
+			);
+		}
+		else {
+			TriangulateSquareCornerCliff(
+				inner, innerCell, left, leftCell,
+				center, rightCell, outerCell
+			);
+		}
+		
+		// edge from left cell to outer cell
+		if(leftCell.GetEdgeType(outerCell) == EdgeType.Slope){
+			TriangulateSquareCornerTerraceToCenter(
+				left, leftCell, outer, outerCell,
+				center, innerCell, rightCell
+			);
+		}
+		else {
+			TriangulateSquareCornerCliff(
+				left, leftCell, outer, outerCell,
+				center, innerCell, rightCell
+			);
+		}
+
+		// edge from outer cell to right cell 
+		if(outerCell.GetEdgeType(rightCell) == EdgeType.Slope){
+			TriangulateSquareCornerTerraceToCenter(
+				outer, outerCell, right, rightCell,
+				center, leftCell, innerCell
+			);
+		}
+		else {
+			TriangulateSquareCornerCliff(
+				outer, outerCell, right, rightCell,
+				center, leftCell, innerCell
+			);
+		}
+		
+		// edge from right cell to inner cell
+		if(rightCell.GetEdgeType(innerCell) == EdgeType.Slope){
+			TriangulateSquareCornerTerraceToCenter(
+				right, rightCell, inner, innerCell,
+				center, outerCell, leftCell
+			);
+		}
+		else {
+			TriangulateSquareCornerCliff(
+				right, rightCell, inner, innerCell,
+				center, outerCell, leftCell
+			);
+		}
+
+	}
+
+
+	/*** triangulates a square tile surrounded by terraces ***/
+	void TriangulateSquareCornerTerraceWrap(
+		Vector3 inner, MapCell innerCell,
+		Vector3 left, MapCell leftCell,
+		Vector3 right, MapCell rightCell,
+		Vector3 outer, MapCell outerCell
+	){
+		
+		Vector3 v1;
+		Vector3 v2;
+		Color c1;
+		Color c2;
+		Vector3 v3 = QuadMetrics.TerraceLerp(inner, left, 1);
+		Vector3 v4 = QuadMetrics.TerraceLerp(inner, right, 1);
+		Color c3 = QuadMetrics.TerraceLerp(splatColorR, splatColorG, 1);
+		Color c4 = QuadMetrics.TerraceLerp(splatColorR, splatColorB, 1);
+
+		Vector4 types;
+		types.x = innerCell.TerrainTypeIndex;
+		types.y = leftCell.TerrainTypeIndex;
+		types.z = rightCell.TerrainTypeIndex;
+		types.w = outerCell.TerrainTypeIndex;
+
+		terrain.AddTriangle(inner, v3, v4);
+		terrain.AddTriangleColor(splatColorR, c3, c4);
+		terrain.AddTriangleTerrainTypes(types);
+
+		for (int i = 2; i <= QuadMetrics.terraceSteps; i++) {
+			v1 = v3;
+			v2 = v4;
+			c1 = c3;
+			c2 = c4;
+			v3 = QuadMetrics.TerraceLerp(inner, left, i);
+			v4 = QuadMetrics.TerraceLerp(inner, right, i);
+			c3 = QuadMetrics.TerraceLerp(splatColorR, splatColorG, i);
+			c4 = QuadMetrics.TerraceLerp(splatColorR, splatColorB, i);
+
+			terrain.AddQuad(v1, v2, v3, v4);
+			terrain.AddQuadColor(c1, c2, c3, c4);
+			terrain.AddQuadTerrainTypes(types);
+		}
+
+		if(outerCell.Elevation > leftCell.Elevation){
+			v1 = v3;
+			v2 = v4;
+			c1 = c3;
+			c2 = c4;
+			v3 = QuadMetrics.TerraceLerp(left, outer, 1);
+			v4 = QuadMetrics.TerraceLerp(right, outer, 1);
+			c3 = QuadMetrics.TerraceLerp(splatColorG, splatColorA, 1);
+			c4 = QuadMetrics.TerraceLerp(splatColorB, splatColorA, 1);
+
+			terrain.AddQuad(v1, v2, v3, v4);
+			terrain.AddQuadColor(c1, c2, c3, c4);
+			terrain.AddQuadTerrainTypes(types);
+
+			for (int i = 2; i <= QuadMetrics.terraceSteps; i++) {
+				v1 = v3;
+				v2 = v4;
+				c1 = c3;
+				c2 = c4;
+				v3 = QuadMetrics.TerraceLerp(left, outer, i);
+				v4 = QuadMetrics.TerraceLerp(right, outer, i);
+				c3 = QuadMetrics.TerraceLerp(splatColorG, splatColorA, i);
+				c4 = QuadMetrics.TerraceLerp(splatColorB, splatColorA, i);
+
+				terrain.AddQuad(v1, v2, v3, v4);
+				terrain.AddQuadColor(c1, c2, c3, c4);
+				terrain.AddQuadTerrainTypes(types);
+			}
+
+			terrain.AddTriangle(v3, v4, outer);
+			terrain.AddTriangleColor(c3, c4, splatColorA);
+			terrain.AddTriangleTerrainTypes(types);
+		}
+		else if(outerCell.Elevation == leftCell.Elevation){
+			terrain.AddTriangle(outer, v4, v3);
+			terrain.AddTriangleColor(splatColorA, c4, c3);
+			terrain.AddTriangleTerrainTypes(types);
+		}
+	}
+
+
+	/* terrace valley goes from a high tile across 2 low tiles back to a high tile  */ 
+	void TriangulateSquareCornerTerraceValley(
+		Vector3 inner, MapCell innerCell,
+		Vector3 left, MapCell leftCell,
+		Vector3 right, MapCell rightCell,
+		Vector3 outer, MapCell outerCell
+	){
+		
+		Vector3 v1 = Vector3.zero;
+		Vector3 v2 = Vector3.zero;
+		Color c1 = splatColorRGBA;
+		Color c2 = splatColorRGBA;
+		Vector3 v3 = QuadMetrics.TerraceLerp(inner, left, 1);
+		Vector3 v4 = QuadMetrics.TerraceLerp(inner, right, 1);
+		Color c3 = QuadMetrics.TerraceLerp(splatColorR, splatColorG, 1);
+		Color c4 = QuadMetrics.TerraceLerp(splatColorR, splatColorB, 1);
+
+		Vector4 types;
+		types.x = innerCell.TerrainTypeIndex;
+		types.y = leftCell.TerrainTypeIndex;
+		types.z = rightCell.TerrainTypeIndex;
+		types.w = outerCell.TerrainTypeIndex;
+
+
+		// fall toward the middle of the intersection
+		terrain.AddTriangle(inner, v3, v4);
+		terrain.AddTriangleColor(splatColorR, c3, c4);
+		terrain.AddTriangleTerrainTypes(types);
+
+		for (int i = 2; i <= QuadMetrics.terraceSteps - 1; i++) {
+			v1 = v3;
+			v2 = v4;
+			c1 = c3;
+			c2 = c4;
+			v3 = QuadMetrics.TerraceLerp(inner, left, i);
+			v4 = QuadMetrics.TerraceLerp(inner, right, i);
+			c3 = QuadMetrics.TerraceLerp(splatColorR, splatColorG, i);
+			c4 = QuadMetrics.TerraceLerp(splatColorR, splatColorB, i);
+
+			terrain.AddQuad(v1, v2, v3, v4);
+			terrain.AddQuadColor(c1, c2, c3, c4);
+			terrain.AddQuadTerrainTypes(types);
+		}
+		// skip reaching the very bottom of the valley for aesthetic reasons 
+
+		// rise toward the next hill 
+		v1 = v3;
+		v2 = v4;
+		c1 = c3;
+		c2 = c4;
+
+
+		v3 = QuadMetrics.TerraceLerp(left, outer, 1);
+		v4 = QuadMetrics.TerraceLerp(right, outer, 1);
+		c3 = QuadMetrics.TerraceLerp(splatColorG, splatColorA, 1);
+		c4 = QuadMetrics.TerraceLerp(splatColorB, splatColorA, 1);
+		
+		terrain.AddTriangle(left, v3, v1);
+		terrain.AddTriangleColor(splatColorG, c3, c1);
+		terrain.AddTriangleTerrainTypes(types);
+
+		terrain.AddTriangle(right, v2, v4);
+		terrain.AddTriangleColor(splatColorB, c2, c4);
+		terrain.AddTriangleTerrainTypes(types);
+
+		terrain.AddQuad(v1, v2, v3, v4);
+		terrain.AddQuadColor(c1, c2, c3, c4);
+		terrain.AddQuadTerrainTypes(types);
+
+		for (int i = 2; i <= QuadMetrics.terraceSteps; i++) {
+			v1 = v3;
+			v2 = v4;
+			c1 = c3;
+			c2 = c4;
+			v3 = QuadMetrics.TerraceLerp(left, outer, i);
+			v4 = QuadMetrics.TerraceLerp(right, outer, i);
+			c3 = QuadMetrics.TerraceLerp(splatColorG, splatColorA, i);
+			c4 = QuadMetrics.TerraceLerp(splatColorB, splatColorA, i);
+
+			terrain.AddQuad(v1, v2, v3, v4);
+			terrain.AddQuadColor(c1, c2, c3, c4);
+			terrain.AddQuadTerrainTypes(types);
+		}
+
+		terrain.AddTriangle(v3, v4, outer);
+		terrain.AddTriangleColor(c3, c4, splatColorA);
+		terrain.AddTriangleTerrainTypes(types);
+		
+	}
+
+	/*** for terraces connecting to slopes ? ***/
+	void TriangulateSquareCornerTerraceToCenter(
+		Vector3 inner, MapCell innerCell,
+		Vector3 left, MapCell leftCell,
+		Vector3 center, 
+		MapCell rightCell, MapCell outerCell
+	){
+		Vector3 v3 = QuadMetrics.TerraceLerp(inner, left, 1);
+		Color c3 = QuadMetrics.TerraceLerp(splatColorR, splatColorG, 1);
+
+		Vector4 types;
+		types.x = innerCell.TerrainTypeIndex;
+		types.y = leftCell.TerrainTypeIndex;
+		types.z = rightCell.TerrainTypeIndex;
+		types.w = outerCell.TerrainTypeIndex;
+
+		terrain.AddTriangle(inner, v3, center);
+		terrain.AddTriangleColor(splatColorR, c3, splatColorRGBA);
+		terrain.AddTriangleTerrainTypes(types);
+
+		for (int i = 2; i < QuadMetrics.terraceSteps; i++) {
+			Vector3 v1 = v3;
+			Color c1 = c3;
+			v3 = QuadMetrics.TerraceLerp(inner, left, i);
+			c3 = QuadMetrics.TerraceLerp(splatColorR, splatColorG, i);
+			terrain.AddTriangle(v1, v3, center);
+			terrain.AddTriangleColor(c1, c3, splatColorRGBA);
+			terrain.AddTriangleTerrainTypes(types);
+		}
+		
+		terrain.AddTriangle(v3, left, center);
+		terrain.AddTriangleColor(c3, splatColorG, splatColorRGBA);
+		terrain.AddTriangleTerrainTypes(types);
+	}
+
+	void TriangulateSquareCornerCliff(
+		Vector3 inner, MapCell innerCell,
+		Vector3 left, MapCell leftCell,
+		Vector3 center, 
+		MapCell rightCell, MapCell outerCell
+	){
+
+		Vector3 midIL = inner + (left - inner)*0.5f;
+		Vector4 types;
+		types.x = innerCell.TerrainTypeIndex;
+		types.y = leftCell.TerrainTypeIndex;
+		types.z = rightCell.TerrainTypeIndex;
+		types.w = outerCell.TerrainTypeIndex;
+
 		terrain.AddTriangle(inner, midIL, center);
 		terrain.AddTriangleColor(splatColorR, splatColorRG, splatColorRGBA);
 		terrain.AddTriangleTerrainTypes(types);
@@ -247,95 +630,56 @@ public class MapGridChunk : MonoBehaviour
 		terrain.AddTriangle(midIL, left, center);
 		terrain.AddTriangleColor(splatColorRG, splatColorG, splatColorRGBA);
 		terrain.AddTriangleTerrainTypes(types);
-		
-		terrain.AddTriangle(left, midLO, center);
-		terrain.AddTriangleColor(splatColorG, splatColorGA, splatColorRGBA);
-		terrain.AddTriangleTerrainTypes(types);
-		
-		terrain.AddTriangle(midLO, outer, center);
-		terrain.AddTriangleColor(splatColorGA, splatColorA, splatColorRGBA);
-		terrain.AddTriangleTerrainTypes(types);
-		
-		terrain.AddTriangle(outer, midRO, center);
-		terrain.AddTriangleColor(splatColorA, splatColorBA, splatColorRGBA);
-		terrain.AddTriangleTerrainTypes(types);
-		
-		terrain.AddTriangle(midRO, right, center);
-		terrain.AddTriangleColor(splatColorBA, splatColorB, splatColorRGBA);
-		terrain.AddTriangleTerrainTypes(types);
-		
-		terrain.AddTriangle(right, midIR, center);
-		terrain.AddTriangleColor(splatColorB, splatColorRB, splatColorRGBA);
-		terrain.AddTriangleTerrainTypes(types);
-		
-		terrain.AddTriangle(midIR, inner, center);
-		terrain.AddTriangleColor(splatColorRB, splatColorR, splatColorRGBA);
-		terrain.AddTriangleTerrainTypes(types);
-
-	/*** Scrapped Method: diamond within a square (left visible seams on edges of blend) ***/ 
-	/*
-		terrain.AddTriangle(inner, midIL, midIR);
-		terrain.AddTriangleColor(splatColorR, splatColorRG, splatColorRB);
-		types.x = innerCell.TerrainTypeIndex;
-		types.y = leftCell.TerrainTypeIndex;
-		types.z = rightCell.TerrainTypeIndex;
-		terrain.AddTriangleTerrainTypes(types);
-
-		terrain.AddTriangle(left, midLO, midIL);
-		terrain.AddTriangleColor(splatColorR, splatColorRG, splatColorRB);
-		types.x = leftCell.TerrainTypeIndex;
-		types.y = outerCell.TerrainTypeIndex;
-		types.z = innerCell.TerrainTypeIndex;
-		terrain.AddTriangleTerrainTypes(types);
-		
-		terrain.AddTriangle(right, midIR, midRO);
-		terrain.AddTriangleColor(splatColorR, splatColorRG, splatColorRB);
-		types.x = rightCell.TerrainTypeIndex;
-		types.y = innerCell.TerrainTypeIndex;
-		types.z = outerCell.TerrainTypeIndex;
-		terrain.AddTriangleTerrainTypes(types);
-		
-		terrain.AddTriangle(outer, midRO, midLO);
-		terrain.AddTriangleColor(splatColorR, splatColorRG, splatColorRB);
-		types.x = outerCell.TerrainTypeIndex;
-		types.y = rightCell.TerrainTypeIndex;
-		types.z = leftCell.TerrainTypeIndex;
-		terrain.AddTriangleTerrainTypes(types);
-
-
-		terrain.AddTriangle(midIL, center, midIR);
-		terrain.AddTriangleColor(splatColorRG, splatColorRGBA, splatColorRB);
-		types.x = innerCell.TerrainTypeIndex;
-		types.y = leftCell.TerrainTypeIndex;
-		types.z = rightCell.TerrainTypeIndex;
-		types.w = outerCell.TerrainTypeIndex;
-		terrain.AddTriangleTerrainTypes(types);
-
-		terrain.AddTriangle(midLO, center, midIL);
-		terrain.AddTriangleColor(splatColorRG, splatColorRGBA, splatColorRB);
-		types.x = leftCell.TerrainTypeIndex;
-		types.y = outerCell.TerrainTypeIndex;
-		types.z = innerCell.TerrainTypeIndex;
-		types.w = rightCell.TerrainTypeIndex;
-		terrain.AddTriangleTerrainTypes(types);
-
-		terrain.AddTriangle(midRO, center, midLO);
-		terrain.AddTriangleColor(splatColorRG, splatColorRGBA, splatColorRB);
-		types.x = outerCell.TerrainTypeIndex;
-		types.y = rightCell.TerrainTypeIndex;
-		types.z = leftCell.TerrainTypeIndex;
-		types.w = innerCell.TerrainTypeIndex;
-		terrain.AddTriangleTerrainTypes(types);
-
-		terrain.AddTriangle(midIR, center, midRO);
-		terrain.AddTriangleColor(splatColorRG, splatColorRGBA, splatColorRB);
-		types.x = rightCell.TerrainTypeIndex;
-		types.y = innerCell.TerrainTypeIndex;
-		types.z = outerCell.TerrainTypeIndex;
-		types.w = leftCell.TerrainTypeIndex;
-		terrain.AddTriangleTerrainTypes(types);
-		*/
 	}
+
+	/* for corners that basically just continue edges */ 
+	void TriangulateSquareCornerTerraceBridge(
+		Vector3 lowerLeft, MapCell lowLeftCell,
+		Vector3 upperLeft, MapCell upLeftCell,
+		Vector3 lowerRight, MapCell lowRightCell,
+		Vector3 upperRight, MapCell upRightCell
+	){
+		Vector3 v1 = lowerLeft;
+		Vector3 v2 = lowerRight;
+		Color c1 = splatColorR;
+		Color c2 = splatColorB;
+		Vector3 v3 = QuadMetrics.TerraceLerp(lowerLeft, upperLeft, 1);
+		Vector3 v4 = QuadMetrics.TerraceLerp(lowerRight, upperRight, 1);
+		Color c3 = QuadMetrics.TerraceLerp(splatColorR, splatColorG, 1);
+		Color c4 = QuadMetrics.TerraceLerp(splatColorB, splatColorA, 1);
+		Vector4 types;
+		types.x = lowLeftCell.TerrainTypeIndex;
+		types.y = upLeftCell.TerrainTypeIndex;
+		types.z = lowRightCell.TerrainTypeIndex;
+		types.w = upRightCell.TerrainTypeIndex;
+
+		terrain.AddQuad(v1, v2, v3, v4);
+		terrain.AddQuadColor(c1, c2, c3, c4);
+		terrain.AddQuadTerrainTypes(types);
+
+		for (int i = 2; i <= QuadMetrics.terraceSteps; i++) {
+			v1 = v3;
+			v2 = v4;
+			c1 = c3;
+			c2 = c4;
+			v3 = QuadMetrics.TerraceLerp(lowerLeft, upperLeft, i);
+			v4 = QuadMetrics.TerraceLerp(lowerRight, upperRight, i);
+			c3 = QuadMetrics.TerraceLerp(splatColorR, splatColorG, i);
+			c4 = QuadMetrics.TerraceLerp(splatColorB, splatColorA, i);
+
+			terrain.AddQuad(v1, v2, v3, v4);
+			terrain.AddQuadColor(c1, c2, c3, c4);
+			terrain.AddQuadTerrainTypes(types);
+		}
+	}
+
+
+
+
+
+
+
+
 
 
 	void TriangulateCorner (

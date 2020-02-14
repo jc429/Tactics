@@ -150,7 +150,7 @@ public class MapGrid : MonoBehaviour
 		//label cell
 		TextMeshPro label = Instantiate<TextMeshPro>(cellLabelPrefab);
 		label.rectTransform.anchoredPosition = new Vector2(pos.x, pos.z);
-		//label.text = cell.coordinates.ToString();
+		label.text = cell.coordinates.ToString();
 
 		cell.uiRect = label.rectTransform;
 
