@@ -162,4 +162,11 @@ public class CellMesh : MonoBehaviour
 		terrainTypes.Add(types);
 	}
 
+	Vector3 Perturb (Vector3 position) {
+		Vector4 sample = QuadMetrics.SampleNoise(position);
+		position.x += sample.x * 2f - 1f;
+		position.z += sample.z * 2f - 1f;
+		return position;
+	}
+
 }

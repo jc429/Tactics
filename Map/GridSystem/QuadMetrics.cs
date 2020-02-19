@@ -42,6 +42,15 @@ public static class QuadMetrics
 	/* cell color index */
 	public static Color[] colors;
 
+	/* noise sampling texture */ 
+	public static Texture2D noiseSource;
+
+	
+	public static Vector4 SampleNoise (Vector3 position) {
+		return noiseSource.GetPixelBilinear(position.x, position.z);
+	}
+
+
 	public static Vector3 GetFirstCorner (QuadDirection direction) {
 		return corners[(int)direction];
 	}

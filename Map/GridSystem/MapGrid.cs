@@ -8,6 +8,10 @@ using TMPro;
 public class MapGrid : MonoBehaviour
 {
 
+	/* texture to use to generate noise in QuadMetrics*/
+	public Texture2D noiseSource;
+
+
 	bool started = false;
 	/* size of map in cells */
 	/* maps must currently be in a multiple of chunk sizes (4X, 4Z) */
@@ -46,11 +50,16 @@ public class MapGrid : MonoBehaviour
 	List<MapUnit> units = new List<MapUnit>();
 
 	void Awake(){
-		HexMetrics.colors = colors;
+		QuadMetrics.noiseSource = noiseSource;
+		QuadMetrics.colors = colors;
 		MapUnit.unitPrefab = unitPrefab;
 		GameController.mapGrid = this;
 
 		CreateMapRect(8,8);
+	}
+
+	void OnEnable () {
+		QuadMetrics.noiseSource = noiseSource;
 	}
 
 	public void StartMap(){

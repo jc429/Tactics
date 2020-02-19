@@ -149,80 +149,64 @@ public class MapGridChunk : MonoBehaviour
 
 		/* unlike hex maps, square map cells have 3 neighbors to deal with at a given corner */
 		// TODO: fill in corners
-		MapCell nextNeighbor = cell.GetNeighbor(direction.Next());
-		if (direction == QuadDirection.N && nextNeighbor != null) {
-			Vector3 bridge2 = QuadMetrics.GetBridge(direction.Next());
-			bridge2.y = nextNeighbor.Position.y - cell.Position.y;
+		if(direction == QuadDirection.N){
+			MapCell neighborE = cell.GetNeighbor(QuadDirection.E);
+			if (neighborE != null) {
+				Vector3 bridgeE = QuadMetrics.GetBridge(QuadDirection.E);
+				bridgeE.y = neighborE.Position.y - cell.Position.y;
 
-			MapCell neighbor4 = nextNeighbor.GetNeighbor(direction);
-			Vector3 bridge3 = QuadMetrics.GetBridge(direction);
-			bridge3.y = neighbor4.Position.y - nextNeighbor.Position.y;
+				MapCell neighborNE = neighborE.GetNeighbor(QuadDirection.N);
+				Vector3 bridgeEN = QuadMetrics.GetBridge(QuadDirection.N);		//bridge from east to northeast
+				bridgeEN.y = neighborNE.Position.y - neighborE.Position.y;
 
-			//start from one of the lowest cells
-			if(cell.Elevation <= neighbor.Elevation
-			&& cell.Elevation <= nextNeighbor.Elevation
-			&& cell.Elevation <= neighbor4.Elevation){
-				TriangulateSquareCorner(
-					e1.v2, cell, 
-					e2.v2, neighbor,
-					e1.v2 + bridge2, nextNeighbor,
-					e1.v2 + bridge2 + bridge3, neighbor4
-				);
-			}
-			else if(neighbor.Elevation <= cell.Elevation
-			&& neighbor.Elevation <= nextNeighbor.Elevation
-			&& neighbor.Elevation <= neighbor4.Elevation){
-				TriangulateSquareCorner(
-					e2.v2, neighbor,
-					e1.v2 + bridge2 + bridge3, neighbor4,
-					e1.v2, cell,
-					e1.v2 + bridge2, nextNeighbor
-				);
-			}
-			else if(nextNeighbor.Elevation <= cell.Elevation
-			&& nextNeighbor.Elevation <= neighbor.Elevation
-			&& nextNeighbor.Elevation <= neighbor4.Elevation){
-				TriangulateSquareCorner(
-					e1.v2 + bridge2, nextNeighbor,
-					e1.v2, cell,
-					e1.v2 + bridge2 + bridge3, neighbor4,
-					e2.v2, neighbor
-				);
-			}
-			else{
-				TriangulateSquareCorner(
-					e1.v2 + bridge2 + bridge3, neighbor4,
-					e1.v2 + bridge2, nextNeighbor,
-					e2.v2, neighbor,
-					e1.v2, cell
-				);
-			}
-		}
+				// SW, SE, NE, NW
+				MapCell[] cellList = new MapCell[]{cell,neighborE,neighborNE,neighbor};
+				Vector3[] cellEdgeList = new Vector3[]{e1.v2, e1.v2 + bridgeE, e1.v2 + bridgeE + bridgeEN, e2.v2};
+				//start from one of the lowest cells
+				
 
-		/*
-		// remaining corner triangles
-		MapCell nextNeighbor = cell.GetNeighbor(direction.Next());
-		if (direction <= QuadDirection.E && nextNeighbor != null) {
-			Vector3 v5 = e1.v2 + QuadMetrics.GetBridge(direction.Next());
-			v5.y = nextNeighbor.Elevation * QuadMetrics.elevationStep;
 
-			//start from lowest elevation
-			if (cell.Elevation <= neighbor.Elevation) {
-				if (cell.Elevation <= nextNeighbor.Elevation) {
-					TriangulateCorner(e1.v2, cell, e2.v2, neighbor, v5, nextNeighbor);
+				//prioritize NE cell as highest 
+				if(cell.Elevation <= neighbor.Elevation
+				&& cell.Elevation <= neighborE.Elevation
+				&& cell.Elevation <= neighborNE.Elevation){
+					TriangulateSquareCorner(
+						e1.v2, cell, 
+						e2.v2, neighbor,
+						e1.v2 + bridgeE, neighborE,
+						e1.v2 + bridgeE + bridgeEN, neighborNE
+					);
 				}
-				else {
-					TriangulateCorner(v5, nextNeighbor, e1.v2, cell, e2.v2, neighbor);
+				else if(neighbor.Elevation <= cell.Elevation
+				&& neighbor.Elevation <= neighborE.Elevation
+				&& neighbor.Elevation <= neighborNE.Elevation){
+					TriangulateSquareCorner(
+						e2.v2, neighbor,
+						e1.v2 + bridgeE + bridgeEN, neighborNE,
+						e1.v2, cell,
+						e1.v2 + bridgeE, neighborE
+					);
+				}
+				else if(neighborE.Elevation <= cell.Elevation
+				&& neighborE.Elevation <= neighbor.Elevation
+				&& neighborE.Elevation <= neighborNE.Elevation){
+					TriangulateSquareCorner(
+						e1.v2 + bridgeE, neighborE,
+						e1.v2, cell,
+						e1.v2 + bridgeE + bridgeEN, neighborNE,
+						e2.v2, neighbor
+					);
+				}
+				else{
+					TriangulateSquareCorner(
+						e1.v2 + bridgeE + bridgeEN, neighborNE,
+						e1.v2 + bridgeE, neighborE,
+						e2.v2, neighbor,
+						e1.v2, cell
+					);
 				}
 			}
-			else if (neighbor.Elevation <= nextNeighbor.Elevation) {
-				TriangulateCorner(e2.v2, neighbor, v5, nextNeighbor, e1.v2, cell);
-			}
-			else {
-				TriangulateCorner(v5, nextNeighbor, e1.v2, cell, e2.v2, neighbor);
-			}
 		}
-		*/
 	}
 
 	void TriangulateEdgeTerraces(
@@ -273,46 +257,78 @@ public class MapGridChunk : MonoBehaviour
 		types.w = outerCell.TerrainTypeIndex;
 
 
-	/*** New Method: 8 way intersection ***/ 
 
 		//terrace wrapping around a corner 
-		if(innerCell.GetEdgeType(leftCell) == EdgeType.Slope
-		&& innerCell.GetEdgeType(rightCell) == EdgeType.Slope
-		&& leftCell.Elevation == rightCell.Elevation){
-			if(innerCell.Elevation < leftCell.Elevation
-			&& innerCell.Elevation < outerCell.Elevation){
-				TriangulateSquareCornerTerraceWrap(
-					inner, innerCell, 
-					left, leftCell,
-					right, rightCell,
-					outer, outerCell
-				);
+		// if the left and right cells are the same height, we are not dealing with a bridge
+		if(leftCell.Elevation == rightCell.Elevation){
+			if(innerCell.GetEdgeType(leftCell) == EdgeType.Slope
+			&& innerCell.GetEdgeType(rightCell) == EdgeType.Slope){
+				if(innerCell.Elevation != leftCell.Elevation){
+					if(innerCell.Elevation == outerCell.Elevation){
+						TriangulateSquareCornerTerraceValley(
+							left, leftCell,
+							outer, outerCell,
+							inner, innerCell, 
+							right, rightCell
+						);
+					}
+					else {
+						TriangulateSquareCornerTerraceWrap(
+							inner, innerCell, 
+							left, leftCell,
+							right, rightCell,
+							outer, outerCell
+						);
+					}
+					return;
+				}
 			}
-			else if(innerCell.Elevation < leftCell.Elevation
-			&& innerCell.Elevation == outerCell.Elevation){
-				TriangulateSquareCornerTerraceValley(
-					left, leftCell,
-					outer, outerCell,
-					inner, innerCell, 
-					right, rightCell
-				);
-			}
-			return;
 		}
-		else if(outerCell.GetEdgeType(leftCell) == EdgeType.Slope
-		&& outerCell.GetEdgeType(rightCell) == EdgeType.Slope
-		&& leftCell.Elevation == rightCell.Elevation){
+
+		// one high surrounded by 3 lows
+		if(outerCell.GetEdgeType(leftCell) == EdgeType.Slope
+		&& outerCell.GetEdgeType(rightCell) == EdgeType.Slope){
 			if(outerCell.Elevation > leftCell.Elevation
-			&& outerCell.Elevation > innerCell.Elevation){
+			&& outerCell.Elevation > innerCell.Elevation
+			&& outerCell.Elevation > rightCell.Elevation){
 				TriangulateSquareCornerTerraceWrap(
 					outer, outerCell,
 					right, rightCell,
 					left, leftCell,
 					inner, innerCell 
 				);
+				return;
 			}
-			return;
 		}
+		if(leftCell.GetEdgeType(innerCell) == EdgeType.Slope
+		&& leftCell.GetEdgeType(outerCell) == EdgeType.Slope){
+			if(leftCell.Elevation > innerCell.Elevation
+			&& leftCell.Elevation > rightCell.Elevation
+			&& leftCell.Elevation > outerCell.Elevation){
+				TriangulateSquareCornerTerraceWrap(
+					left, leftCell,
+					outer, outerCell,
+					inner, innerCell, 
+					right, rightCell
+				);
+				return;
+			}
+		}
+		if(rightCell.GetEdgeType(outerCell) == EdgeType.Slope
+		&& rightCell.GetEdgeType(innerCell) == EdgeType.Slope){
+			if(rightCell.Elevation > outerCell.Elevation
+			&& rightCell.Elevation > leftCell.Elevation
+			&& rightCell.Elevation > innerCell.Elevation){
+				TriangulateSquareCornerTerraceWrap(
+					right, rightCell,
+					inner, innerCell, 
+					outer, outerCell,
+					left, leftCell
+				);
+				return;
+			}
+		}
+
 		
 		// terrace bridges 
 		if(innerCell.GetEdgeType(leftCell) == EdgeType.Slope
@@ -341,6 +357,9 @@ public class MapGridChunk : MonoBehaviour
 				return;
 			}
 		}
+
+
+		/*** New Method: 8 way intersection ***/ 
 
 		// edge from inner cell to left cell
 		if(innerCell.GetEdgeType(leftCell) == EdgeType.Slope){
@@ -882,13 +901,17 @@ public class MapGridChunk : MonoBehaviour
 
 			water.AddQuad(c1, c2, e1, e2);
 
-			if (direction <= QuadDirection.E) {
-				MapCell nextNeighbor = cell.GetNeighbor(direction.Next());
+			if (direction == QuadDirection.N) {
+				MapCell nextNeighbor = cell.GetNeighbor(QuadDirection.E);
 				if (nextNeighbor == null || !nextNeighbor.IsUnderwater) {
 					return;
 				}
-				water.AddTriangle(
-					c2, e2, c2 + QuadMetrics.GetWaterBridge(direction.Next())
+				MapCell neighborNE = neighbor.GetNeighbor(QuadDirection.E);
+				if (neighborNE == null || !neighborNE.IsUnderwater) {
+					return;
+				}
+				water.AddQuad(
+					e2, c2, e2 + QuadMetrics.GetWaterBridge(QuadDirection.E), c2 + QuadMetrics.GetWaterBridge(QuadDirection.E)
 				);
 			}
 		}
@@ -913,13 +936,21 @@ public class MapGridChunk : MonoBehaviour
 		
 		MapCell nextNeighbor = cell.GetNeighbor(direction.Next());
 		if (nextNeighbor != null) {
+
 			Vector3 v3 = nextNeighbor.Position + (nextNeighbor.IsUnderwater ?
-				QuadMetrics.GetFirstWaterCorner(direction.Previous()) :
-				QuadMetrics.GetFirstSolidCorner(direction.Previous()));
+				QuadMetrics.GetFirstWaterCorner(direction) :
+				QuadMetrics.GetFirstSolidCorner(direction));
 			v3.y = center.y;
 
-			waterShore.AddTriangle(corner2, bridge2, v3);
-			waterShore.AddTriangleUV(
+			MapCell neighbor4 = neighbor.GetNeighbor(direction.Next());
+			Vector3 v4 = neighbor4.Position + (neighbor4.IsUnderwater ?
+				QuadMetrics.GetFirstWaterCorner(direction.Previous()) :
+				QuadMetrics.GetFirstSolidCorner(direction.Previous()));
+			v4.y = center.y;
+
+			waterShore.AddQuad(bridge2, corner2, v4, v3);
+			waterShore.AddQuadUV(
+				new Vector2(0f, 1f),
 				new Vector2(0f, 0f),
 				new Vector2(0f, 1f),
 				new Vector2(0f, nextNeighbor.IsUnderwater ? 0f : 1f)
