@@ -102,7 +102,7 @@ public static class ArmyManager{
 
 	public static void AssignUnitToArmy(MapUnit unit, int army){
 		if(army <= 0 || army >= numArmies){
-			Debug.Log("Invalid Army!");
+			Debug.Log("Invalid Army! (" + army + ")");
 			return;
 		}
 
@@ -114,7 +114,7 @@ public static class ArmyManager{
 	
 	public static void RemoveUnitFromArmy(MapUnit unit, int army){
 		if(army <= 0 || army >= numArmies){
-			Debug.Log("Invalid Army!");
+			Debug.Log("Invalid Army! (" + army + ")");
 			return;
 		}
 

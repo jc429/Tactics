@@ -125,7 +125,7 @@ public class Cell : MonoBehaviour
 	/* Color of cell */
 	public Color CellColor {
 		get {
-			return HexMetrics.colors[terrainTypeIndex];
+			return QuadMetrics.colors[terrainTypeIndex];
 		}
 		set {
 		}

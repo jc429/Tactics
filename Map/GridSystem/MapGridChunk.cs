@@ -283,6 +283,15 @@ public class MapGridChunk : MonoBehaviour
 					return;
 				}
 			}
+			else if(innerCell.GetEdgeType(leftCell) == EdgeType.Cliff
+			&& innerCell.GetEdgeType(rightCell) == EdgeType.Cliff){
+				TriangulateCliffCorner(
+					inner, innerCell, 
+					left, leftCell,
+					right, rightCell,
+					outerCell
+				);
+			}
 		}
 
 		// one high surrounded by 3 lows
@@ -419,6 +428,24 @@ public class MapGridChunk : MonoBehaviour
 
 	}
 
+	
+	void TriangulateCliffCorner(
+		Vector3 inner, MapCell innerCell, 
+		Vector3 left, MapCell leftCell,
+		Vector3 right, MapCell rightCell,
+		MapCell outerCell
+	){
+		Vector4 types;
+		types.x = innerCell.TerrainTypeIndex;
+		types.y = leftCell.TerrainTypeIndex;
+		types.z = rightCell.TerrainTypeIndex;
+		types.w = outerCell.TerrainTypeIndex;
+
+
+		terrain.AddTriangle(inner, left, right);
+		terrain.AddTriangleColor(splatColorR, splatColorG, splatColorG);
+		terrain.AddTriangleTerrainTypes(types);
+	}
 
 	/*** triangulates a square tile surrounded by terraces ***/
 	void TriangulateSquareCornerTerraceWrap(
@@ -942,19 +969,32 @@ public class MapGridChunk : MonoBehaviour
 				QuadMetrics.GetFirstSolidCorner(direction));
 			v3.y = center.y;
 
-			MapCell neighbor4 = neighbor.GetNeighbor(direction.Next());
-			Vector3 v4 = neighbor4.Position + (neighbor4.IsUnderwater ?
-				QuadMetrics.GetFirstWaterCorner(direction.Previous()) :
-				QuadMetrics.GetFirstSolidCorner(direction.Previous()));
-			v4.y = center.y;
 
-			waterShore.AddQuad(bridge2, corner2, v4, v3);
-			waterShore.AddQuadUV(
-				new Vector2(0f, 1f),
-				new Vector2(0f, 0f),
-				new Vector2(0f, 1f),
-				new Vector2(0f, nextNeighbor.IsUnderwater ? 0f : 1f)
-			);
+			if(nextNeighbor.IsUnderwater){
+				MapCell neighbor4 = neighbor.GetNeighbor(direction.Next());
+				if(neighbor4 != null){
+					Vector3 v4 = neighbor4.Position + (neighbor4.IsUnderwater ?
+						QuadMetrics.GetFirstWaterCorner(direction.Previous()) :
+						QuadMetrics.GetFirstSolidCorner(direction.Previous()));
+					v4.y = center.y;
+
+					waterShore.AddQuad(bridge2, corner2, v4, v3);
+					waterShore.AddQuadUV(
+						new Vector2(0f, 1f),
+						new Vector2(0f, 0f),
+						new Vector2(0f, neighbor4.IsUnderwater ? 0f : 1f),
+						new Vector2(0f, nextNeighbor.IsUnderwater ? 0f : 1f)
+					);
+				}
+			}
+			else{
+				waterShore.AddTriangle(bridge2, v3, corner2);
+				waterShore.AddTriangleUV(
+					new Vector2(0f, 1f),
+					new Vector2(0f, nextNeighbor.IsUnderwater ? 0f : 1f),
+					new Vector2(0f, 0f)
+				);
+			}
 		}
 	}
 

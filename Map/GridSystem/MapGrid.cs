@@ -598,6 +598,7 @@ public class MapGrid : MonoBehaviour
 		if (header >= 1) {
 			int unitCount = reader.ReadInt32();
 			for (int i = 0; i < unitCount; i++) {
+				Debug.Log("Ayyy");
 				MapUnit.Load(reader, this);
 			}
 		}
