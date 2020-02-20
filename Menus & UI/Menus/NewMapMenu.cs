@@ -21,7 +21,7 @@ public class NewMapMenu : MonoBehaviour {
 	}
 
 	public void CreateSmallMap () {
-		CreateRectMap(6, 6);
+		CreateRectMap(4, 4);
 	}
 
 	public void CreateMediumMap () {
@@ -29,7 +29,7 @@ public class NewMapMenu : MonoBehaviour {
 	}
 
 	public void CreateLargeMap () {
-		CreateRectMap(10, 10);
+		CreateRectMap(12, 12);
 	}
 
 	

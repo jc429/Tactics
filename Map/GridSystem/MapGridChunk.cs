@@ -139,7 +139,7 @@ public class MapGridChunk : MonoBehaviour
 		
 		//TriangulateEdgeStrip(e1, splatColorR, cell.TerrainTypeIndex, e2, splatColorG, neighbor.TerrainTypeIndex);
 		
-		if (cell.GetEdgeType(direction) == EdgeType.Slope) {
+		if (cell.GetEdgeType(direction) == EdgeType.Terrace) {
 			TriangulateEdgeTerraces(e1, cell, e2, neighbor);
 		}
 		else {
@@ -260,10 +260,10 @@ public class MapGridChunk : MonoBehaviour
 
 		//terrace wrapping around a corner 
 		// if the left and right cells are the same height, we are not dealing with a bridge
-		if(leftCell.Elevation == rightCell.Elevation){
-			if(innerCell.GetEdgeType(leftCell) == EdgeType.Slope
-			&& innerCell.GetEdgeType(rightCell) == EdgeType.Slope){
-				if(innerCell.Elevation != leftCell.Elevation){
+		if(leftCell.Elevation == rightCell.Elevation
+		&& innerCell.GetEdgeType(leftCell) == innerCell.GetEdgeType(rightCell)){
+			switch(innerCell.GetEdgeType(leftCell)){
+				case EdgeType.Terrace:
 					if(innerCell.Elevation == outerCell.Elevation){
 						TriangulateSquareCornerTerraceValley(
 							left, leftCell,
@@ -280,23 +280,75 @@ public class MapGridChunk : MonoBehaviour
 							outer, outerCell
 						);
 					}
-					return;
-				}
+					break;
+				case EdgeType.Flat:
+					if(innerCell.Elevation == outerCell.Elevation){
+						TriangulateSquareCornerPlane(
+							inner,innerCell,
+							left, leftCell,
+							right, rightCell,
+							outer, outerCell
+						);
+					}
+					else{
+						TriangulateCliffCorner(
+							inner, innerCell, 
+							left, leftCell,
+							right, rightCell,
+							outerCell
+						);
+					}
+					break;
+				default:
+					TriangulateCliffCorner(
+						inner, innerCell, 
+						left, leftCell,
+						right, rightCell,
+						outerCell
+					);
+					break;
 			}
-			else if(innerCell.GetEdgeType(leftCell) == EdgeType.Cliff
-			&& innerCell.GetEdgeType(rightCell) == EdgeType.Cliff){
-				TriangulateCliffCorner(
-					inner, innerCell, 
-					left, leftCell,
-					right, rightCell,
-					outerCell
-				);
+			switch(outerCell.GetEdgeType(leftCell)){
+				case EdgeType.Terrace:
+					if(innerCell.Elevation == outerCell.Elevation){
+						//this condition was already handled above
+						break;
+					}
+					else {
+						TriangulateSquareCornerTerraceWrap(
+							outer, outerCell,
+							right, rightCell,
+							left, leftCell,
+							inner, innerCell
+						);
+					}
+					break;
+				case EdgeType.Flat:
+					if(innerCell.Elevation != outerCell.Elevation){
+						TriangulateCliffCorner(
+							outer, outerCell, 
+							right, rightCell,
+							left, leftCell,
+							innerCell
+						);
+					}
+					//the else condition was already handled above
+					break;
+				default:
+					TriangulateCliffCorner(
+						outer, outerCell, 
+						right, rightCell,
+						left, leftCell,
+						innerCell
+					);
+					break;
 			}
+			return;
 		}
 
 		// one high surrounded by 3 lows
-		if(outerCell.GetEdgeType(leftCell) == EdgeType.Slope
-		&& outerCell.GetEdgeType(rightCell) == EdgeType.Slope){
+		if(outerCell.GetEdgeType(leftCell) == EdgeType.Terrace
+		&& outerCell.GetEdgeType(rightCell) == EdgeType.Terrace){
 			if(outerCell.Elevation > leftCell.Elevation
 			&& outerCell.Elevation > innerCell.Elevation
 			&& outerCell.Elevation > rightCell.Elevation){
@@ -309,8 +361,8 @@ public class MapGridChunk : MonoBehaviour
 				return;
 			}
 		}
-		if(leftCell.GetEdgeType(innerCell) == EdgeType.Slope
-		&& leftCell.GetEdgeType(outerCell) == EdgeType.Slope){
+		if(leftCell.GetEdgeType(innerCell) == EdgeType.Terrace
+		&& leftCell.GetEdgeType(outerCell) == EdgeType.Terrace){
 			if(leftCell.Elevation > innerCell.Elevation
 			&& leftCell.Elevation > rightCell.Elevation
 			&& leftCell.Elevation > outerCell.Elevation){
@@ -323,8 +375,8 @@ public class MapGridChunk : MonoBehaviour
 				return;
 			}
 		}
-		if(rightCell.GetEdgeType(outerCell) == EdgeType.Slope
-		&& rightCell.GetEdgeType(innerCell) == EdgeType.Slope){
+		if(rightCell.GetEdgeType(outerCell) == EdgeType.Terrace
+		&& rightCell.GetEdgeType(innerCell) == EdgeType.Terrace){
 			if(rightCell.Elevation > outerCell.Elevation
 			&& rightCell.Elevation > leftCell.Elevation
 			&& rightCell.Elevation > innerCell.Elevation){
@@ -340,8 +392,8 @@ public class MapGridChunk : MonoBehaviour
 
 		
 		// terrace bridges 
-		if(innerCell.GetEdgeType(leftCell) == EdgeType.Slope
-		&& rightCell.GetEdgeType(outerCell) == EdgeType.Slope){
+		if(innerCell.GetEdgeType(leftCell) == EdgeType.Terrace
+		&& rightCell.GetEdgeType(outerCell) == EdgeType.Terrace){
 			if(innerCell.Elevation == rightCell.Elevation 
 			&& leftCell.Elevation == outerCell.Elevation){
 				TriangulateSquareCornerTerraceBridge(
@@ -353,8 +405,8 @@ public class MapGridChunk : MonoBehaviour
 				return;
 			}
 		}
-		else if(innerCell.GetEdgeType(rightCell) == EdgeType.Slope
-		&& leftCell.GetEdgeType(outerCell) == EdgeType.Slope){
+		else if(innerCell.GetEdgeType(rightCell) == EdgeType.Terrace
+		&& leftCell.GetEdgeType(outerCell) == EdgeType.Terrace){
 			if(innerCell.Elevation == leftCell.Elevation 
 			&& rightCell.Elevation == outerCell.Elevation){
 				TriangulateSquareCornerTerraceBridge(
@@ -371,7 +423,7 @@ public class MapGridChunk : MonoBehaviour
 		/*** New Method: 8 way intersection ***/ 
 
 		// edge from inner cell to left cell
-		if(innerCell.GetEdgeType(leftCell) == EdgeType.Slope){
+		if(innerCell.GetEdgeType(leftCell) == EdgeType.Terrace){
 			TriangulateSquareCornerTerraceToCenter(
 				inner, innerCell, left, leftCell,
 				center, rightCell, outerCell
@@ -385,7 +437,7 @@ public class MapGridChunk : MonoBehaviour
 		}
 		
 		// edge from left cell to outer cell
-		if(leftCell.GetEdgeType(outerCell) == EdgeType.Slope){
+		if(leftCell.GetEdgeType(outerCell) == EdgeType.Terrace){
 			TriangulateSquareCornerTerraceToCenter(
 				left, leftCell, outer, outerCell,
 				center, innerCell, rightCell
@@ -399,7 +451,7 @@ public class MapGridChunk : MonoBehaviour
 		}
 
 		// edge from outer cell to right cell 
-		if(outerCell.GetEdgeType(rightCell) == EdgeType.Slope){
+		if(outerCell.GetEdgeType(rightCell) == EdgeType.Terrace){
 			TriangulateSquareCornerTerraceToCenter(
 				outer, outerCell, right, rightCell,
 				center, leftCell, innerCell
@@ -413,7 +465,7 @@ public class MapGridChunk : MonoBehaviour
 		}
 		
 		// edge from right cell to inner cell
-		if(rightCell.GetEdgeType(innerCell) == EdgeType.Slope){
+		if(rightCell.GetEdgeType(innerCell) == EdgeType.Terrace){
 			TriangulateSquareCornerTerraceToCenter(
 				right, rightCell, inner, innerCell,
 				center, outerCell, leftCell
@@ -443,8 +495,55 @@ public class MapGridChunk : MonoBehaviour
 
 
 		terrain.AddTriangle(inner, left, right);
-		terrain.AddTriangleColor(splatColorR, splatColorG, splatColorG);
+		terrain.AddTriangleColor(splatColorR, splatColorG, splatColorB);
 		terrain.AddTriangleTerrainTypes(types);
+	}
+
+
+	/* triangulates between four tiles of equal height */ 
+	void TriangulateSquareCornerPlane(
+		Vector3 inner, MapCell innerCell,
+		Vector3 left, MapCell leftCell,
+		Vector3 right, MapCell rightCell,
+		Vector3 outer, MapCell outerCell
+	){
+		Vector4 types;
+		types.x = innerCell.TerrainTypeIndex;
+		types.y = leftCell.TerrainTypeIndex;
+		types.z = rightCell.TerrainTypeIndex;
+		types.w = outerCell.TerrainTypeIndex;
+		
+		Vector3 center = inner + (outer - inner)*0.5f;
+
+
+		TriangulateSquareCornerTerraceToCenter(
+			inner, innerCell,
+			left, leftCell,
+			center,
+			rightCell,
+			outerCell
+		);
+		TriangulateSquareCornerTerraceToCenter(
+			left, leftCell,
+			outer, outerCell,
+			center,
+			innerCell,
+			rightCell
+		);
+		TriangulateSquareCornerTerraceToCenter(
+			outer, outerCell,
+			right, rightCell,
+			center,
+			leftCell,
+			innerCell
+		);
+		TriangulateSquareCornerTerraceToCenter(
+			right, rightCell,
+			inner, innerCell,
+			center,
+			outerCell,
+			leftCell
+		);
 	}
 
 	/*** triangulates a square tile surrounded by terraces ***/
@@ -736,8 +835,8 @@ public class MapGridChunk : MonoBehaviour
 		EdgeType leftEdgeType = bottomCell.GetEdgeType(leftCell);
 		EdgeType rightEdgeType = bottomCell.GetEdgeType(rightCell);
 
-		if (leftEdgeType == EdgeType.Slope) {
-			if (rightEdgeType == EdgeType.Slope) {
+		if (leftEdgeType == EdgeType.Terrace) {
+			if (rightEdgeType == EdgeType.Terrace) {
 				TriangulateCornerTerraces(bottom, bottomCell, left, leftCell, right, rightCell);
 			}
 			else if (rightEdgeType == EdgeType.Flat) {
@@ -747,7 +846,7 @@ public class MapGridChunk : MonoBehaviour
 				TriangulateCornerTerracesCliff(bottom, bottomCell, left, leftCell, right, rightCell);
 			}
 		}
-		else if (rightEdgeType == EdgeType.Slope) {
+		else if (rightEdgeType == EdgeType.Terrace) {
 			if (leftEdgeType == EdgeType.Flat) {
 				TriangulateCornerTerraces(right, rightCell, bottom, bottomCell, left, leftCell);
 			}
@@ -755,7 +854,7 @@ public class MapGridChunk : MonoBehaviour
 				TriangulateCornerCliffTerraces(bottom, bottomCell, left, leftCell, right, rightCell);
 			}
 		}
-		else if (leftCell.GetEdgeType(rightCell) == EdgeType.Slope) {
+		else if (leftCell.GetEdgeType(rightCell) == EdgeType.Terrace) {
 			if (leftCell.Elevation < rightCell.Elevation) {
 				TriangulateCornerCliffTerraces(right, rightCell, bottom, bottomCell, left, leftCell);
 			}
@@ -832,7 +931,7 @@ public class MapGridChunk : MonoBehaviour
 
 		TriangulateBoundaryTriangle(begin, splatColorR, left, splatColorG, boundary, boundaryColor, types);
 
-		if (leftCell.GetEdgeType(rightCell) == EdgeType.Slope) {
+		if (leftCell.GetEdgeType(rightCell) == EdgeType.Terrace) {
 			TriangulateBoundaryTriangle(left, splatColorG, right, splatColorB, boundary, boundaryColor, types);
 		}
 		else {
@@ -861,7 +960,7 @@ public class MapGridChunk : MonoBehaviour
 
 		TriangulateBoundaryTriangle(right, splatColorB, begin, splatColorR, boundary, boundaryColor, types);
 
-		if (leftCell.GetEdgeType(rightCell) == EdgeType.Slope) {
+		if (leftCell.GetEdgeType(rightCell) == EdgeType.Terrace) {
 			TriangulateBoundaryTriangle(left, splatColorG, right, splatColorB, boundary, boundaryColor, types);
 		}
 		else {

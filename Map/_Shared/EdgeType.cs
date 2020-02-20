@@ -1,6 +1,6 @@
 ﻿public enum EdgeType {
 	Flat, 
-	Slope, 
+	Terrace, 
 	Cliff,
 	Stairs
 }

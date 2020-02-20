@@ -45,7 +45,7 @@ public class SaveLoadMenu : MonoBehaviour {
 			actionButtonLabel.text = "Load";
 		}
 		FillList();
-		if(!save){
+		if(!save && listContent.childCount > 0){
 			SaveLoadItem sli = listContent.GetChild(listContent.childCount - 1).gameObject.GetComponent<SaveLoadItem>();
 			if(sli != null){
 				SelectItem(sli.MapName);

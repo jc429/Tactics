@@ -126,7 +126,7 @@ public class HexGridChunk : MonoBehaviour
 			e1.v2 + bridge
 		);
 
-		if (cell.GetEdgeType(direction) == EdgeType.Slope) {
+		if (cell.GetEdgeType(direction) == EdgeType.Terrace) {
 			TriangulateEdgeTerraces(e1, cell, e2, neighbor);
 		}
 		else {
@@ -190,8 +190,8 @@ public class HexGridChunk : MonoBehaviour
 		EdgeType leftEdgeType = bottomCell.GetEdgeType(leftCell);
 		EdgeType rightEdgeType = bottomCell.GetEdgeType(rightCell);
 
-		if (leftEdgeType == EdgeType.Slope) {
-			if (rightEdgeType == EdgeType.Slope) {
+		if (leftEdgeType == EdgeType.Terrace) {
+			if (rightEdgeType == EdgeType.Terrace) {
 				TriangulateCornerTerraces(bottom, bottomCell, left, leftCell, right, rightCell);
 			}
 			else if (rightEdgeType == EdgeType.Flat) {
@@ -201,7 +201,7 @@ public class HexGridChunk : MonoBehaviour
 				TriangulateCornerTerracesCliff(bottom, bottomCell, left, leftCell, right, rightCell);
 			}
 		}
-		else if (rightEdgeType == EdgeType.Slope) {
+		else if (rightEdgeType == EdgeType.Terrace) {
 			if (leftEdgeType == EdgeType.Flat) {
 				TriangulateCornerTerraces(right, rightCell, bottom, bottomCell, left, leftCell);
 			}
@@ -209,7 +209,7 @@ public class HexGridChunk : MonoBehaviour
 				TriangulateCornerCliffTerraces(bottom, bottomCell, left, leftCell, right, rightCell);
 			}
 		}
-		else if (leftCell.GetEdgeType(rightCell) == EdgeType.Slope) {
+		else if (leftCell.GetEdgeType(rightCell) == EdgeType.Terrace) {
 			if (leftCell.Elevation < rightCell.Elevation) {
 				TriangulateCornerCliffTerraces(right, rightCell, bottom, bottomCell, left, leftCell);
 			}
@@ -286,7 +286,7 @@ public class HexGridChunk : MonoBehaviour
 
 		TriangulateBoundaryTriangle(begin, color1, left, color2, boundary, boundaryColor, types);
 
-		if (leftCell.GetEdgeType(rightCell) == EdgeType.Slope) {
+		if (leftCell.GetEdgeType(rightCell) == EdgeType.Terrace) {
 			TriangulateBoundaryTriangle(left, color2, right, color3, boundary, boundaryColor, types);
 		}
 		else {
@@ -315,7 +315,7 @@ public class HexGridChunk : MonoBehaviour
 
 		TriangulateBoundaryTriangle(right, color3, begin, color1, boundary, boundaryColor, types);
 
-		if (leftCell.GetEdgeType(rightCell) == EdgeType.Slope) {
+		if (leftCell.GetEdgeType(rightCell) == EdgeType.Terrace) {
 			TriangulateBoundaryTriangle(left, color2, right, color3, boundary, boundaryColor, types);
 		}
 		else {

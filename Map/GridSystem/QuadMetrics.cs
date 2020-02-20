@@ -89,7 +89,7 @@ public static class QuadMetrics
 		}
 		int delta = elevation2 - elevation1;
 		if (delta == 1 || delta == -1) {
-			return EdgeType.Slope;
+			return EdgeType.Terrace;
 		}
 		return EdgeType.Cliff;
 	}
