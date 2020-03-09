@@ -6,17 +6,17 @@ public class NewHexMapMenu : MonoBehaviour {
 
 	public void Open () {
 		gameObject.SetActive(true);
-		GameController.hexCamera.LockCamera();
+		//GameController.hexCamera.LockCamera();
 	}
 
 	public void Close () {
 		gameObject.SetActive(false);
-		GameController.hexCamera.UnlockCamera();
+		//GameController.hexCamera.UnlockCamera();
 	}
 
 	void CreateRectMap (int x, int z) {
 		hexGrid.CreateMapRect(x, z);
-		GameController.hexCamera.ValidatePosition();
+		//GameController.hexCamera.ValidatePosition();
 		Close();
 	}
 
@@ -34,7 +34,7 @@ public class NewHexMapMenu : MonoBehaviour {
 
 	void CreateCircleMap (int r) {
 		hexGrid.CreateMapCircle(r);
-		GameController.hexCamera.ValidatePosition();
+		//GameController.hexCamera.ValidatePosition();
 		Close();
 	}
 

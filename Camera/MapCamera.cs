@@ -2,51 +2,62 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HexCamera : MonoBehaviour
+public class MapCamera : MonoBehaviour
 {
+	public bool invertZoomAxis;
+
+	/* the map this camera is focusing on */ 
+	public MapGrid grid;
 
 	/* pivot axes for camera */
 	Transform swivel, stick;
 
+	OctDirection facing;
+
+
+
 	public float zoom = 1f;
 
-	public float stickMinZoom, stickMaxZoom;
+	[Range(-5, 10)]
+	public float zoomMin, zoomMax;
 
-	public float swivelMinZoom, swivelMaxZoom;
+	[Range(-30, 45)]
+	public float camPitchMin = 0, camPitchMax = 30;
 
-	public float moveSpeedMinZoom, moveSpeedMaxZoom;
+	[Range(3, 30)]
+	public float panSpeedZoomMax = 5, panSpeedZoomMin = 15;
 
-	public float rotationSpeed;
-	public float rotationAngle;
-	public float shiftSpeed;
+	float rotationSpeed;
+	float rotationAngle;
+	float shiftSpeed = 100;
 
-	DodecDirection facing;
+	/* is the camera moving or at rest */ 
 	bool atRest;
 
-	public HexGrid grid;
-	// public MapGrid grid;
-
 	bool locked;
+	public bool Locked{
+		get{ return locked; }
+	}
 
-	void Awake () {
-		//GameController.hexCamera = this;
-		swivel = transform.GetChild(0);
-		stick = swivel.GetChild(0);
-		facing = DodecDirection.N;
+	void Awake(){
+		GameController.mapCamera = this;
+		stick = transform.GetChild(0);
+		swivel = stick.GetChild(0);
+		facing = OctDirection.N;
 		atRest = true;
 	}
 
 	void Start(){
 		AdjustZoom(0.15f);
 		
-		float xMax = (grid.cellCountX - 0.5f) * (2f * HexMetrics.innerRadius);
-		float zMax = (grid.cellCountZ - 1) * (1.5f * HexMetrics.outerRadius);
-		//Debug.Log(xMax + ", " + zMax);
-		transform.localPosition = new Vector3(0.5f*xMax,0,0.5f*zMax);
-		
+		MapCoordinates c = grid.GetCenterCoordinates();
+		transform.localPosition = new Vector3(c.X, 0, c.Y);
+
 	}
 
-	void Update () {
+	// Update is called once per frame
+	void Update()
+	{
 		if(!locked){
 			float zoomDelta = Input.GetAxis("Mouse ScrollWheel");
 			if (zoomDelta != 0f) {
@@ -65,25 +76,28 @@ public class HexCamera : MonoBehaviour
 			}
 		}
 	}
-	
+
 	/* Freely adjust camera zoom */
 	void AdjustZoom (float delta) {
+		if(invertZoomAxis){
+			delta *= -1;
+		}
 		zoom = Mathf.Clamp01(zoom + delta);
 
-		float distance = Mathf.Lerp(stickMinZoom, stickMaxZoom, zoom);
-		stick.localPosition = new Vector3(0f, 0f, distance);
+		float distance = Mathf.Lerp(zoomMin, zoomMax, zoom);
+		stick.localPosition = new Vector3(0f, distance, 0f);
 
-		float angle = Mathf.Lerp(swivelMinZoom, swivelMaxZoom, zoom);
+		float angle = Mathf.Lerp(camPitchMin, camPitchMax, zoom);
 		swivel.localRotation = Quaternion.Euler(angle, 0f, 0f);
 	}
 
 	void SetZoom(float z){
 		zoom = Mathf.Clamp01(z);
 
-		float distance = Mathf.Lerp(stickMinZoom, stickMaxZoom, zoom);
-		stick.localPosition = new Vector3(0f, 0f, distance);
+		float distance = Mathf.Lerp(zoomMin, zoomMax, zoom);
+		stick.localPosition = new Vector3(0f, distance, 0f);
 
-		float angle = Mathf.Lerp(swivelMinZoom, swivelMaxZoom, zoom);
+		float angle = Mathf.Lerp(camPitchMin, camPitchMax, zoom);
 		swivel.localRotation = Quaternion.Euler(angle, 0f, 0f);
 	}
 
@@ -115,14 +129,14 @@ public class HexCamera : MonoBehaviour
 		StartCoroutine(TurnToLookAt(facing));
 	}
 
-	IEnumerator TurnToLookAt (DodecDirection dir){
+	IEnumerator TurnToLookAt (OctDirection dir){
 		float rotation = dir.DegreesOfRotation();
 		Quaternion fromRotation = transform.localRotation;
 		Quaternion toRotation = Quaternion.Euler(new Vector3(0,dir.DegreesOfRotation(),0));
 		float angle = Quaternion.Angle(fromRotation, toRotation);
 		float speed = shiftSpeed / angle;
 		
-		if( angle > 0){
+		if( angle != 0){
 			for (float t = speed * Time.deltaTime; t < 1f; t += speed * Time.deltaTime) {
 				transform.localRotation = Quaternion.Slerp(fromRotation, toRotation, t);
 				yield return null;
@@ -135,7 +149,7 @@ public class HexCamera : MonoBehaviour
 	void AdjustPosition (float xDelta, float zDelta) {
 		Vector3 direction = transform.localRotation * new Vector3(xDelta, 0f, zDelta).normalized;
 		float damping = Mathf.Max(Mathf.Abs(xDelta), Mathf.Abs(zDelta));
-		float distance = Mathf.Lerp(moveSpeedMinZoom, moveSpeedMaxZoom, zoom) * damping * Time.deltaTime;
+		float distance = Mathf.Lerp(panSpeedZoomMax, panSpeedZoomMin, zoom) * damping * Time.deltaTime;
 
 		Vector3 pos = transform.localPosition;
 		pos += distance * direction;
@@ -155,10 +169,10 @@ public class HexCamera : MonoBehaviour
 
 	/* keeps camera within grid boundaries */
 	Vector3 ClampPosition (Vector3 position) {
-		float xMax = (grid.cellCountX - 0.5f) * (2f * HexMetrics.innerRadius);
+		float xMax = (grid.cellCountX - 1f) * QuadMetrics.cellWidth;
 		position.x = Mathf.Clamp(position.x, 0f, xMax);
 
-		float zMax = (grid.cellCountZ - 1) * (1.5f * HexMetrics.outerRadius);
+		float zMax = (grid.cellCountY - 2f) * QuadMetrics.cellWidth;
 		position.z = Mathf.Clamp(position.z, 0f, zMax);
 
 		return position;
@@ -182,7 +196,7 @@ public class HexCamera : MonoBehaviour
 	/* puts the camera in a default state, usually after reloading a map */
 	public void ResetZoomAndCenterCamera(){
 		SetZoom(0.15f);
-		HexCell center = grid.GetCell(grid.GetCenterCoordinates());
+		MapCell center = grid.GetCell(grid.GetCenterCoordinates());
 		SetPosition(center.Position);
 	}
 }

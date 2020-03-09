@@ -251,16 +251,16 @@ public class HexGrid : MonoBehaviour
     }
 
 
-    /* Creates and labels a Hex Cell */
-    void CreateCell(int x, int z, int i){
-        Vector3 pos;
-        pos.x = (x + (z * 0.5f - (z / 2))) * (HexMetrics.innerRadius * 2f);
-        pos.y = 0;
-        pos.z = z * (HexMetrics.outerRadius * 1.5f);
+	/* Creates and labels a Hex Cell */
+	void CreateCell(int x, int z, int i){
+		Vector3 pos;
+		pos.x = (x + (z * 0.5f - (z / 2))) * (HexMetrics.innerRadius * 2f);
+		pos.y = 0;
+		pos.z = z * (HexMetrics.outerRadius * 1.5f);
 
-        HexCell cell = cells[i] = Instantiate<HexCell>(cellPrefab);
-    //	cell.transform.SetParent(transform,false);
-        cell.transform.localPosition = pos;
+		HexCell cell = cells[i] = Instantiate<HexCell>(cellPrefab);
+//	cell.transform.SetParent(transform,false);
+		cell.transform.localPosition = pos;
 		cell.coordinates = HexCoordinates.FromOffsetCoordinates(x,z);
 		//cell.coordinates = new HexCoordinates(x,z);	
 
@@ -284,17 +284,17 @@ public class HexGrid : MonoBehaviour
 		}
 	
 
-        //label cell
-        TextMeshPro label = Instantiate<TextMeshPro>(cellLabelPrefab);
+		//label cell
+		TextMeshPro label = Instantiate<TextMeshPro>(cellLabelPrefab);
 		label.rectTransform.anchoredPosition = new Vector2(pos.x, pos.z);
 		//label.text = cell.coordinates.ToString();
 
-        cell.uiRect = label.rectTransform;
+		cell.uiRect = label.rectTransform;
 
 		cell.Elevation = 0;
 
 		AddCellToChunk(x, z, cell);
-    }
+	}
 
 	/* what it says on the box */
 	void AddCellToChunk (int x, int z, HexCell cell) {
@@ -847,6 +847,7 @@ public class HexGrid : MonoBehaviour
 			}
 		}
 
-		GameController.hexCamera.ResetZoomAndCenterCamera();
+		GameController.mapCamera.ResetZoomAndCenterCamera();
+		//GameController.hexCamera.ResetZoomAndCenterCamera();
 	}
 }

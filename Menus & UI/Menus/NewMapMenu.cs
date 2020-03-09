@@ -6,17 +6,17 @@ public class NewMapMenu : MonoBehaviour {
 
 	public void Open () {
 		gameObject.SetActive(true);
-		GameController.hexCamera.LockCamera();
+		GameController.mapCamera.LockCamera();
 	}
 
 	public void Close () {
 		gameObject.SetActive(false);
-		GameController.hexCamera.UnlockCamera();
+		GameController.mapCamera.UnlockCamera();
 	}
 
 	void CreateRectMap (int x, int z) {
 		mapGrid.CreateMapRect(x, z);
-		GameController.hexCamera.ValidatePosition();
+		GameController.mapCamera.ValidatePosition();
 		Close();
 	}
 

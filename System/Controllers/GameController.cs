@@ -10,7 +10,8 @@ public class GameController : MonoBehaviour
 	//the active instance of the game manager
 	public static GameController instance;			
 
-	public static HexCamera hexCamera;	
+	//public static HexCamera hexCamera;	
+	public static MapCamera mapCamera;	
 
 	//public static HexGrid hexGrid;
 	public static MapGrid mapGrid;

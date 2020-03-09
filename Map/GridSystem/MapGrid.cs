@@ -14,7 +14,7 @@ public class MapGrid : MonoBehaviour
 
 	bool started = false;
 	/* size of map in cells */
-	/* maps must currently be in a multiple of chunk sizes (4X, 4Z) */
+	/* maps must currently be in a multiple of chunk sizes (4X, 4Y) */
 	public int cellCountX = 16, cellCountY = 16;
 	int chunkCountX, chunkCountY;
 	MapShape mapShape = MapShape.Rect;
@@ -204,6 +204,10 @@ public class MapGrid : MonoBehaviour
 			return GetCell(hit.point);
 		}
 		return null;
+	}
+
+	public MapCoordinates GetCenterCoordinates(){
+		return new MapCoordinates(cellCountX / 2, cellCountY / 2);
 	}
 
 	/* show or hide the labels on each cell */
