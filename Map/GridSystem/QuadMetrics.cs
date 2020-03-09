@@ -8,7 +8,7 @@ public static class QuadMetrics
 	public const float halfWidth = 1f;
 
 	/* percentage of the tile that remains solid (for edge blending) */
-  public const float solidFactor = 0.75f;
+  public const float solidFactor = 0.9f; //0.75f;
 	public const float blendFactor = 1f - solidFactor;
 
 	/* percentage of submerged tile that remains non-shore water */

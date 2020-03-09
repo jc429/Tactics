@@ -17,17 +17,17 @@ public class UnitProperties{
 	public WeaponType weaponType;
 	
 	/* raw stats are the unit's stats with no skills applied */
-	[NamedArrayAttribute (new string[] {"HP", "Str", "Skl", "Spd", "Def", "Res"})]
-	public int[] rawStats = new int[(int)CombatStat.Total];
+	[NamedArrayAttribute (new string[] {"HP", "Str", "Spd", "Def", "Res"})]
+	public int[] rawStats = new int[CombatStatExtensions.StatCount];
 	/* any modifiers to stats provided by skills go here */
-	[NamedArrayAttribute (new string[] {"HP", "Str", "Skl", "Spd", "Def", "Res"})]
-	public int[] statModifiers = new int[(int)CombatStat.Total];
+	[NamedArrayAttribute (new string[] {"HP", "Str", "Spd", "Def", "Res"})]
+	public int[] statModifiers = new int[CombatStatExtensions.StatCount];
 	/* buffs applied to each stat (range 0 to +7) */
-	[NamedArrayAttribute (new string[] {"HP", "Str", "Skl", "Spd", "Def", "Res"})]
-	public int[] fieldBuffs = new int[(int)CombatStat.Total];
+	[NamedArrayAttribute (new string[] {"HP", "Str", "Spd", "Def", "Res"})]
+	public int[] fieldBuffs = new int[CombatStatExtensions.StatCount];
 	/* debuffs applied to each stat (range 0 to -7) */
-	[NamedArrayAttribute (new string[] {"HP", "Str", "Skl", "Spd", "Def", "Res"})]
-	public int[] fieldDebuffs = new int[(int)CombatStat.Total];
+	[NamedArrayAttribute (new string[] {"HP", "Str", "Spd", "Def", "Res"})]
+	public int[] fieldDebuffs = new int[CombatStatExtensions.StatCount];
 	
 
 
@@ -54,7 +54,7 @@ public class UnitProperties{
 
 	public UnitProperties(){
 		combatProperties = new UnitCombatProperties();
-		for(int i = 0; i < (int)CombatStat.Total; i++){
+		for(int i = 0; i < CombatStatExtensions.StatCount; i++){
 			rawStats[i] = 1;
 			statModifiers[i] = 0;
 			fieldBuffs[i] = 0;
@@ -79,7 +79,7 @@ public class UnitProperties{
 	}
 	/* applies multiple stat modifiers */
 	public void ApplyStatMods(byte statMatrix, int value){
-		for(int i = 0; i < (int)CombatStat.Total; i++){
+		for(int i = 0; i < CombatStatExtensions.StatCount; i++){
 			if((statMatrix & (1 << i)) != 0){
 				statModifiers[i] += value;
 			}
@@ -128,7 +128,7 @@ public class UnitProperties{
 	/* applies a buff to multiple stats */
 	public void ApplyBuffs(byte statMatrix, int amount){
 		amount = Mathf.Clamp(amount,0,7);
-		for(int i = 0; i < (int)CombatStat.Total; i++){
+		for(int i = 0; i < CombatStatExtensions.StatCount; i++){
 			if((statMatrix & (1 << i)) != 0){
 				fieldBuffs[i] += amount;
 			}
@@ -143,7 +143,7 @@ public class UnitProperties{
 	/* applies a debuff to multiple stats */
 	public void ApplyDebuffs(byte statMatrix, int amount){
 		amount = Mathf.Clamp(amount,-7,0);
-		for(int i = 0; i < (int)CombatStat.Total; i++){
+		for(int i = 0; i < CombatStatExtensions.StatCount; i++){
 			if((statMatrix & (1 << i)) != 0){
 				fieldDebuffs[i] += amount;
 			}
@@ -301,7 +301,7 @@ public class UnitProperties{
 		writer.Write((int)movementClass);
 		writer.Write((int)weaponType);
 		writer.Write(affiliation);
-		for(int i = 0; i < (int)CombatStat.Total; i++){
+		for(int i = 0; i < CombatStatExtensions.StatCount; i++){
 			writer.Write(rawStats[i]);
 		}
 		for(int i = 0; i < skillIDs.Length; i++){
@@ -314,7 +314,7 @@ public class UnitProperties{
 		movementClass = (MovementClass)reader.ReadInt32();
 		weaponType = (WeaponType)reader.ReadInt32();
 		affiliation = reader.ReadInt32();
-		for(int i = 0; i < (int)CombatStat.Total; i++){
+		for(int i = 0; i < CombatStatExtensions.StatCount; i++){
 			rawStats[i] = reader.ReadInt32();
 			statModifiers[i] = 0;
 		}

@@ -18,7 +18,6 @@ public class MapGrid : MonoBehaviour
 	public int cellCountX = 16, cellCountY = 16;
 	int chunkCountX, chunkCountY;
 	MapShape mapShape = MapShape.Rect;
-	int mapRadius;		//for use with circular maps 
 	public int cellCountTotal = 0;
 	//where the center of the map is located
 
@@ -78,7 +77,6 @@ public class MapGrid : MonoBehaviour
 		ClearPath();
 		ClearUnits();
 		mapShape = MapShape.Rect;
-		mapRadius = 0;
 
 		if (
 			sizeX <= 0 || sizeX % QuadMetrics.chunkSizeX != 0 ||

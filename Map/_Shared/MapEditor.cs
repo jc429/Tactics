@@ -14,7 +14,7 @@ public class MapEditor : MonoBehaviour
 	public Material terrainMaterial;
 
 	/* tools for detecting click + drag inputs */
-	bool isDrag;
+	bool isDrag = false;
 	QuadDirection dragDirection;
 	MapCell previousCell;
 

@@ -14,7 +14,7 @@ public class MapCamera : MonoBehaviour
 
 	OctDirection facing;
 
-
+/**  -5.5 z to -2.75 y at angle 54.5   **/
 
 	public float zoom = 1f;
 
@@ -27,9 +27,9 @@ public class MapCamera : MonoBehaviour
 	[Range(3, 30)]
 	public float panSpeedZoomMax = 5, panSpeedZoomMin = 15;
 
-	float rotationSpeed;
-	float rotationAngle;
-	float shiftSpeed = 100;
+	float rotationSpeed = 0;
+	float rotationAngle = 0;
+	float shiftSpeed = 120;
 
 	/* is the camera moving or at rest */ 
 	bool atRest;
@@ -41,7 +41,7 @@ public class MapCamera : MonoBehaviour
 
 	void Awake(){
 		GameController.mapCamera = this;
-		stick = transform.GetChild(0);
+		stick = transform.GetChild(0).GetChild(0);
 		swivel = stick.GetChild(0);
 		facing = OctDirection.N;
 		atRest = true;

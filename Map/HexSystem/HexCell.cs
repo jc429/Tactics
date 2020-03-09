@@ -12,7 +12,7 @@ public class HexCell : Cell
 	// adjacent cells
 	[SerializeField]
 	[NamedArrayAttribute (new string[] {"NE", "E", "SE", "SW", "W", "NW"})]
-	HexCell[] neighbors;
+	HexCell[] neighbors = new HexCell[6];
 
 	// chunk this cell is a member of 
 	public HexGridChunk chunk;

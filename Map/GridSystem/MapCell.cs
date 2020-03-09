@@ -10,7 +10,7 @@ public class MapCell : Cell
 	// adjacent cells
 	[SerializeField]
 	[NamedArrayAttribute (new string[] {"N", "E", "S", "W"})]
-	MapCell[] neighbors;
+	MapCell[] neighbors = new MapCell[4];
 
 	// chunk this cell is a member of 
 	public MapGridChunk chunk;

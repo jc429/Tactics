@@ -10,11 +10,10 @@ public class GameController : MonoBehaviour
 	//the active instance of the game manager
 	public static GameController instance;			
 
-	//public static HexCamera hexCamera;	
+	/* the current map */ 
+	public static MapGrid mapGrid;
 	public static MapCamera mapCamera;	
 
-	//public static HexGrid hexGrid;
-	public static MapGrid mapGrid;
 
 	public static GameUI gameUI;
 	public static UnitInfoPanel unitInfoPanel;
@@ -24,8 +23,8 @@ public class GameController : MonoBehaviour
 
 	public RectTransform hpBarCanvasParent;
 
-	public InfoPanel keywordInfoPanel;
 
+	public InfoPanel keywordInfoPanel;
 	public TextAsset keywordCSV;
 
 	public Texture2D skillSpriteSheet;
@@ -112,6 +111,8 @@ public class GameController : MonoBehaviour
 	}
 
 
-
+	public void RestartGame(){
+		
+	}
 
 }

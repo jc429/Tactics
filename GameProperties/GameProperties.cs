@@ -8,16 +8,6 @@ public static class GameProperties
 	public static bool DEBUG_INFINITE_ACTIONS = false;
 
 
-	public static class Stats{
-		public static readonly string[] statList = new string[]{"HP", "Str", "Skl", "Spd", "Def", "Res"};
-
-		public static string GetStatString(CombatStat stat){
-			if(stat == CombatStat.Total){
-				return "Total";
-			}
-			return statList[(int)stat];
-		}
-	}
 	
 	public static class MovementProperties{
 
@@ -37,7 +27,7 @@ public static class GameProperties
 			{	2,		0,		1,		0,		1	},		//Water (Shallow)
 			{	4,		0,		1,		0,		1	},		//Water (Deep)
 			{	1,		4,		1,		1,		2	},		//Coast
-			{	0,		0,		0,		0,		0	}		//Solid
+			{	0,		0,		0,		0,		0	}			//Solid
 		};
 		/* move cost of 0 means "cannot enter tile no matter what" */
 

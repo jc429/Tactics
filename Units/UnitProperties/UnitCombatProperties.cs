@@ -23,11 +23,11 @@ public class UnitCombatProperties{
 	public MapUnit foe;
 
 	/* stats at the start of combat */
-	[NamedArrayAttribute (new string[] {"HP", "Str", "Skl", "Spd", "Def", "Res"})]
-	public int[] combatStats = new int[(int)CombatStat.Total];
+	[NamedArrayAttribute (new string[] {"HP", "Str", "Spd", "Def", "Res"})]
+	public int[] combatStats = new int[CombatStatExtensions.StatCount];
 	/* in-combat buffs/debuffs */
-	[NamedArrayAttribute (new string[] {"HP", "Str", "Skl", "Spd", "Def", "Res"})]
-	public int[] combatStatMods = new int[(int)CombatStat.Total];
+	[NamedArrayAttribute (new string[] {"HP", "Str", "Spd", "Def", "Res"})]
+	public int[] combatStatMods = new int[CombatStatExtensions.StatCount];
 
 	uint flags; 
 
@@ -36,7 +36,7 @@ public class UnitCombatProperties{
 
 	public void Clear(){
 		foe = null;
-		for(int i = 0; i < (int)CombatStat.Total; i++){
+		for(int i = 0; i < CombatStatExtensions.StatCount; i++){
 			combatStats[i] = 0;
 			combatStatMods[i] = 0;
 		}
@@ -65,7 +65,7 @@ public class UnitCombatProperties{
 
 	/* sets up the combat stats (which will be further modified by in-combat buffs/debuffs) */
 	public void CalculateStartingStats(bool ignoreBuffs = false, bool ignoreDebuffs = false){
-		for(int i = 0; i < (int)CombatStat.Total; i++){
+		for(int i = 0; i < CombatStatExtensions.StatCount; i++){
 			int stat = unitProperties.rawStats[i] + unitProperties.statModifiers[i];
 			if(ignoreBuffs){
 				stat += unitProperties.fieldBuffs[i];
@@ -95,7 +95,7 @@ public class UnitCombatProperties{
 		combatStatMods[(int)stat] += amount;
 	}
 	public void ModifyStats(byte statMatrix, int amount){
-		for(int i = 0; i < (int)CombatStat.Total; i++){
+		for(int i = 0; i < CombatStatExtensions.StatCount; i++){
 			if((statMatrix & (1 << i)) != 0){
 				combatStatMods[i] += amount;
 			}
