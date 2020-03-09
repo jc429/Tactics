@@ -2,18 +2,29 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+
+public enum GameMode{
+	TestingGrounds,
+	MapEditor,
+	PlayGame
+}
+
 public class GameController : MonoBehaviour
 {
-	[SerializeField]
-	public static readonly bool DEBUG_MODE = true;
-	
+	static GameMode gMode = GameMode.TestingGrounds;
+	public static GameMode gameMode{
+		get { return gMode; }
+	}
+
 	//the active instance of the game manager
 	public static GameController instance;			
+	public static UIManager uiManager;
 
 	/* the current map */ 
 	public static MapGrid mapGrid;
 	public static MapCamera mapCamera;	
 
+	public static MapEditor mapEditor;
 
 	public static GameUI gameUI;
 	public static UnitInfoPanel unitInfoPanel;
@@ -24,16 +35,14 @@ public class GameController : MonoBehaviour
 	public RectTransform hpBarCanvasParent;
 
 
-	public InfoPanel keywordInfoPanel;
 	public TextAsset keywordCSV;
 
 	public Texture2D skillSpriteSheet;
 
-	public static class UIElements{
-		public static TurnDisplay turnDisplay;
-	}
 
 	static bool gameStarted = false;
+
+	
 
 	void Awake(){
 		if (instance == null) {
@@ -47,9 +56,38 @@ public class GameController : MonoBehaviour
 	}
 
 	void Start(){
-		SetGamePaused(false);
-		keywordInfoPanel.Close();
-		StartGame();
+		switch(gameMode){
+			case GameMode.TestingGrounds:
+			{
+				mapGrid.CreateMapRect(8,8,true);
+				uiManager.CloseAllMenus();
+				mapEditor.SetMapEditorActive(false);
+				uiManager.HideCombatUI();
+				
+				//StartGame();
+
+			}
+			break;
+			case GameMode.MapEditor:
+			{
+				//randomly generate a map 
+				mapGrid.CreateMapRect(8,8);
+				uiManager.OpenStartingMenus();
+				mapEditor.SetMapEditorActive(true);
+				uiManager.HideCombatUI();
+
+			}
+			break;
+			case GameMode.PlayGame:
+			{
+			//	mapGrid.StartMap();
+			//	TurnManager.StartTurn();
+				SetGamePaused(false);
+				uiManager.keywordInfoPanel.Close();
+				StartGame();
+			}
+			break;
+		}
 	}
 
 	void Update(){
@@ -57,14 +95,13 @@ public class GameController : MonoBehaviour
 			StartGame();
 		}
 
-		DebugInput();
+		if(GameSettings.DEBUG_MODE){
+			DebugInput();
+		}
 
 	}
 
 	void DebugInput(){
-		if(!DEBUG_MODE){
-			return;
-		}
 
 		if(Input.GetKeyDown(KeyCode.B)){
 			//Debug.Log(Input.mousePosition);

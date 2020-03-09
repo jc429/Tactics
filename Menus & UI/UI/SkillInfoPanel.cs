@@ -15,7 +15,7 @@ public class SkillInfoPanel : InfoPanel
 	Canvas canvas;
 
 	void Start(){
-		keywordPanel = GameController.instance.keywordInfoPanel;
+		keywordPanel = GameController.uiManager.keywordInfoPanel;
 		canvas = GetComponentInParent<Canvas>();
 	}
 

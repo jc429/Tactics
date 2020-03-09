@@ -19,19 +19,27 @@ public class TurnDisplay : MonoBehaviour
 	public TMP_Text turnText, phaseText;
 	public Image background;
     // Start is called before the first frame update
-    void Awake(){
-		GameController.UIElements.turnDisplay = this;
+	void Awake(){
+		TurnManager.turnDisplay = this;
 		startPos = endPos = turnUI.anchoredPosition;
 		startPos.x = startX;
 		endPos.x = endX;
-    }
+		
+	}
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+	// Update is called once per frame
+	void Update()
+	{
+			
+	}
 
+	public void Reset(){
+		StopAllCoroutines();
+		Color c = background.color;
+		c.a = 0;
+		background.color = c;
+		gameObject.SetActive(false);
+	}
 
 	public void StartTurnAnimation(int turnNo, int armyPhaseNo){
 		StopAllCoroutines();
@@ -46,6 +54,7 @@ public class TurnDisplay : MonoBehaviour
 		Color c = background.color;
 		c.a = 0;
 		background.color = c;
+		gameObject.SetActive(true);
 		StartCoroutine(TurnAnim());
 	}
 
@@ -61,6 +70,7 @@ public class TurnDisplay : MonoBehaviour
 		turnUI.anchoredPosition = endPos;
 		c.a = 0;
 		background.color = c;
+		gameObject.SetActive(false);
 	}
 
 }

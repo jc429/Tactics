@@ -6,11 +6,18 @@ using UnityEngine;
 
 
 public static class TurnManager {
+	
+	public static TurnDisplay turnDisplay;
+
 	static int currentTurn;
 
 	static int turnStartArmy;
 
 	static List<MapUnit> currentArmy;
+
+	public static void HideUI(){
+		turnDisplay.Reset();
+	}
 
 	public static void StartGame(){
 		currentTurn = 1;
@@ -37,7 +44,7 @@ public static class TurnManager {
 		foreach(MapUnit unit in currentArmy){
 			unit.StartTurn();
 		}
-		GameController.UIElements.turnDisplay.StartTurnAnimation(currentTurn,ArmyManager.GetCurrentArmyNumber());
+		turnDisplay.StartTurnAnimation(currentTurn,ArmyManager.GetCurrentArmyNumber());
 	}
 
 	/* ends the current army's turn (public so it can be forcibly called without moving all units) */

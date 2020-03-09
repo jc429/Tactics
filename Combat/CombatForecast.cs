@@ -9,16 +9,16 @@ public class CombatForecast : MonoBehaviour
 	public CombatForecastUnitPanel leftUnitPanel;
 	public CombatForecastUnitPanel rightUnitPanel;
 
-    void Awake()
-    {
-        CombatManager.combatForecast = this;
-    }
+	void Awake()
+	{
+		CombatManager.combatForecast = this;
+	}
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+	// Update is called once per frame
+	void Update()
+	{
+			
+	}
 
 	public void Show(){
 		panel.SetActive(true);

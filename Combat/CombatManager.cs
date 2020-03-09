@@ -20,7 +20,15 @@ public class CombatManager : MonoBehaviour{
 		else{
 			combatInfo = new CombatInfo();
 		}
-		combatForecast.Hide();
+	}
+
+	public void SetCombatPreviewVisible(bool b){
+		if(b){
+			combatForecast.Show();
+		}
+		else{
+			combatForecast.Hide();
+		}
 	}
 
 	public static void PreCalculateCombat(MapUnit attackUnit, MapUnit defendUnit){

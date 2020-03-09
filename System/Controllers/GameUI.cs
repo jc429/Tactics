@@ -3,7 +3,7 @@ using UnityEngine.EventSystems;
 
 public class GameUI : MonoBehaviour {
 	
-	public HexGrid hexGrid;
+	//public HexGrid hexGrid;
 	public MapGrid mapGrid;
 
 	public BasicMenu unitActionMenu;
@@ -25,7 +25,7 @@ public class GameUI : MonoBehaviour {
 	}
 
 	void Update () {
-		mapGrid.StartMap();
+		
 		if (!EventSystem.current.IsPointerOverGameObject()) {
 			if(selectedUnit != null){
 				switch(selectedUnit.turnState){

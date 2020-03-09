@@ -6,7 +6,6 @@ using TMPro;
 
 public class SaveLoadMenu : MonoBehaviour {
 
-	static bool OPEN_LOAD_MENU_ON_GAME_START = true;
 	const int SaveFileVersionNumber = 1;
 
 	//public HexGrid hexGrid;
@@ -23,19 +22,9 @@ public class SaveLoadMenu : MonoBehaviour {
 
 	bool saveMode;
 
-	void Start(){
-		switch(OPEN_LOAD_MENU_ON_GAME_START){
-			case true:
-				Open(false);
-				break;
-			case false:
-				Close();
-				break;
-		}
-	}
 
-	public void Open (bool save) {
-		saveMode = save;
+	public void Open (bool mode) {
+		saveMode = mode;
 		if (saveMode) {
 			menuLabel.text = "Save Map";
 			actionButtonLabel.text = "Save";
@@ -45,7 +34,7 @@ public class SaveLoadMenu : MonoBehaviour {
 			actionButtonLabel.text = "Load";
 		}
 		FillList();
-		if(!save && listContent.childCount > 0){
+		if(!saveMode && listContent.childCount > 0){
 			SaveLoadItem sli = listContent.GetChild(listContent.childCount - 1).gameObject.GetComponent<SaveLoadItem>();
 			if(sli != null){
 				SelectItem(sli.MapName);

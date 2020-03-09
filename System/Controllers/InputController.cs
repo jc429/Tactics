@@ -24,6 +24,12 @@ public enum ButtonState{
 	Released
 }
 
+public enum CursorInputType{
+	DPad,
+	Mouse,
+	Touch
+}
+
 public static class InputController {
 
 	static int inputQueueLength = 10;

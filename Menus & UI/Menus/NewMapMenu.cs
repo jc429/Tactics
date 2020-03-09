@@ -4,6 +4,8 @@ public class NewMapMenu : MonoBehaviour {
 
 	public MapGrid mapGrid;
 
+
+
 	public void Open () {
 		gameObject.SetActive(true);
 		GameController.mapCamera.LockCamera();

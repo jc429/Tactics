@@ -40,9 +40,8 @@ public class MapEditor : MonoBehaviour
 
 
 	void Awake () {
+		GameController.mapEditor = this;
 		terrainMaterial.DisableKeyword("GRID_ON");
-		SetEditMode(false);
-		SetEditorPanelActive(false);
 	}
 
     // Update is called once per frame
@@ -65,6 +64,10 @@ public class MapEditor : MonoBehaviour
 		previousCell = null;
 	}
 
+	public void SetMapEditorActive(bool b){
+		SetEditMode(b);
+		SetEditorPanelActive(b);
+	}
 
 	
 	void HandleInput(){

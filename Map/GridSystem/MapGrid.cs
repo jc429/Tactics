@@ -54,7 +54,6 @@ public class MapGrid : MonoBehaviour
 		MapUnit.unitPrefab = unitPrefab;
 		GameController.mapGrid = this;
 
-		CreateMapRect(8,8);
 	}
 
 	void OnEnable () {
@@ -72,7 +71,7 @@ public class MapGrid : MonoBehaviour
 	}
 
 	/* generates a new map */
-	public bool CreateMapRect(int sizeX, int sizeY){
+	public bool CreateMapRect(int sizeX, int sizeY, bool debugMode = false){
 		started = false;
 		ClearPath();
 		ClearUnits();
@@ -134,7 +133,7 @@ public class MapGrid : MonoBehaviour
 	}
 
 	/* Creates and labels a Hex Cell */
-	void CreateCell(int x, int y, int i){
+	MapCell CreateCell(int x, int y, int i, bool forceHeight = false, int height = 0){
 		Vector3 pos;
 		pos.x = x * QuadMetrics.cellWidth;
 		pos.y = 0;
@@ -161,10 +160,47 @@ public class MapGrid : MonoBehaviour
 
 		cell.uiRect = label.rectTransform;
 
-		cell.TerrainTypeIndex = (int)Random.Range(0,4);
-		cell.Elevation = (int)Random.Range(0,3);
+		/* pretty randomization stuff */
+		float r = Random.Range(0f,1f);
+		if(forceHeight){
+			cell.TerrainTypeIndex = (int)Random.Range(0,4);
+			cell.Elevation = height;
+		}
+		else if(r > 0.4f){
+			MapCell w = cell.GetNeighbor(QuadDirection.W);
+			MapCell s = cell.GetNeighbor(QuadDirection.S);
+			if(w != null && s != null){
+				r = Random.Range(0f,1f);
+				if(r > 0.5f){
+					cell.TerrainTypeIndex = w.TerrainTypeIndex;
+					cell.Elevation = w.Elevation;
+				}
+				else if(r > 0.5f){
+					cell.TerrainTypeIndex = s.TerrainTypeIndex;
+					cell.Elevation = s.Elevation;
+				}
+			}
+			else if(w != null){
+				cell.TerrainTypeIndex = w.TerrainTypeIndex;
+				cell.Elevation = w.Elevation;
+			}
+			else if(s != null){
+				cell.TerrainTypeIndex = s.TerrainTypeIndex;
+				cell.Elevation = s.Elevation;
+			}
+			else{
+				cell.TerrainTypeIndex = (int)Random.Range(0,4);
+				cell.Elevation = (int)Random.Range(0,3);
+			}
+		}
+		else{
+			cell.TerrainTypeIndex = (int)Random.Range(0,4);
+			cell.Elevation = (int)Random.Range(0,3);
+		}
 
 		AddCellToChunk(x, y, cell);
+
+		return cell;
 	}
 
 	/* what it says on the box */
