@@ -28,7 +28,7 @@ public static class Colors{
 
 	
 	public static class UIColors{
-		public static Color HoverColor = Color.magenta;
+		public static Color HoverColor = Colors.GetColor(255,180,255);
 		public static Color PathColor = Color.green;
 		public static Color StartColor = Color.blue;
 		public static Color DestinationColor = Color.red;

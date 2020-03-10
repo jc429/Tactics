@@ -132,7 +132,7 @@ public class MapGrid : MonoBehaviour
 		}
 	}
 
-	/* Creates and labels a Hex Cell */
+	/* Creates and labels a Map Cell */
 	MapCell CreateCell(int x, int y, int i, bool forceHeight = false, int height = 0){
 		Vector3 pos;
 		pos.x = x * QuadMetrics.cellWidth;
@@ -175,7 +175,7 @@ public class MapGrid : MonoBehaviour
 					cell.TerrainTypeIndex = w.TerrainTypeIndex;
 					cell.Elevation = w.Elevation;
 				}
-				else if(r > 0.5f){
+				else{
 					cell.TerrainTypeIndex = s.TerrainTypeIndex;
 					cell.Elevation = s.Elevation;
 				}

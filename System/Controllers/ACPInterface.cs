@@ -6,8 +6,8 @@ public class ACPInterface : MonoBehaviour{
 	
 	public ArmyColorProfile[] colorProfiles = new ArmyColorProfile[ArmyManager.numArmies];
 
-    void Awake(){
-        ArmyManager.acpInterface = this;
-    }
+	void Awake(){
+		ArmyManager.acpInterface = this;
+	}
 	
 }

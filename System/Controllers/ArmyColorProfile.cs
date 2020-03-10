@@ -11,6 +11,14 @@ public class ArmyColorProfile{
 	public Color uiColorMain;
 	public Color uiColorAccent;
 
+	public ArmyColorProfile(){
+		primaryColor = Color.black;
+		accentColor = Color.black;
+		desaturatedColor = Color.black;
+		uiColorMain = Color.black;
+		uiColorAccent = Color.black;
+	}
+
 	public void SaveProfile(BinaryWriter writer){
 		Colors.SaveColor(writer, primaryColor);
 		Colors.SaveColor(writer, accentColor);
