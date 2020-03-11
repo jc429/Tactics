@@ -16,16 +16,17 @@ public class MapCamera : MonoBehaviour
 
 /**  -5.5 z to -2.75 y at angle 54.5   **/
 
-	public float zoom = 1f;
+	const float defaultZoom = 0.3f;
+	public float zoom = defaultZoom;
 
 	[Range(-5, 10)]
 	public float zoomMin, zoomMax;
 
 	[Range(-30, 45)]
-	public float camPitchMin = 0, camPitchMax = 30;
+	public float camPitchNear = 0, camPitchFar = 30;
 
-	[Range(3, 30)]
-	public float panSpeedZoomMax = 5, panSpeedZoomMin = 15;
+	[Range(5, 20)]
+	public float panSpeedNear = 8, panSpeedFar = 12;
 
 	float rotationSpeed = 0;
 	float rotationAngle = 0;
@@ -48,10 +49,7 @@ public class MapCamera : MonoBehaviour
 	}
 
 	void Start(){
-		AdjustZoom(0.15f);
-		
-		MapCoordinates c = grid.GetCenterCoordinates();
-		transform.localPosition = new Vector3(c.X, 0, c.Y);
+		ResetZoomAndCenterCamera();
 
 	}
 
@@ -87,7 +85,7 @@ public class MapCamera : MonoBehaviour
 		float distance = Mathf.Lerp(zoomMin, zoomMax, zoom);
 		stick.localPosition = new Vector3(0f, distance, 0f);
 
-		float angle = Mathf.Lerp(camPitchMin, camPitchMax, zoom);
+		float angle = Mathf.Lerp(camPitchNear, camPitchFar, zoom);
 		swivel.localRotation = Quaternion.Euler(angle, 0f, 0f);
 	}
 
@@ -97,7 +95,7 @@ public class MapCamera : MonoBehaviour
 		float distance = Mathf.Lerp(zoomMin, zoomMax, zoom);
 		stick.localPosition = new Vector3(0f, distance, 0f);
 
-		float angle = Mathf.Lerp(camPitchMin, camPitchMax, zoom);
+		float angle = Mathf.Lerp(camPitchNear, camPitchFar, zoom);
 		swivel.localRotation = Quaternion.Euler(angle, 0f, 0f);
 	}
 
@@ -149,7 +147,7 @@ public class MapCamera : MonoBehaviour
 	void AdjustPosition (float xDelta, float zDelta) {
 		Vector3 direction = transform.localRotation * new Vector3(xDelta, 0f, zDelta).normalized;
 		float damping = Mathf.Max(Mathf.Abs(xDelta), Mathf.Abs(zDelta));
-		float distance = Mathf.Lerp(panSpeedZoomMax, panSpeedZoomMin, zoom) * damping * Time.deltaTime;
+		float distance = Mathf.Lerp(panSpeedNear, panSpeedFar, zoom) * damping * Time.deltaTime;
 
 		Vector3 pos = transform.localPosition;
 		pos += distance * direction;
@@ -195,8 +193,11 @@ public class MapCamera : MonoBehaviour
 
 	/* puts the camera in a default state, usually after reloading a map */
 	public void ResetZoomAndCenterCamera(){
-		SetZoom(0.15f);
+		SetZoom(defaultZoom);
 		MapCell center = grid.GetCell(grid.GetCenterCoordinates());
-		SetPosition(center.Position);
+		Vector3 v = Vector3.zero;
+		v.x = (grid.cellCountX % 2 == 0) ? -1 : 0;
+		v.z = (grid.cellCountY % 2 == 0) ? -1 : 0;
+		SetPosition(center.Position + v);
 	}
 }

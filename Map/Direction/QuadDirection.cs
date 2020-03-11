@@ -22,12 +22,23 @@ public static class QuadDirectionExtensions {
 		return (90 * (int)direction) % 360;
 	}
 
-	public static QuadDirection QuadDirectionFromDegrees(int degrees){
+	public static QuadDirection QuadDirectionFromDegrees(float degrees){
+		// rotational offset to capture wedge on both sides of desired direction
+		degrees -= 45f;
 		while(degrees < 0){
 			degrees = degrees + 360;
 		}
 		degrees = degrees % 360;
-		return (QuadDirection)(degrees / 90); 
+		// y 0 = north, 90 = east
+		degrees /= 90f;
+		return (QuadDirection)degrees; 
+	}
+
+	public static QuadDirection QuadDirectionFromVector(Vector2 v){
+		if(v == Vector2.zero){
+			return QuadDirection.N;
+		}
+		return QuadDirectionFromDegrees(Mathf.RoundToInt(Vector2.Angle(Vector2.up, v)));
 	}
 
 	public static QuadDirection RandomDirection(){

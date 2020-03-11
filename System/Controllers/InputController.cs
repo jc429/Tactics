@@ -178,8 +178,8 @@ public static class InputController {
 		}
 	}
 
-	public static Vector3 GetDirectionHeld(){
-		Vector3 v = Vector3.zero;
+	public static Vector2 GetDirectionHeld(){
+		Vector3 v = Vector2.zero;
 		v.x += RightDPadPressed() ?  1 : 0;
 		v.x += LeftDPadPressed()  ? -1 : 0;
 		v.y += UpDPadPressed()    ?  1 : 0;

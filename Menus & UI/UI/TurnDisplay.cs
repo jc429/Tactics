@@ -50,6 +50,10 @@ public class TurnDisplay : MonoBehaviour
 			phaseText.outlineColor = turnText.outlineColor = (Color32)acp.uiColorAccent;
 			phaseText.color = turnText.color = acp.uiColorMain;
 		}
+		else{
+			phaseText.outlineColor = turnText.outlineColor = Color.black;
+			phaseText.color = turnText.color = Color.white;
+		}
 		turnUI.anchoredPosition = startPos;
 		Color c = background.color;
 		c.a = 0;

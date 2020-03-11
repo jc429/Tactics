@@ -25,7 +25,38 @@ public class GameUI : MonoBehaviour {
 	}
 
 	void Update () {
-		
+		switch(GameSettings.cursorInputType){
+			case CursorInputType.DPad:
+				UpdateInputsDPad();
+				break;
+			case CursorInputType.Mouse:
+				UpdateInputsMouse();
+				break;
+		}
+	}
+
+	void UpdateInputsDPad(){
+		// check for directional inputs first 
+		Vector2 dirHeld = InputController.GetDirectionHeld();
+		if(dirHeld != Vector2.zero){
+			MapCell newCell = currentCell;
+			if(dirHeld.x != 0 && newCell != null){
+				newCell = newCell.GetNeighbor(QuadDirectionExtensions.QuadDirectionFromVector(new Vector2(dirHeld.x, 0)));
+			}
+			if(dirHeld.y != 0 && newCell != null){
+				newCell = newCell.GetNeighbor(QuadDirectionExtensions.QuadDirectionFromVector(new Vector2(0, dirHeld.y)));
+			}
+			// move if cell changed
+			if(newCell != null && newCell != currentCell){
+				UpdateCurrentCell(newCell);
+			}
+		}
+		else{	//no direction held
+
+		}
+	}
+
+	void UpdateInputsMouse(){
 		if (!EventSystem.current.IsPointerOverGameObject()) {
 			if(selectedUnit != null){
 				switch(selectedUnit.turnState){
@@ -57,7 +88,7 @@ public class GameUI : MonoBehaviour {
 						OpenUnitActionMenu();
 					}
 					else{
-						UpdateCurrentCell();
+						UpdateCurrentCellMouse();
 						if(currentCell != null && currentCell.Unit != null){
 							if(selectedUnit.Properties.affiliation != currentCell.Unit.Properties.affiliation){
 								CombatManager.PreCalculateCombat(selectedUnit, currentCell.Unit);
@@ -77,11 +108,11 @@ public class GameUI : MonoBehaviour {
 						DoSelectUnit();
 					}
 					else{
-						UpdateCurrentCell();
+						UpdateCurrentCellMouse();
 					}
 					break;
 				default:
-					UpdateCurrentCell();
+					UpdateCurrentCellMouse();
 					break;
 				}
 			}
@@ -90,7 +121,7 @@ public class GameUI : MonoBehaviour {
 					DoSelectUnit();
 				}
 				else{
-					UpdateCurrentCell();				
+					UpdateCurrentCellMouse();				
 				}
 			}
 
@@ -104,8 +135,7 @@ public class GameUI : MonoBehaviour {
 		mapGrid.ClearPath();
 	}
 
-	bool UpdateCurrentCell () {
-		MapCell cell = mapGrid.GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
+	bool UpdateCurrentCell(MapCell cell){
 		if (cell != currentCell) {
 			if(currentCell != null){
 				currentCell.colorFlags.IsHoveredOn = false;
@@ -119,6 +149,11 @@ public class GameUI : MonoBehaviour {
 		return false;
 	}
 
+	bool UpdateCurrentCellMouse () {
+		MapCell cell = mapGrid.GetCell(Camera.main.ScreenPointToRay(Input.mousePosition));
+		return UpdateCurrentCell(cell);
+	}
+
 	void DoSelectUnit () {
 		mapGrid.ClearPath();
 		if(selectedUnit != null){
@@ -130,7 +165,7 @@ public class GameUI : MonoBehaviour {
 		if(currentCell != null){
 			currentCell.colorFlags.IsSelected = false;
 		}
-		UpdateCurrentCell();
+		UpdateCurrentCellMouse();
 		if (currentCell) {
 			MapUnit unit = currentCell.Unit;
 			if(unit != null){
@@ -169,7 +204,7 @@ public class GameUI : MonoBehaviour {
 	
 	/* calculate the path the selected unit would take to reach the tile the cursor is on */
 	void DoPathfinding () {
-		if (UpdateCurrentCell()) {
+		if (UpdateCurrentCellMouse()) {
 			if (currentCell /*&& selectedUnit.IsValidDestination(currentCell)*/) {
 				mapGrid.FindPath(selectedUnit.CurrentCell, currentCell, selectedUnit);
 			}

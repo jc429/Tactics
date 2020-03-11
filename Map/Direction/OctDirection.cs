@@ -23,13 +23,22 @@ public static class OctDirectionExtensions {
 		return (45 * (int)direction) % 360;
 	}
 
-	public static OctDirection OctDirectionFromDegrees(int degrees){
+	public static OctDirection OctDirectionFromDegrees(float degrees){
+		// rotational offset to capture wedge on both sides of desired direction
+		degrees -= 22.5f;
 		while(degrees < 0){
 			degrees = degrees + 360;
 		}
 		degrees = degrees % 360;
 		// y 0 = north, 90 = east
-		return (OctDirection)(degrees / 45); 
+		degrees /= 45f;
+		return (OctDirection)degrees; 
+	}
+	public static OctDirection OctDirectionFromVector(Vector2 v){
+		if(v == Vector2.zero){
+			return OctDirection.N;
+		}
+		return OctDirectionFromDegrees(Mathf.RoundToInt(Vector2.Angle(Vector2.up, v)));
 	}
 	
 	public static QuadDirection GetNearestQuadDirection(this OctDirection dir8){

@@ -16,7 +16,7 @@ public static class QuadMetrics
 	public const float waterBlendFactor = 1f - waterFactor;
 	
 	/* how high (in m) one step of elevation raises one tile */
-	public const float elevationStep = 0.5f;
+	public const float elevationStep = 0.25f;
 
 	/* subdivisions of a slope */
 	public const int terracesPerSlope = 2;

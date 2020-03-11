@@ -5,7 +5,7 @@ using UnityEngine;
 
 public static class ArmyManager{
 	
-	public const int numArmies = 8;
+	public const int numArmies = 4;
 
 	public static ArmyColorProfile[] colorProfiles = new ArmyColorProfile[numArmies];
 	public static ACPInterface acpInterface;

@@ -140,6 +140,7 @@ public class MapGrid : MonoBehaviour
 		pos.z = y * QuadMetrics.cellWidth;
 
 		MapCell cell = cells[i] = Instantiate<MapCell>(cellPrefab);
+		cell.name = "Cell  (" + x + ", " + y +")";
     //	cell.transform.SetParent(transform,false);
 		cell.transform.localPosition = pos;
 		cell.coordinates = new MapCoordinates(x,y);
