@@ -57,18 +57,18 @@ public class MapCamera : MonoBehaviour
 	void Update()
 	{
 		if(!locked){
-			float zoomDelta = Input.GetAxis("Mouse ScrollWheel");
+			float zoomDelta = InputController.GetAxis(InputAxis.CamZoom);
 			if (zoomDelta != 0f) {
 				AdjustZoom(zoomDelta);
 			}
 
-			float rotationDelta = Input.GetAxis("CamRotation");
+			float rotationDelta = InputController.GetCustomAxis(InputID.TriggerL, InputID.TriggerR);
 			if (rotationDelta != 0f) {
 				ShiftRotation(rotationDelta);
 			}
 
-			float xDelta = Input.GetAxis("Horizontal");
-			float zDelta = Input.GetAxis("Vertical");
+			float xDelta = InputController.GetAxis(InputAxis.CamHorizontal);
+			float zDelta = InputController.GetAxis(InputAxis.CamVertical);
 			if (xDelta != 0f || zDelta != 0f) {
 				AdjustPosition(xDelta, zDelta);
 			}

@@ -18,13 +18,15 @@ public static class QuadDirectionExtensions {
 		return direction == QuadDirection.W ? QuadDirection.N : (direction + 1);
 	}
 
+	// rotating clockwise, starting from north
 	public static int DegreesOfRotation(this QuadDirection direction){
 		return (90 * (int)direction) % 360;
 	}
 
+	// rotating clockwise, starting from north
 	public static QuadDirection QuadDirectionFromDegrees(float degrees){
 		// rotational offset to capture wedge on both sides of desired direction
-		degrees -= 45f;
+		degrees += 45f;
 		while(degrees < 0){
 			degrees = degrees + 360;
 		}
@@ -34,11 +36,17 @@ public static class QuadDirectionExtensions {
 		return (QuadDirection)degrees; 
 	}
 
+	// rotating clockwise, starting from north
 	public static QuadDirection QuadDirectionFromVector(Vector2 v){
 		if(v == Vector2.zero){
+			Debug.Log("Error: Zero Vector provided");
 			return QuadDirection.N;
 		}
-		return QuadDirectionFromDegrees(Mathf.RoundToInt(Vector2.Angle(Vector2.up, v)));
+		float angle = Vector2.SignedAngle(v, Vector2.up);
+		if(angle < 0){
+			angle += 360;
+		}
+		return QuadDirectionFromDegrees(angle);
 	}
 
 	public static QuadDirection RandomDirection(){

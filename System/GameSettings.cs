@@ -10,5 +10,5 @@ public static class GameSettings
 	public static readonly bool DEBUG_MODE = true;
 
 
-	public static readonly CursorInputType cursorInputType; 
+	public static readonly CursorInputType cursorInputType = CursorInputType.DPad; 
 }

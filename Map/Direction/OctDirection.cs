@@ -25,7 +25,7 @@ public static class OctDirectionExtensions {
 
 	public static OctDirection OctDirectionFromDegrees(float degrees){
 		// rotational offset to capture wedge on both sides of desired direction
-		degrees -= 22.5f;
+		degrees += 22.5f;
 		while(degrees < 0){
 			degrees = degrees + 360;
 		}
@@ -36,9 +36,14 @@ public static class OctDirectionExtensions {
 	}
 	public static OctDirection OctDirectionFromVector(Vector2 v){
 		if(v == Vector2.zero){
+			Debug.Log("Error: Zero Vector provided");
 			return OctDirection.N;
 		}
-		return OctDirectionFromDegrees(Mathf.RoundToInt(Vector2.Angle(Vector2.up, v)));
+		float angle = Vector2.SignedAngle(v, Vector2.up);
+		if(angle < 0){
+			angle += 360;
+		}
+		return OctDirectionFromDegrees(angle);
 	}
 	
 	public static QuadDirection GetNearestQuadDirection(this OctDirection dir8){

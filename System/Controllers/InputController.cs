@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,11 +13,24 @@ public enum InputID{
 	FaceE 			= (1<<6),
 	FaceS 			= (1<<7),
 	FaceW 			= (1<<8),
+	CamLeft			= (1<<9),
+	CamRight		= (1<<10),
+	CamUp				= (1<<11),
+	CamDown			= (1<<12),
+	TriggerL		= (1<<13),
+	TriggerR		= (1<<14),
 
 
-	Pause				= (1<<11),
-	Reset				= (1<<12)
+	Pause				= (1<<30),
+	Reset				= (1<<31)
 }
+
+public enum InputAxis{
+	CamHorizontal		= 0,
+	CamVertical			= 1,
+	CamZoom					= 2
+}
+
 
 public enum ButtonState{
 	Active,
@@ -31,17 +45,21 @@ public enum CursorInputType{
 }
 
 public static class InputController {
+	const int inputAxisCount = 3;
 
-	static int inputQueueLength = 10;
-
-	static ushort currentInputs = 0;
-	static ushort previousInputs = 0;
+	// this frame and last frame's inputs
+	static UInt32 currentInputs = 0;
+	static UInt32 previousInputs = 0;
 	
-	static List<ushort> inputQueue = new List<ushort>();
+	// input history lasting X frames
+	static int inputQueueLength = 10;
+	static List<UInt32> inputQueue = new List<UInt32>();
+
+	static float[] inputAxisArray = new float[inputAxisCount];
 
 	public static void Initialize(){
 		if(inputQueue == null){
-			inputQueue = new List<ushort>();
+			inputQueue = new List<UInt32>();
 		}
 		ClearInputs();
 	}
@@ -51,18 +69,24 @@ public static class InputController {
 	}
 
 	public static void CaptureInputs(){
-		ushort inputs = 0;
-
-		inputs |= (Input.GetKey(KeyCode.W)) ? (ushort)InputID.DpadUp : (ushort)0;
-		inputs |= (Input.GetKey(KeyCode.S)) ? (ushort)InputID.DpadDown : (ushort)0;
-		inputs |= (Input.GetKey(KeyCode.A)) ? (ushort)InputID.DpadLeft : (ushort)0;
-		inputs |= (Input.GetKey(KeyCode.D)) ? (ushort)InputID.DpadRight : (ushort)0;
-		inputs |= (Input.GetKey(KeyCode.I)||Input.GetKey(KeyCode.UpArrow)) ? (ushort)InputID.FaceN : (ushort)0;
-		inputs |= (Input.GetKey(KeyCode.K)||Input.GetKey(KeyCode.DownArrow)) ? (ushort)InputID.FaceS : (ushort)0;
-		inputs |= (Input.GetKey(KeyCode.J)||Input.GetKey(KeyCode.LeftArrow)) ? (ushort)InputID.FaceW : (ushort)0;
-		inputs |= (Input.GetKey(KeyCode.L)||Input.GetKey(KeyCode.RightArrow)) ? (ushort)InputID.FaceE : (ushort)0;
-		inputs |= (Input.GetButtonDown("Pause")) ? (ushort)InputID.Pause : (ushort)0;
-		inputs |= (Input.GetButtonDown("Reset")) ? (ushort)InputID.Reset : (ushort)0;
+		UInt32 inputs = 0;
+		//TODO: figure out a way to not hardcode these
+		inputs |= (Input.GetKey(KeyCode.UpArrow)) ? (UInt32)InputID.DpadUp : (UInt32)0;
+		inputs |= (Input.GetKey(KeyCode.DownArrow)) ? (UInt32)InputID.DpadDown : (UInt32)0;
+		inputs |= (Input.GetKey(KeyCode.LeftArrow)) ? (UInt32)InputID.DpadLeft : (UInt32)0;
+		inputs |= (Input.GetKey(KeyCode.RightArrow)) ? (UInt32)InputID.DpadRight : (UInt32)0;
+		inputs |= (Input.GetKey(KeyCode.I)) ? (UInt32)InputID.FaceN : (UInt32)0;
+		inputs |= (Input.GetKey(KeyCode.K)) ? (UInt32)InputID.FaceS : (UInt32)0;
+		inputs |= (Input.GetKey(KeyCode.J)) ? (UInt32)InputID.FaceW : (UInt32)0;
+		inputs |= (Input.GetKey(KeyCode.L)) ? (UInt32)InputID.FaceE : (UInt32)0;
+		inputs |= (Input.GetKey(KeyCode.W)) ? (UInt32)InputID.CamUp : (UInt32)0;
+		inputs |= (Input.GetKey(KeyCode.S)) ? (UInt32)InputID.CamDown : (UInt32)0;
+		inputs |= (Input.GetKey(KeyCode.A)) ? (UInt32)InputID.CamLeft : (UInt32)0;
+		inputs |= (Input.GetKey(KeyCode.D)) ? (UInt32)InputID.CamRight : (UInt32)0;
+		inputs |= (Input.GetKey(KeyCode.Q)) ? (UInt32)InputID.TriggerL : (UInt32)0;
+		inputs |= (Input.GetKey(KeyCode.E)) ? (UInt32)InputID.TriggerR : (UInt32)0;
+//		inputs |= (Input.GetButtonDown("Pause")) ? (UInt32)InputID.Pause : (UInt32)0;
+//		inputs |= (Input.GetButtonDown("Reset")) ? (UInt32)InputID.Reset : (UInt32)0;
 
 		previousInputs = currentInputs;
 		currentInputs = inputs; 
@@ -70,12 +94,16 @@ public static class InputController {
 		if(inputQueue.Count > inputQueueLength){
 			inputQueue.RemoveAt(0);
 		}
+
+		inputAxisArray[(int)InputAxis.CamHorizontal] = Input.GetAxis("Camera Horizontal");
+		inputAxisArray[(int)InputAxis.CamVertical] = Input.GetAxis("Camera Vertical");
+		inputAxisArray[(int)InputAxis.CamZoom] = Input.GetAxis("Camera Zoom");
 	}
 
 	public static bool CheckQueuedInput(InputID input){
-		return CheckQueuedInput((ushort)input);
+		return CheckQueuedInput((UInt32)input);
 	}
-	public static bool CheckQueuedInput(ushort input){
+	public static bool CheckQueuedInput(UInt32 input){
 		if(inputQueue.Count < 1){
 			return false;
 		}
@@ -88,9 +116,9 @@ public static class InputController {
 	}
 
 	public static bool CheckQueuedInputPressed(InputID input){
-		return CheckQueuedInputPressed((ushort)input);
+		return CheckQueuedInputPressed((UInt32)input);
 	}
-	public static bool CheckQueuedInputPressed(ushort input){
+	public static bool CheckQueuedInputPressed(UInt32 input){
 		if(inputQueue.Count < 2){
 			return false;
 		}
@@ -103,9 +131,9 @@ public static class InputController {
 	}
 
 	public static bool CheckQueuedInputReleased(InputID input){
-		return CheckQueuedInputReleased((ushort)input);
+		return CheckQueuedInputReleased((UInt32)input);
 	}
-	public static bool CheckQueuedInputReleased(ushort input){
+	public static bool CheckQueuedInputReleased(UInt32 input){
 		if(inputQueue.Count < 2){
 			return false;
 		}
@@ -118,23 +146,23 @@ public static class InputController {
 	}
 
 	public static bool CheckCurrentInput(InputID input){
-		return CheckCurrentInput((ushort)input);
+		return CheckCurrentInput((UInt32)input);
 	}
-	public static bool CheckCurrentInput(ushort input){
+	public static bool CheckCurrentInput(UInt32 input){
 		return ((currentInputs & input) != 0);
 	}
 
 	public static bool CheckCurrentInputPressed(InputID input){
-		return CheckCurrentInputPressed((ushort)input);
+		return CheckCurrentInputPressed((UInt32)input);
 	}
-	public static bool CheckCurrentInputPressed(ushort input){
+	public static bool CheckCurrentInputPressed(UInt32 input){
 		return ((currentInputs & input) != 0 && (previousInputs & input) == 0);
 	}
 
 	public static bool CheckCurrentInputReleased(InputID input){
-		return CheckCurrentInputReleased((ushort)input);
+		return CheckCurrentInputReleased((UInt32)input);
 	}
-	public static bool CheckCurrentInputReleased(ushort input){
+	public static bool CheckCurrentInputReleased(UInt32 input){
 		return ((currentInputs & input) == 0 && (previousInputs & input) != 0);
 	}
 
@@ -145,6 +173,26 @@ public static class InputController {
 	public static float GetAxisVertical(){
 		return Input.GetAxisRaw("Vertical");
 	}
+
+	public static float GetAxis(InputAxis axis){
+		return inputAxisArray[(int)axis];
+	}
+
+	//returns a value based on two inputs
+	public static int GetCustomAxis(InputID inputA, InputID inputB){
+		bool a = CheckCurrentInput(inputA);
+		bool b = CheckCurrentInput(inputB);
+		if(a && !b){
+			return -1;
+		}
+		if(b && !a){
+			return 1;
+		}
+		return 0;
+	}
+
+
+	/**********************************************************************************/
 
 	public static bool UpDPadPressed(bool queued = false){
 		if(queued){

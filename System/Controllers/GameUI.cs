@@ -8,12 +8,16 @@ public class GameUI : MonoBehaviour {
 
 	public BasicMenu unitActionMenu;
 
-	// cell the mouse cursor is over
+	const float gridStepDuration = 0.3f;
+	Timer gridStepTimer = new Timer(gridStepDuration);
+
+	// cell the mouse cursor is over / dpad has selected
 	MapCell currentCell;
 
+
+	[Header("Selected Unit")]
 	MapUnit selectedUnit;
-	// cell the unit started their turn in
-	MapCell startCell;
+	MapCell startCell; // cell the unit started their turn in
 	OctDirection startFacing;
 
 	void Awake(){
@@ -22,6 +26,7 @@ public class GameUI : MonoBehaviour {
 
 	void Start(){
 		unitActionMenu.CloseMenu();
+		
 	}
 
 	void Update () {
@@ -35,24 +40,46 @@ public class GameUI : MonoBehaviour {
 		}
 	}
 
+	public void StartGame(){
+		unitActionMenu.CloseMenu();
+		if(GameSettings.cursorInputType == CursorInputType.DPad){
+			MapCell c = mapGrid.GetCell(new MapCoordinates(0,0));
+			UpdateCurrentCell(c);
+		}
+	}
+
 	void UpdateInputsDPad(){
 		// check for directional inputs first 
 		Vector2 dirHeld = InputController.GetDirectionHeld();
-		if(dirHeld != Vector2.zero){
-			MapCell newCell = currentCell;
-			if(dirHeld.x != 0 && newCell != null){
-				newCell = newCell.GetNeighbor(QuadDirectionExtensions.QuadDirectionFromVector(new Vector2(dirHeld.x, 0)));
-			}
-			if(dirHeld.y != 0 && newCell != null){
-				newCell = newCell.GetNeighbor(QuadDirectionExtensions.QuadDirectionFromVector(new Vector2(0, dirHeld.y)));
-			}
-			// move if cell changed
-			if(newCell != null && newCell != currentCell){
-				UpdateCurrentCell(newCell);
+
+		if(gridStepTimer.IsActive){
+			gridStepTimer.AdvanceTimer(Time.deltaTime);
+			if(gridStepTimer.IsFinished){
+				gridStepTimer.Reset();
 			}
 		}
-		else{	//no direction held
+		else{
+			if(dirHeld != Vector2.zero){
+				MapCell newCell = currentCell;
+				if(dirHeld.x != 0 && newCell != null){
+					QuadDirection d = QuadDirectionExtensions.QuadDirectionFromVector(new Vector2(dirHeld.x, 0));
+					Debug.Log(d);
+					newCell = newCell.GetNeighbor(d);
+				}
+				if(dirHeld.y != 0 && newCell != null){
+					QuadDirection d = QuadDirectionExtensions.QuadDirectionFromVector(new Vector2(0, dirHeld.y));
+					Debug.Log(d);
+					newCell = newCell.GetNeighbor(d);
+				}
+				// move if cell changed
+				if(newCell != null && newCell != currentCell){
+					UpdateCurrentCell(newCell);
+					gridStepTimer.Start();
+				}
+			}
+			else{	//no direction held
 
+			}
 		}
 	}
 
@@ -136,17 +163,14 @@ public class GameUI : MonoBehaviour {
 	}
 
 	bool UpdateCurrentCell(MapCell cell){
-		if (cell != currentCell) {
-			if(currentCell != null){
-				currentCell.colorFlags.IsHoveredOn = false;
-			}
-			currentCell = cell;
-			if(currentCell != null){
-				currentCell.colorFlags.IsHoveredOn = true;
-			}
-			return true;
+		if(currentCell != null){
+			currentCell.colorFlags.IsHoveredOn = false;
 		}
-		return false;
+		currentCell = cell;
+		if(currentCell != null){
+			currentCell.colorFlags.IsHoveredOn = true;
+		}
+		return (currentCell != null);
 	}
 
 	bool UpdateCurrentCellMouse () {

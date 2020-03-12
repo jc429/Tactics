@@ -91,6 +91,7 @@ public class GameController : MonoBehaviour
 	}
 
 	void Update(){
+		InputController.CaptureInputs();
 		if(!gameStarted && Input.GetKeyDown(KeyCode.Space)){
 			StartGame();
 		}
@@ -135,6 +136,7 @@ public class GameController : MonoBehaviour
 		gameStarted = true;
 		ArmyManager.SetAllUnitsToFinished();
 		TurnManager.StartGame();
+		gameUI.StartGame();
 	}
 
 	public void SetGamePaused(bool pause){
